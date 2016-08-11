@@ -15,6 +15,8 @@
 
     CustomerStickerController.prototype.render = function( ctr, App, data ) {
 
+        console.log(data);
+
         var that = this;
         that.el = document.createElement( 'div' );
         that.el.className = 'customStickerContainer centerToScreenContainer animation_fadein noselect';

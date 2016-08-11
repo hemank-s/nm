@@ -67,19 +67,6 @@
         }
 
 
-        // function defineRewardsClick(){
-        //     if (allRewards.length) {
-        //         console.log(allRewards);
-        //         for (var i = 0; i < allRewards.length; i++) {
-        //             allRewards[i].addEventListener("click", function(event) {
-        //                 var rewardType = this.getAttribute('data-rewardtype');
-        //                 var rewardRouter = getRewardRouter(rewardType);
-        //                 App.router.navigateTo( rewardRouter, {});
-        //             });
-        //         }
-        //     }    
-        // }
-
         function getTimeRemaining(endtime) {
             var t = Date.parse(endtime) - Date.parse(new Date());
             var seconds = Math.floor((t / 1000) % 60);

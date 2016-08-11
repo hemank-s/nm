@@ -42,33 +42,47 @@
         },
 
         // Profile Service For Ninja 
-
         getNinjaProfile: function(fn, x){
             var params = {
-                'url': 'http://54.169.82.65:5016/v1/profile?random='+Math.round(Math.random() * 999999999),
+                'url': URL.api_location + '/profile?random='+Math.round(Math.random() * 999999999),
                 'type': 'GET'
             };
             if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
             else this.ninjaService.communicate(params);  
         },
 
+        // Get complete Ninja List of Rewards That can be earned By Work
         getNinjaRewards : function(fn,x){
             var params = {
-                'url': 'http://10.0.1.133:5016/v1/profile?random='+Math.round(Math.random() * 999999999),
+                'url': URL.api_location + '/rewards?random='+Math.round(Math.random() * 999999999),
                 'type': 'GET'
             };
             if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
             else this.ninjaService.communicate(params);  
         },
 
+        // Get Ninja Acitivty/Stats for Lifetime :: 30 days :: 7 days 
         getNinjaActivity : function(fn, x){
             var params = {
-                'url': 'http://54.169.82.65:5016/v1/stats?random='+Math.round(Math.random() * 999999999),
+                'url': URL.api_location + '/stats?random='+Math.round(Math.random() * 999999999),
                 'type': 'GET'
             };
             if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
             else this.ninjaService.communicate(params);  
-        }
+        },
+
+        // Get Speicifc Reward Details For The Reward Router
+        getRewardDetails: function(data, fn, x) {
+            console.log(data);
+            var params = {
+                'url': URL.api_location + '/rewards/'+data.rewardId+'?random='+Math.round(Math.random() * 999999999),
+                'type': 'GET'
+            };
+            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
+            else this.ninjaService.communicate(params);
+        },
+
+
         
         // Rewards Service For Ninja 
 

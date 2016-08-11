@@ -136,6 +136,15 @@
             }
         },
 
+        // Show Toast in Android or console
+        showToast: function(toast){
+            if(platformSdk.bridgeEnabled){
+                platformSdk.ui.showToast(toast);    
+            }else{
+                console.log(toast);
+            }
+        },
+
 
         debounce: function(func, wait, immediate) {
             var timeout;

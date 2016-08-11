@@ -28,19 +28,66 @@
                 }
         },
 
+        showRewardStateToast : function(state){
+            if(state == 'unlocked'){
+                console.log("The state is currently unlocked :: Can open the reward");
+            }else if (state == 'locked'){
+                utils.showToast('The reward is currently under locked state. Try again once you unlock it at a higher streak');
+            }else if (state == 'redeemed'){
+                console.log("Reward already redeemed once or more.");
+            }else if (state == 'disabled'){
+                utils.showToast('The reward is in disabled state, sorry for the inconvienience');
+            }
+        },
+
         // Update the ninja Click Events For rewards
         updateNinjaRewardsLinks: function(App){
             
             var that = this;
 
             var allRewards = document.getElementsByClassName( 'rewardRow' );
+
             if ( allRewards.length ) {
                 console.log( allRewards );
                 for ( var i = 0; i < allRewards.length; i++ ) {
                     allRewards[i].addEventListener( 'click', function( event ) {
+                        
+                        // Get Reward related information
+                        var rewardState = this.getAttribute('data-state');
+
+                        if(rewardState == 'locked'){
+                            that.showRewardStateToast(rewardState);
+                            return;
+                        } else if (rewardState == 'disabled'){
+                            that.schowRewardStateToast(rewardState);
+                            return;
+                        }
+                        
                         var rewardType = this.getAttribute( 'data-rewardtype' );
                         var rewardRouter = that.getRewardRouter( rewardType );
-                        App.router.navigateTo( rewardRouter, {});
+                        var rewardId = this.getAttribute('data-rewardId');
+
+                        var data = {};
+                        data.rewardId = rewardId;
+
+
+                        // STUB TO REMOVE 
+
+                        var res1 = {'data':{'customStickers':[],'status':'eligible'}};
+                        var res2 = {'data':{'customStickers':[{"id":123,"ts":34325322,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'status':'eligible'}};
+                        var res3 = {'data':{'customStickers':[{"id":123,"ts":34325322,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":3432532212,"status":"inProgress","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'status':'notEligible'}};
+                        
+                        App.router.navigateTo( rewardRouter, res1.data);
+
+                        // STUB TO REMOVE
+
+                        // Reward Details API
+                        App.NinjaService.getRewardDetails(data, function(res) {
+                            console.log(res.data);
+                            // Routing to the specific Router
+                            App.router.navigateTo( rewardRouter, res.data);                            
+                        }, this);
+
                     });
                 }
             }

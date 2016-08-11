@@ -287,7 +287,7 @@
 
             self.router.navigateTo('/');
             // Profile Call Fetches this res and sends to the profile udpater
-            var res = {'data':{"battery":6,"rewards_hash":"be96dc8c0a876b08c8076b03acdee0db4","status":"active","streak":1,"name":'Hemank Sabharwal'}};
+            var res = {'data':{"battery":6,"rewards_hash":"be96dc8c0a876b08c8076b03acdee0db5","status":"active","streak":1,"name":'Hemank Sabharwal'}};
             profileModel.updateNinjaData(res.data,self);
             activityModel.fetchNinjaActivity('lifetime');
             

@@ -4417,6 +4417,15 @@
 	            }
 	        },
 
+	        // Show Toast in Android or console
+	        showToast: function(toast){
+	            if(platformSdk.bridgeEnabled){
+	                platformSdk.ui.showToast(toast);    
+	            }else{
+	                console.log(toast);
+	            }
+	        },
+
 
 	        debounce: function(func, wait, immediate) {
 	            var timeout;
@@ -4667,20 +4676,20 @@
 	    module.exports = function(env) {
 	        if (env === Constants.DEV_ENV) {
 	            return {
-	                API_URL: 'http://52.76.46.27:5002',
-	                LOG_URL:'http://52.76.46.27:5002',
+	                API_URL: 'http://54.169.82.65:5016/v1',
+	                LOG_URL:'http://54.169.82.65:5016/v1',
 
 	            };
 	        } else if (env === Constants.STAGING_ENV) {
 	            return {
-	                API_URL: 'http://52.76.46.27:5002',
-	                LOG_URL:'http://52.76.46.27:5002',
+	                API_URL: 'http://54.169.82.65:5016/v1',
+	                LOG_URL:'http://54.169.82.65:5016/v1',
 
 	            };
 	        } else if (env === Constants.PROD_ENV) {
 	            return {
-	                API_URL: 'http://nixy.hike.in',
-	                LOG_URL:'http://epsy.hike.in',
+	                API_URL: 'http://54.169.82.65:5016/v1',
+	                LOG_URL:'http://54.169.82.65:5016/v1',
 	            };
 	        }
 
@@ -4932,7 +4941,7 @@
 	            });
 
 	            platformSdk.events.subscribe('onUpPressed', function() {
-	                // self.upPressTrigger();
+	               self.backPressTrigger();
 	            });
 
 	            // Ninja Home Screen Router :: Three Tabs (Rewards/Activity/Mystery Box)
@@ -4981,7 +4990,7 @@
 
 	            self.router.navigateTo('/');
 	            // Profile Call Fetches this res and sends to the profile udpater
-	            var res = {'data':{"battery":6,"rewards_hash":"be96dc8c0a876b08c8076b03acdee0db4","status":"active","streak":1,"name":'Hemank Sabharwal'}};
+	            var res = {'data':{"battery":6,"rewards_hash":"be96dc8c0a876b08c8076b03acdee0db5","status":"active","streak":1,"name":'Hemank Sabharwal'}};
 	            profileModel.updateNinjaData(res.data,self);
 	            activityModel.fetchNinjaActivity('lifetime');
 	            
@@ -5091,19 +5100,6 @@
 	            }
 	        }
 
-
-	        // function defineRewardsClick(){
-	        //     if (allRewards.length) {
-	        //         console.log(allRewards);
-	        //         for (var i = 0; i < allRewards.length; i++) {
-	        //             allRewards[i].addEventListener("click", function(event) {
-	        //                 var rewardType = this.getAttribute('data-rewardtype');
-	        //                 var rewardRouter = getRewardRouter(rewardType);
-	        //                 App.router.navigateTo( rewardRouter, {});
-	        //             });
-	        //         }
-	        //     }    
-	        // }
 
 	        function getTimeRemaining(endtime) {
 	            var t = Date.parse(endtime) - Date.parse(new Date());
@@ -5243,7 +5239,7 @@
 
 	            // STUB TO REMOVE
 
-	            var oldRewardsHash = 'be96dc8c0a876b08c8076b03acdee0db5';
+	            var oldRewardsHash = 'be96dc8c0a876b08c8076b03acdee0db4';
 
 	            // STUB TO REMOVE
 
@@ -5264,7 +5260,7 @@
 	            
 	                // STUB TO REMOVE
 
-	                var newRewardData = [{"title":"Early Access Stickers","stitle":"Get all the hike stickers before everyone else","icon":"https://s3-ap-southeast-1.amazonaws.com/hike-giscassets/3rd-sticker.png","state":"unlocked","id":1,"streak":0,"type":"sticker_reward"},{"title":"Express GIF","stitle":"Express yourself with GIFs, like no one else can","icon":"https://s3-ap-southeast-1.amazonaws.com/hike-giscassets/3rd-sticker.png","state":"locked","id":3,"streak":35,"type":"exclusive_feature"},{"title":"Submit Content","stitle":"Submit hike content and get recognition","icon":"https://s3-ap-southeast-1.amazonaws.com/hike-giscassets/3rd-sticker.png","state":"locked","id":5,"streak":60,"type":"user_generated_content"},{"title":"My Sticker","stitle":"Have an exclusive sticker made just for you","icon":"https://s3-ap-southeast-1.amazonaws.com/hike-giscassets/3rd-sticker.png","state":"locked","id":6,"streak":80,"type":"custom_sticker"}];
+	                var newRewardData = [{"title":"Early Access Stickers","stitle":"Get all the hike stickers before everyone else","icon":"https://s3-ap-southeast-1.amazonaws.com/hike-giscassets/3rd-sticker.png","state":"unlocked","id":1,"streak":0,"type":"sticker_reward"},{"title":"Express GIF","stitle":"Express yourself with GIFs, like no one else can","icon":"https://s3-ap-southeast-1.amazonaws.com/hike-giscassets/3rd-sticker.png","state":"locked","id":3,"streak":35,"type":"exclusive_feature"},{"title":"Submit Content","stitle":"Submit hike content and get recognition","icon":"https://s3-ap-southeast-1.amazonaws.com/hike-giscassets/3rd-sticker.png","state":"locked","id":5,"streak":60,"type":"user_generated_content"},{"title":"My Sticker","stitle":"Have an exclusive sticker made just for you","icon":"https://s3-ap-southeast-1.amazonaws.com/hike-giscassets/3rd-sticker.png","state":"unlocked","id":6,"streak":0,"type":"custom_sticker"}];
 	                rewardsModel.updateNinjaRewards(newRewardData,App);
 	                
 	                // STUB TO REMOVE
@@ -5412,19 +5408,66 @@
 	                }
 	        },
 
+	        showRewardStateToast : function(state){
+	            if(state == 'unlocked'){
+	                console.log("The state is currently unlocked :: Can open the reward");
+	            }else if (state == 'locked'){
+	                utils.showToast('The reward is currently under locked state. Try again once you unlock it at a higher streak');
+	            }else if (state == 'redeemed'){
+	                console.log("Reward already redeemed once or more.");
+	            }else if (state == 'disabled'){
+	                utils.showToast('The reward is in disabled state, sorry for the inconvienience');
+	            }
+	        },
+
 	        // Update the ninja Click Events For rewards
 	        updateNinjaRewardsLinks: function(App){
 	            
 	            var that = this;
 
 	            var allRewards = document.getElementsByClassName( 'rewardRow' );
+
 	            if ( allRewards.length ) {
 	                console.log( allRewards );
 	                for ( var i = 0; i < allRewards.length; i++ ) {
 	                    allRewards[i].addEventListener( 'click', function( event ) {
+	                        
+	                        // Get Reward related information
+	                        var rewardState = this.getAttribute('data-state');
+
+	                        if(rewardState == 'locked'){
+	                            that.showRewardStateToast(rewardState);
+	                            return;
+	                        } else if (rewardState == 'disabled'){
+	                            that.schowRewardStateToast(rewardState);
+	                            return;
+	                        }
+	                        
 	                        var rewardType = this.getAttribute( 'data-rewardtype' );
 	                        var rewardRouter = that.getRewardRouter( rewardType );
-	                        App.router.navigateTo( rewardRouter, {});
+	                        var rewardId = this.getAttribute('data-rewardId');
+
+	                        var data = {};
+	                        data.rewardId = rewardId;
+
+
+	                        // STUB TO REMOVE 
+
+	                        var res1 = {'data':{'customStickers':[],'status':'eligible'}};
+	                        var res2 = {'data':{'customStickers':[{"id":123,"ts":34325322,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'status':'eligible'}};
+	                        var res3 = {'data':{'customStickers':[{"id":123,"ts":34325322,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":3432532212,"status":"inProgress","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'status':'notEligible'}};
+	                        
+	                        App.router.navigateTo( rewardRouter, res1.data);
+
+	                        // STUB TO REMOVE
+
+	                        // Reward Details API
+	                        App.NinjaService.getRewardDetails(data, function(res) {
+	                            console.log(res.data);
+	                            // Routing to the specific Router
+	                            App.router.navigateTo( rewardRouter, res.data);                            
+	                        }, this);
+
 	                    });
 	                }
 	            }
@@ -5656,33 +5699,47 @@
 	        },
 
 	        // Profile Service For Ninja 
-
 	        getNinjaProfile: function(fn, x){
 	            var params = {
-	                'url': 'http://54.169.82.65:5016/v1/profile?random='+Math.round(Math.random() * 999999999),
+	                'url': URL.api_location + '/profile?random='+Math.round(Math.random() * 999999999),
 	                'type': 'GET'
 	            };
 	            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
 	            else this.ninjaService.communicate(params);  
 	        },
 
+	        // Get complete Ninja List of Rewards That can be earned By Work
 	        getNinjaRewards : function(fn,x){
 	            var params = {
-	                'url': 'http://10.0.1.133:5016/v1/profile?random='+Math.round(Math.random() * 999999999),
+	                'url': URL.api_location + '/rewards?random='+Math.round(Math.random() * 999999999),
 	                'type': 'GET'
 	            };
 	            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
 	            else this.ninjaService.communicate(params);  
 	        },
 
+	        // Get Ninja Acitivty/Stats for Lifetime :: 30 days :: 7 days 
 	        getNinjaActivity : function(fn, x){
 	            var params = {
-	                'url': 'http://54.169.82.65:5016/v1/stats?random='+Math.round(Math.random() * 999999999),
+	                'url': URL.api_location + '/stats?random='+Math.round(Math.random() * 999999999),
 	                'type': 'GET'
 	            };
 	            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
 	            else this.ninjaService.communicate(params);  
-	        }
+	        },
+
+	        // Get Speicifc Reward Details For The Reward Router
+	        getRewardDetails: function(data, fn, x) {
+	            console.log(data);
+	            var params = {
+	                'url': URL.api_location + '/rewards/'+data.rewardId+'?random='+Math.round(Math.random() * 999999999),
+	                'type': 'GET'
+	            };
+	            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
+	            else this.ninjaService.communicate(params);
+	        },
+
+
 	        
 	        // Rewards Service For Ninja 
 
@@ -5755,7 +5812,6 @@
 	                    activityData[key].count = that.getNumberAbrr( activityData[key].count );
 
 	            }
-	            console.log(activityData);
 	        },
 
 	        fetchNinjaActivity: function( timeperiod ) {
@@ -5949,6 +6005,8 @@
 	    };
 
 	    CustomerStickerController.prototype.render = function( ctr, App, data ) {
+
+	        console.log(data);
 
 	        var that = this;
 	        that.el = document.createElement( 'div' );
