@@ -971,14 +971,14 @@ a:visited {
   position: absolute; }
 
 .customStickerHeaderImage {
-  background: url(images/customStickerHeader.png);
+  background: url(images/customStickerHeader.gif);
   -webkit-background-size: contain;
   -o-background-size: contain;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  width: 228px;
-  height: 114px;
+  width: 250px;
+  height: 190px;
   margin: 0px auto; }
 
 .hideClass {
@@ -1109,249 +1109,35 @@ input:-ms-input-placeholder {
   width: 11%;
   border-radius: 4px; }
 
-.ninjaStreak {
-  margin: 28px 25px 0px 0px; }
+.customStickerHistory {
+  padding: 32px 20px 0px 20px; }
 
-.ninjaBattery {
-  margin: 28px 0px 0px 25px; }
-
-.ninjaBatteryIcon {
-  background: url(images/batteryIcon.png);
+.customStickerIcon {
+  display: inline-block;
+  vertical-align: middle;
   background-size: contain;
+  width: 50px;
+  height: 50px;
   background-repeat: no-repeat;
-  width: 19px;
-  height: 16px; }
-
-.ninjaStreakIcon {
-  background: url(images/streakIcon.png);
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 13px;
-  height: 11px;
-  display: inline-block; }
-
-.ninjaStreakValue {
-  display: inline-block; }
-
-.rewardsContainer {
-  padding: 30px 0px 30px 20px; }
-
-.ninjaProfileIcon {
-  background: url(images/ninjaProfile.jpg);
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 75px;
-  height: 75px;
-  -webkit-border-radius: 50%;
   border-radius: 50%; }
 
-.ninjaName {
-  color: #3D475B;
-  font-size: 16px;
-  font-weight: 400;
-  margin-top: 10px; }
-
-.commonDv {
-  margin-top: 33px; }
-
-.rewardRow {
+.customStickerRow {
   list-style: none;
   margin-bottom: 16px;
   padding-bottom: 16px; }
 
-.rewardIcon {
-  background: url(images/giftSample.png);
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 26px;
-  height: 26px;
-  display: inline-block; }
-
-.rewardDetails {
+.customStickerDetails {
   display: inline-block;
-  margin-left: 18px; }
+  vertical-align: middle; }
 
-.rewardHeading {
+.stickerPhrase {
   font-size: 16px;
   color: #3D475B;
   margin-bottom: 7px; }
 
-.rewardSubheading {
+.stickerOrderDate {
   font-size: 12px;
   color: rgba(61, 71, 91, 0.64); }
-
-.mysteryBoxIcon {
-  background: url(images/mysteryPack.png);
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 108px;
-  height: 108px;
-  margin: 20px auto 24px auto; }
-
-#clockdiv {
-  color: #E49F5C;
-  display: inline-block;
-  font-weight: 300;
-  text-align: center;
-  font-size: 29px;
-  border: 1px solid #F0D6BD;
-  box-shadow: 0px 1px 3px 0px #FFFFFF;
-  border-radius: 10px;
-  padding: 16px 21px; }
-
-#clockdiv > div {
-  border-radius: 3px;
-  display: inline-block; }
-
-#clockdiv div > span {
-  display: inline-block;
-  margin: 0px 6px; }
-
-.smalltext {
-  font-weight: 400;
-  color: #3D475B;
-  font-size: 12px;
-  padding-top: 12px; }
-
-.mysteryBoxMessage {
-  margin: 26px auto 0px auto;
-  text-transform: uppercase;
-  color: rgba(61, 71, 91, 0.64);
-  font-size: 13px;
-  font-weight: 400; }
-
-.activityContainer {
-  margin-top: 24px; }
-
-.seperator {
-  background: rgba(0, 0, 0, 0.05);
-  height: 1px;
-  margin: 0px;
-  border: none;
-  padding: 0px; }
-
-.leaderboardWrapper {
-  margin: 24px 0px 38px 24px; }
-
-.listRow {
-  display: inline-block;
-  float: left; }
-
-::-webkit-scrollbar {
-  display: none; }
-
-.topList {
-  width: 47em;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap; }
-
-.topNinjas {
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap; }
-
-.leaderboardHeading {
-  color: rgba(61, 71, 91, 0.64);
-  font-size: 14px;
-  font-weight: 400;
-  margin-bottom: 20px; }
-
-.listRow {
-  margin-right: 32px; }
-
-.userName {
-  font-size: 12px;
-  color: #3D475B;
-  font-weight: 400;
-  margin-top: 6px; }
-
-.userIcon {
-  background: url(images/ninjaProfile.jpg);
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 48px;
-  height: 48px;
-  -webkit-border-radius: 50%;
-  border-radius: 50%; }
-
-.statTypeContainer {
-  padding: 24px;
-  margin-bottom: 24px; }
-
-.statHeading {
-  font-size: 14px;
-  color: rgba(61, 71, 91, 0.64);
-  margin-bottom: 20px; }
-
-.statBoxWrapper {
-  padding-left: 12px;
-  width: 40%;
-  display: inline-block;
-  margin-bottom: 28px; }
-
-.statBoxFloatLeft {
-  float: left; }
-
-.statBoxFloatRight {
-  float: right; }
-
-.statValue {
-  font-size: 32px;
-  color: #3D475B;
-  font-weight: 300; }
-
-.settingsWrapper {
-  margin-bottom: 14px;
-  text-align: center; }
-
-.optionOne, .optionTwo, .optionThree {
-  font-size: 12px;
-  color: #3D475B;
-  font-weight: 300;
-  display: inline-block; }
-
-.twoSideMargin {
-  margin-left: 8px;
-  margin-right: 8px; }
-
-.selectedTime {
-  background: #3D475B;
-  color: #fff; }
-
-.statTimePeriod {
-  display: inline-block;
-  border: 1px solid #3D475B;
-  border-radius: 20px;
-  text-align: center;
-  padding: 6px 14px;
-  width: 20%; }
-
-.statText {
-  font-size: 12px;
-  color: rgba(61, 71, 91, 0.4);
-  margin-top: 4px; }
-
-.rewardStreakWrapper {
-  display: inline-block;
-  float: right;
-  margin-right: 16px;
-  vertical-align: middle;
-  line-height: 35px; }
-
-.rewardStreakIcon {
-  background: url(images/streakIcon.png);
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 13px;
-  display: inline-block;
-  height: 11px; }
-
-.rewardStreakValue {
-  font-size: 14px;
-  color: rgba(61, 71, 91, 0.64);
-  font-weight: 500;
-  display: inline-block; }
 
 .showbox {
   position: absolute;

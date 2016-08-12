@@ -73,11 +73,11 @@
 
                         // STUB TO REMOVE 
 
-                        var res1 = {'data':{'customStickers':[],'status':'eligible'}};
-                        var res2 = {'data':{'customStickers':[{"id":123,"ts":34325322,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'status':'eligible'}};
-                        var res3 = {'data':{'customStickers':[{"id":123,"ts":34325322,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":3432532212,"status":"inProgress","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'status':'notEligible'}};
+                        var res1 = {'data':{'customStickers':[],'eligible':true}};
+                        var res2 = {'data':{'customStickers':[{"id":123,"ts":1470916209163,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
+                        var res3 = {'data':{'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"completed","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':false}};
                         
-                        App.router.navigateTo( rewardRouter, res1.data);
+                        App.router.navigateTo( rewardRouter, res2.data);
 
                         // STUB TO REMOVE
 

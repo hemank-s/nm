@@ -4279,27 +4279,27 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	(function(W, undefined) {
+	(function( W, undefined ) {
 	    'use strict';
 
-	    HTMLElement.prototype.toggleClass = function(classToken, flag) {
+	    HTMLElement.prototype.toggleClass = function( classToken, flag ) {
 	        var element = this;
 
-	        if (flag !== undefined) {
-	            if (flag) {
-	                element.classList.add(classToken);
+	        if ( flag !== undefined ) {
+	            if ( flag ) {
+	                element.classList.add( classToken );
 	            } else {
-	                element.classList.remove(classToken);
+	                element.classList.remove( classToken );
 	            }
 	        } else {
-	            element.classList.toggle(classToken);
+	            element.classList.toggle( classToken );
 	        }
 	    };
 
-	    var ConnTypes = __webpack_require__(5).ConnectionTypes,
-	        _extend = function(toObj, fromObj) {
-	            for (var key in fromObj) {
-	                if (fromObj.hasOwnProperty(key) && toObj[key] === undefined) {
+	    var ConnTypes = __webpack_require__( 5 ).ConnectionTypes,
+	        _extend = function( toObj, fromObj ) {
+	            for ( var key in fromObj ) {
+	                if ( fromObj.hasOwnProperty( key ) && toObj[key] === undefined ) {
 	                    toObj[key] = fromObj[key];
 	                }
 	            }
@@ -4313,93 +4313,93 @@
 	        idCounter = 1;
 
 	    module.exports = {
-	        isFunction: function(fn) {
+	        isFunction: function( fn ) {
 	            return typeof fn === 'function';
 	        },
 
-	        extend: function(toObj, fromObj) {
-	            _extend(toObj.prototype, fromObj.prototype);
-	            _extend(toObj, fromObj);
+	        extend: function( toObj, fromObj ) {
+	            _extend( toObj.prototype, fromObj.prototype );
+	            _extend( toObj, fromObj );
 
 	            return toObj;
 	        },
 
-	        serializeParams: function(params) {
+	        serializeParams: function( params ) {
 	            var serializedParams = [];
 
-	            for (var key in params) {
-	                if (params.hasOwnProperty(key)) {
-	                    serializedParams.push(key + '=' + params[key]);
+	            for ( var key in params ) {
+	                if ( params.hasOwnProperty( key ) ) {
+	                    serializedParams.push( key + '=' + params[key] );
 	                }
 	            }
 
-	            return serializedParams.join('&');
+	            return serializedParams.join( '&' );
 	        },
 
-	        empty: function(element) {
-	            while (element.firstChild) {
-	                element.removeChild(element.firstChild);
+	        empty: function( element ) {
+	            while ( element.firstChild ) {
+	                element.removeChild( element.firstChild );
 	            }
 
 	            return element;
 	        },
 
-	        getUniqueId: function(prefix) {
-	            return (prefix || basePrefix) + idCounter++;
+	        getUniqueId: function( prefix ) {
+	            return ( prefix || basePrefix ) + idCounter++;
 	        },
 
-	        simpleClone: function(obj) {
-	            return JSON.parse(JSON.stringify(obj));
+	        simpleClone: function( obj ) {
+	            return JSON.parse( JSON.stringify( obj ) );
 	        },
 
-	        loadImage: function(params) {
-	            var imageEl = document.createElement('img');
+	        loadImage: function( params ) {
+	            var imageEl = document.createElement( 'img' );
 
 	            imageEl.src = params.src;
 
 	            imageEl.onload = function() {
-	                params.success(imageEl, params.src);
+	                params.success( imageEl, params.src );
 	            };
 
 	            imageEl.onError = function() {
-	                params.error(imageEl);
+	                params.error( imageEl );
 	            };
 	        },
 
-	        toOptimizeForImages: function(connectionType) {
-	            if (memoizationCache[connectionType] === undefined) {
-	                memoizationCache[connectionType] = imageOptimizationConnTypes.indexOf(connectionType) !== -1;
+	        toOptimizeForImages: function( connectionType ) {
+	            if ( memoizationCache[connectionType] === undefined ) {
+	                memoizationCache[connectionType] = imageOptimizationConnTypes.indexOf( connectionType ) !== -1;
 	            }
 
 	            return memoizationCache[connectionType];
 	        },
 
-	        getNodeIndex: function(elem) {
+	        getNodeIndex: function( elem ) {
 	            var index = 0;
 
-	            while (elem == elem.previousElementSibling) {
+	            while ( elem == elem.previousElementSibling ) {
 	                index++;
 	            }
 
 	            return index;
 	        },
 
-	        twoStringCompare : function(str1, str2){
+	        twoStringCompare: function( str1, str2 ) {
 	            var n = null;
-	            n = str1.localeCompare(str2);
+	            n = str1.localeCompare( str2 );
 	            return n;
 	        },
 
-	        createCustomEvent: function(eventName) {
+	        createCustomEvent: function( eventName ) {
 	            var customEvent;
 
-	            if (W.CustomEvent) {
-	                customEvent = new CustomEvent(eventName, {
+	            if ( W.CustomEvent ) {
+	                customEvent = new CustomEvent( eventName, {
 	                    bubbles: true
 	                });
 	            } else {
-	                customEvent = document.createEvent('Event');
-	                customEvent.initEvent(eventName, true, false);
+	                customEvent = document.createEvent( 'Event' );
+	                customEvent.initEvent( eventName, true, false );
 	            }
 
 	            return customEvent;
@@ -4408,43 +4408,73 @@
 
 	        // Toggle Back Navigation Set For Allowing Back and Up Press Inside The Application
 
-	        toggleBackNavigation: function(enable) {
+	        toggleBackNavigation: function( enable ) {
 
 	            enable = enable ? 'true' : 'false';
 
-	            if (platformSdk.bridgeEnabled) {
-	                platformSdk.bridge.allowBackPress(enable);
+	            if ( platformSdk.bridgeEnabled ) {
+	                platformSdk.bridge.allowBackPress( enable );
+	            }
+	        },
+
+	        hasClass: function( el, className ) {
+	            if ( el.classList )
+	                return el.classList.contains( className );
+	            else
+	                return !! el.className.match( new RegExp( '(\\s|^)' + className + '(\\s|$)' ) );
+	        },
+
+	        addClass: function( el, className ) {
+	            if ( el.classList )
+	                el.classList.add( className );
+	            else if ( ! hasClass( el, className ) ) el.className += ' ' + className;
+	        },
+
+	        removeClass: function( el, className ) {
+	            if ( el.classList )
+	                el.classList.remove( className );
+	            else if ( hasClass( el, className ) ) {
+	                var reg = new RegExp( '(\\s|^)' + className + '(\\s|$)' );
+	                el.className = el.className.replace( reg, ' ' );
+	            }
+	        },
+
+	        openWebView: function(url){
+	            if(platformSdk.bridgeEnabled){
+	                platformSdk.bridge.openFullPage( 'FAQ', url );
+	            }else{
+	                console.log("Opening Web page to specified url");
 	            }
 	        },
 
 	        // Show Toast in Android or console
-	        showToast: function(toast){
-	            if(platformSdk.bridgeEnabled){
-	                platformSdk.ui.showToast(toast);    
-	            }else{
-	                console.log(toast);
+	        showToast: function( toast ) {
+	            if ( platformSdk.bridgeEnabled ) {
+	                platformSdk.ui.showToast( toast );
+	            } else {
+	                console.log( toast );
 	            }
 	        },
 
-
-	        debounce: function(func, wait, immediate) {
+	        debounce: function( func, wait, immediate ) {
 	            var timeout;
 	            return function() {
 	                var context = this,
 	                    args = arguments;
 	                var later = function() {
 	                    timeout = null;
-	                    if (!immediate) func.apply(context, args);
+	                    if ( ! immediate ) func.apply( context, args );
 	                };
-	                var callNow = immediate && !timeout;
-	                clearTimeout(timeout);
-	                timeout = setTimeout(later, wait);
-	                if (callNow) func.apply(context, args);
+	                var callNow = immediate && ! timeout;
+	                clearTimeout( timeout );
+	                timeout = setTimeout( later, wait );
+	                if ( callNow ) func.apply( context, args );
 	            };
 	        }
 	    };
 
-	})(window);
+	})( window );
+
 
 /***/ },
 /* 5 */
@@ -5453,11 +5483,11 @@
 
 	                        // STUB TO REMOVE 
 
-	                        var res1 = {'data':{'customStickers':[],'status':'eligible'}};
-	                        var res2 = {'data':{'customStickers':[{"id":123,"ts":34325322,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'status':'eligible'}};
-	                        var res3 = {'data':{'customStickers':[{"id":123,"ts":34325322,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":3432532212,"status":"inProgress","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'status':'notEligible'}};
+	                        var res1 = {'data':{'customStickers':[],'eligible':true}};
+	                        var res2 = {'data':{'customStickers':[{"id":123,"ts":1470916209163,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
+	                        var res3 = {'data':{'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"inProgress","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':false}};
 	                        
-	                        App.router.navigateTo( rewardRouter, res1.data);
+	                        App.router.navigateTo( rewardRouter, res2.data);
 
 	                        // STUB TO REMOVE
 
@@ -5989,32 +6019,122 @@
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	(function( W, platformSdk, events ) {
+	(function(W, platformSdk, events) {
 	    'use strict';
 
-	    var utils = __webpack_require__( 4 ),
-	        Constants = __webpack_require__( 5 ),
+	    var utils = __webpack_require__(4),
+	        Constants = __webpack_require__(5),
 
-	        CustomerStickerController = function( options ) {
-	            this.template = __webpack_require__( 24 );
+	        CustomerStickerController = function(options) {
+	            this.template = __webpack_require__(24);
 	        };
 
-	    CustomerStickerController.prototype.bind = function( App, data ) {
+	    CustomerStickerController.prototype.bind = function(App, data) {
 
-	        var ftue = this;      
+	        var that = this;
+
+	        // All Custom Sticker Views Defined
+
+	        // Main views
+	        var customStickerUploadScreen = document.getElementsByClassName('customStickerUploadScreen')[0];
+	        var customStickerFtueWrapper = document.getElementsByClassName('customStickerFtueWrapper')[0];
+
+	        // Subsequent Views
+	        var customStickerSent = document.getElementsByClassName('customStickerSent')[0];
+	        var customStickerStatusCheck = document.getElementsByClassName('customStickerStatusCheck')[0];
+	        var customStickerReadyState = document.getElementsByClassName('customStickerReadyState')[0];
+
+	        // All Custom Sticker Actions
+
+	        var uploadPhoto = document.getElementsByClassName('uploadPhotoContainer')[0];
+	        var customStickerButton = document.getElementsByClassName('customStickerButton')[0];
+	        var customStickerFaq = document.getElementsByClassName('customStickerFaq')[0];
+
+	        if (data.customStickers.length > 0) {
+	            console.log("The user is not new to custom Sticker");
+	            utils.removeClass(customStickerUploadScreen, 'hideClass');
+	        } else {
+	            console.log("First Time user");
+	            utils.removeClass(customStickerFtueWrapper, 'hideClass');
+	        }
+
+	        that.defineCustomStickerHistory(data.customStickers);
+
+	        // FAQ URL CLICK EVENT
+	        customStickerFaq.addEventListener('click', function(ev) {
+	            utils.openWebView(data.faqUrl);
+	        });
+
+	        // Show Upload Screen
+	        customStickerButton.addEventListener('click', function(ev) {
+	            console.log("Starting Custom Sticker");
+	            utils.addClass(customStickerFtueWrapper, 'hideClass');
+	            utils.removeClass(customStickerUploadScreen, 'hideClass');
+	        });
+
+
 	    };
 
-	    CustomerStickerController.prototype.render = function( ctr, App, data ) {
+
+
+	    CustomerStickerController.prototype.defineCustomStickerHistory = function(stickers) {
+
+	        // All Custom Sticker History 
+	        var allCustomStickers = document.getElementsByClassName('customStickerIcon');
+
+	        console.log(stickers);
+
+	        for (var i = 0; i < stickers.length; i++) {
+	            if (stickers[i].url) {
+	                allCustomStickers[i].style.backgroundImage = "url('" + stickers[i].url + "')";
+	            } else {
+	                console.log("Sticker Icon is not present, please try a default icon");
+	            }
+	            if (stickers[i].ts) {
+	                var timestamp = new Date(stickers[i].ts);
+	                stickers[i].ts = timestamp.getDate() + '/' + timestamp.getMonth() + '/' + timestamp.getYear();
+	            } else {
+	                sticker[i].ts = 'Order date is unavailable';
+	            }
+	        }
+
+	    };
+
+	    CustomerStickerController.prototype.convertTimeStamp = function(stickers) {
+
+	        for (var i = 0; i < stickers.length; i++) {
+	            if (stickers[i].ts) {
+	                var timestamp = new Date(stickers[i].ts);
+	                stickers[i].ts = timestamp.getDate() + '/' + timestamp.getMonth() + '/' + timestamp.getYear();
+	            } else {
+	                sticker[i].ts = 'Order date is unavailable';
+	            }
+	        }
+	    };
+
+	    CustomerStickerController.prototype.render = function(ctr, App, data) {
 
 	        console.log(data);
 
 	        var that = this;
-	        that.el = document.createElement( 'div' );
+	        that.customStickersList = [];
+
+	        if (data) {
+	            that.customStickersList = data.customStickers;
+	            that.convertTimeStamp(data.customStickers);
+	        }
+
+	        console.log(that.customStickersList);
+
+	        that.el = document.createElement('div');
 	        that.el.className = 'customStickerContainer centerToScreenContainer animation_fadein noselect';
-	        that.el.innerHTML = Mustache.render( unescape( that.template ) );
-	        ctr.appendChild( that.el );
-	        events.publish( 'update.loader', { show: false });
-	        that.bind( App, data );
+	        that.el.innerHTML = Mustache.render(that.template, {
+	            customStickersList: that.customStickersList,
+	            newStickerEligibility: data.eligible
+	        });
+	        ctr.appendChild(that.el);
+	        events.publish('update.loader', { show: false });
+	        that.bind(App, data);
 	    };
 
 	    CustomerStickerController.prototype.destroy = function() {
@@ -6023,14 +6143,14 @@
 
 	    module.exports = CustomerStickerController;
 
-	})( window, platformSdk, platformSdk.events );
+	})(window, platformSdk, platformSdk.events);
 
 
 /***/ },
 /* 24 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n<div class=\"bottomIllustration\"></div>\n<div class=\"customStickerUploadScreen hideClass\">\n    <div class=\"uploadPhotoContainer\">\n        <div class=\"uploadPhoto\"></div>\n    </div>\n    <div class=\"customStickerText\">\n        <select>\n        \t<option value=\"\">Select your sticker language</option>\n            <option value=\"english\">English</option>\n            <option value=\"hindi\">Hindi</option>\n            <option value=\"marathi\">Marathi</option>\n            <option value=\"malyalam\">Malyalam</option>\n        </select>\n    </div>\n    <input type=\"text\" placeholder=\"Type your sticker text\" id=\"stickerPhrase\" onpaste=\"return false\" required value=\"\">\n    <div class=\"errorMessage hideClass\">If any error message on this screen</div>\n    <div class=\"sendButton hideClass\">Send</div>\n</div>\n<div class=\"customStickerWrapper centerToScreenWrapper align-center\">\n    <div class=\"customStickerFtueWrapper hideClass\">\n        <div class=\"customStickerHeaderImage\"></div>\n        <div class=\"customStickerDetail\">Get your own sticker made by Hike and share it with your friends.</div>\n        <div class=\"customStickerButton\">Start</div>\n        <div class=\"customStickerFaq\">FAQs</div>\n    </div>\n    <div class=\"customStickerSent\">\n        <div class=\"successSentImage\"></div>\n        <div class=\"successSentText\">Successfully sent, you will receive this sticker within 3-4 weeks.</div>\n        <div class=\"successSentAction\">Check Status</div>\n    </div>\n    <div class=\"customStickerStatusCheck hideClass\">\n        <div class=\"statusHeaderImage\"></div>\n        <div class=\"statusText\">We believe in making beautiful sticker. Your sticker will approximately take 3-4 weeks. Keep checking!</div>\n    </div>\n    <div class=\"customStickerReadyState hideClass\">\n        <div class=\"customStickerView\"></div>\n        <div class=\"customStickerShareText\">Hey Your sticker is ready and good to go, let's surprise your friends by sending it to them!</div>\n        <div class=\"customStickerShareAction\">Choose Friends</div>\n    </div>\n</div>\n</div>\n"
+	module.exports = "<div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n<div class=\"bottomIllustration\"></div>\n<div class=\"customStickerUploadScreen hideClass\">\n    {{#newStickerEligibility}}\n        <div class=\"uploadPhotoContainer\">\n            <div class=\"uploadPhoto\"></div>\n        </div>\n        <div class=\"customStickerText\">\n            <select>\n                <option value=\"\">Select your sticker language</option>\n                <option value=\"english\">English</option>\n                <option value=\"hindi\">Hindi</option>\n                <option value=\"marathi\">Marathi</option>\n                <option value=\"malyalam\">Malyalam</option>\n            </select>\n        </div>\n        <input type=\"text\" placeholder=\"Type your sticker text\" id=\"stickerPhrase\" onpaste=\"return false\" required value=\"\">\n        <div class=\"errorMessage hideClass\">If any error message on this screen</div>\n        <div class=\"sendButton hideClass\">Send</div>\n    {{/newStickerEligibility}}\n    <div class=\"customStickerHistory\">\n        <ul>\n            {{#customStickersList}}\n                <li class=\"customStickerRow\" data-id=\"{{id}}\">\n                    <div class=\"customStickerIcon\"></div>\n                    <div class=\"customStickerDetails\">\n                        <p class=\"stickerPhrase\">{{phrase}}</p>\n                        <p class=\"stickerOrderDate\">Order date - {{ts}}</p>\n                    </div>\n                    <div class=\"statusIcon\"></div>\n                </li>\n            {{/customStickersList}}\n        </ul>\n    </div>\n</div>\n<div class=\"customStickerWrapper centerToScreenWrapper align-center\">\n    <div class=\"customStickerFtueWrapper hideClass\">\n        <div class=\"customStickerHeaderImage\"></div>\n        <div class=\"customStickerDetail\">Get your own sticker made by Hike and share it with your friends.</div>\n        <div class=\"customStickerButton\">Start</div>\n        <div class=\"customStickerFaq\">FAQs</div>\n    </div>\n    <div class=\"customStickerSent hideClass\">\n        <div class=\"successSentImage\"></div>\n        <div class=\"successSentText\">Successfully sent, you will receive this sticker within 3-4 weeks.</div>\n        <div class=\"successSentAction\">Check Status</div>\n    </div>\n    <div class=\"customStickerStatusCheck hideClass\">\n        <div class=\"statusHeaderImage\"></div>\n        <div class=\"statusText\">We believe in making beautiful sticker. Your sticker will approximately take 3-4 weeks. Keep checking!</div>\n    </div>\n    <div class=\"customStickerReadyState hideClass\">\n        <div class=\"customStickerView\"></div>\n        <div class=\"customStickerShareText\">Hey Your sticker is ready and good to go, let's surprise your friends by sending it to them!</div>\n        <div class=\"customStickerShareAction\">Choose Friends</div>\n    </div>\n</div>\n</div>\n"
 
 /***/ },
 /* 25 */

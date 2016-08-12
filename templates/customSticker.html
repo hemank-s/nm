@@ -1,21 +1,37 @@
 <div id="animate-area" class="topIllustration animate-area"></div>
 <div class="bottomIllustration"></div>
 <div class="customStickerUploadScreen hideClass">
-    <div class="uploadPhotoContainer">
-        <div class="uploadPhoto"></div>
+    {{#newStickerEligibility}}
+        <div class="uploadPhotoContainer">
+            <div class="uploadPhoto"></div>
+        </div>
+        <div class="customStickerText">
+            <select>
+                <option value="">Select your sticker language</option>
+                <option value="english">English</option>
+                <option value="hindi">Hindi</option>
+                <option value="marathi">Marathi</option>
+                <option value="malyalam">Malyalam</option>
+            </select>
+        </div>
+        <input type="text" placeholder="Type your sticker text" id="stickerPhrase" onpaste="return false" required value="">
+        <div class="errorMessage hideClass">If any error message on this screen</div>
+        <div class="sendButton hideClass">Send</div>
+    {{/newStickerEligibility}}
+    <div class="customStickerHistory">
+        <ul>
+            {{#customStickersList}}
+                <li class="customStickerRow" data-id="{{id}}">
+                    <div class="customStickerIcon"></div>
+                    <div class="customStickerDetails">
+                        <p class="stickerPhrase">{{phrase}}</p>
+                        <p class="stickerOrderDate">Order date - {{ts}}</p>
+                    </div>
+                    <div class="statusIcon{{status}}"></div>
+                </li>
+            {{/customStickersList}}
+        </ul>
     </div>
-    <div class="customStickerText">
-        <select>
-        	<option value="">Select your sticker language</option>
-            <option value="english">English</option>
-            <option value="hindi">Hindi</option>
-            <option value="marathi">Marathi</option>
-            <option value="malyalam">Malyalam</option>
-        </select>
-    </div>
-    <input type="text" placeholder="Type your sticker text" id="stickerPhrase" onpaste="return false" required value="">
-    <div class="errorMessage hideClass">If any error message on this screen</div>
-    <div class="sendButton hideClass">Send</div>
 </div>
 <div class="customStickerWrapper centerToScreenWrapper align-center">
     <div class="customStickerFtueWrapper hideClass">
@@ -24,7 +40,7 @@
         <div class="customStickerButton">Start</div>
         <div class="customStickerFaq">FAQs</div>
     </div>
-    <div class="customStickerSent">
+    <div class="customStickerSent hideClass">
         <div class="successSentImage"></div>
         <div class="successSentText">Successfully sent, you will receive this sticker within 3-4 weeks.</div>
         <div class="successSentAction">Check Status</div>
