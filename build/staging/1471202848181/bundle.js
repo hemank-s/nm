@@ -5480,18 +5480,17 @@
 	                        var data = {};
 	                        data.rewardId = rewardId;
 
-
 	                        // STUB TO REMOVE 
 
-	                        var res1 = {'data':{'customStickers':[],'eligible':true}};
-	                        var res2 = {'data':{'customStickers':[{"id":123,"ts":1470916209163,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
-	                        var res3 = {'data':{'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"inProgress","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':false}};
+	                        var res1 = {'data':{'customStickers':[],'rewardId':rewardId,'eligible':true}};
+	                        var res2 = {'data':{'rewardId':rewardId,'customStickers':[{"id":123,"ts":1470916209163,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':false}};
+	                        var res3 = {'data':{'rewardId':rewardId,'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"completed","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
 	                        
-	                        App.router.navigateTo( rewardRouter, res2.data);
+	                        App.router.navigateTo( rewardRouter, res3.data);
 
 	                        // STUB TO REMOVE
 
-	                        // Reward Details API
+	                        // Reward Details API :: Send Reward Id As well
 	                        App.NinjaService.getRewardDetails(data, function(res) {
 	                            console.log(res.data);
 	                            // Routing to the specific Router
@@ -5769,6 +5768,15 @@
 	            else this.ninjaService.communicate(params);
 	        },
 
+	        sendCustomSticker : function(data, fn, x){
+	            var params = {
+	                'url': URL.api_location + '/rewards/'+data.rewardId+'/custom_sticker/'+data.customStickerId+'?random='+Math.round(Math.random() * 999999999),
+	                'type': 'GET'
+	            };
+	            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
+	            else this.ninjaService.communicate(params);  
+	        },
+
 
 	        
 	        // Rewards Service For Ninja 
@@ -6024,14 +6032,18 @@
 
 	    var utils = __webpack_require__(4),
 	        Constants = __webpack_require__(5),
+	        customImageUploaded = false,
+	        uploadCustomStickerData = {},
 
-	        CustomerStickerController = function(options) {
+	        CustomStickerController = function(options) {
 	            this.template = __webpack_require__(24);
 	        };
 
-	    CustomerStickerController.prototype.bind = function(App, data) {
+	    CustomStickerController.prototype.bind = function(App, data) {
 
 	        var that = this;
+	        console.log("data is",data);
+	        var rewardId = data.rewardId;
 
 	        // All Custom Sticker Views Defined
 
@@ -6043,52 +6055,305 @@
 	        var customStickerSent = document.getElementsByClassName('customStickerSent')[0];
 	        var customStickerStatusCheck = document.getElementsByClassName('customStickerStatusCheck')[0];
 	        var customStickerReadyState = document.getElementsByClassName('customStickerReadyState')[0];
+	        var customStickerRow = document.getElementsByClassName('customStickerRow');
+
+	        var customStickerImage = document.getElementsByClassName('uploadPhotoContainer')[0];
+
+	        //var profilePicLoader = document.getElementById('profilePicLoader');
+	        var errorMessage = document.getElementsByClassName('errorMessage')[0];
+	        var customStickerTextPhrase = document.getElementById('customStickerTextPhrase');
+	        var textLanguage = document.getElementById('textLanguage');
+	        var sendButton = document.getElementsByClassName('sendButton')[0];
 
 	        // All Custom Sticker Actions
 
 	        var uploadPhoto = document.getElementsByClassName('uploadPhotoContainer')[0];
 	        var customStickerButton = document.getElementsByClassName('customStickerButton')[0];
 	        var customStickerFaq = document.getElementsByClassName('customStickerFaq')[0];
+	        var customStickerShareAction = document.getElementsByClassName('customStickerShareAction')[0];
 
 	        if (data.customStickers.length > 0) {
-	            console.log("The user is not new to custom Sticker");
+	            console.log('The user is not new to custom Sticker');
 	            utils.removeClass(customStickerUploadScreen, 'hideClass');
 	        } else {
-	            console.log("First Time user");
+	            console.log('First Time user');
 	            utils.removeClass(customStickerFtueWrapper, 'hideClass');
 	        }
 
 	        that.defineCustomStickerHistory(data.customStickers);
+
+	        // Event Definations
 
 	        // FAQ URL CLICK EVENT
 	        customStickerFaq.addEventListener('click', function(ev) {
 	            utils.openWebView(data.faqUrl);
 	        });
 
-	        // Show Upload Screen
+	        // Show Upload Screen After the First Time
 	        customStickerButton.addEventListener('click', function(ev) {
-	            console.log("Starting Custom Sticker");
 	            utils.addClass(customStickerFtueWrapper, 'hideClass');
 	            utils.removeClass(customStickerUploadScreen, 'hideClass');
 	        });
 
+	        // Choose Sticker Image From gallery
+	        customStickerImage.addEventListener('click', function(ev) {
+	            utils.removeClass(errorMessage, 'hideClass');
+	            that.chooseStickerImageFromGallery();
+	        });
+
+	        // Send the Data to Server
+	        sendButton.addEventListener('click', function(ev) {
+	            that.sendCustomStickerDataToServer();
+	        });
+
+	        customStickerShareAction.addEventListener('click', function(ev) {
+	            
+	            var customStickerId = this.getAttribute('data-id');
+
+	            that.sendCustomStickerToUser(App,rewardId,customStickerId);
+	        });
+
+	        that.defineCustomStickerClick(customStickerRow, data.customStickers);
 
 	    };
 
 
+	    CustomStickerController.prototype.sendCustomStickerToUser = function(App,rewardId,customStickerId) {
 
-	    CustomerStickerController.prototype.defineCustomStickerHistory = function(stickers) {
+	        console.log("Sending the custom sticker to the user via packet");
 
-	        // All Custom Sticker History 
+	        console.log(rewardId);
+	        console.log(customStickerId);
+
+	        var data ={};
+	        data.rewardId = rewardId;
+	        data.customStickerId = customStickerId;
+
+	        // Reward Details API :: Send Reward Id As well
+	        App.NinjaService.sendCustomSticker(data, function(res) {
+	            // Show Toast if Success
+	            console.log(res);
+	            utils.showToast('You will receive your sticker via the team hike bot shortly, start sharing.');
+	            // Routing to the specific Router
+	            //App.router.navigateTo(rewardRouter, res.data);
+	        }, this);
+
+
+
+	    };
+
+	    CustomStickerController.prototype.defineCustomStickerClick = function(customStickerRow, data) {
+
+	        var customStickerUploadScreen = document.getElementsByClassName('customStickerUploadScreen')[0];
+	        var customStickerFtueWrapper = document.getElementsByClassName('customStickerFtueWrapper')[0];
+
+	        // Subsequent Views
+	        var customStickerSent = document.getElementsByClassName('customStickerSent')[0];
+	        var customStickerStatusCheck = document.getElementsByClassName('customStickerStatusCheck')[0];
+	        var customStickerReadyState = document.getElementsByClassName('customStickerReadyState')[0];
+	        var customStickerView = document.getElementsByClassName('customStickerView')[0];
+
+	        for (var i = 0; i < customStickerRow.length; i++) {
+	            customStickerRow[i].addEventListener('click', function(event) {
+
+	                var state = this.getAttribute('data-status');
+	                var id = this.getAttribute('data-id');
+	                var url = this.getAttribute('data-url');
+
+	                if (state == 'completed') {
+	                    console.log("Take To Success Page :: Send Image and ID There Reference");
+	                    utils.removeClass(customStickerReadyState, 'hideClass');
+	                    utils.addClass(customStickerUploadScreen, 'hideClass');
+	                    utils.addClass(customStickerSent, 'hideClass');
+	                    utils.addClass(customStickerFtueWrapper, 'hideClass');
+
+	                    // Set Id Attribute For Reference Later
+	                    var customStickerShareAction = document.getElementsByClassName("customStickerShareAction")[0];
+	                    var att = document.createAttribute("data-id");
+	                    att.value = id;
+	                    customStickerShareAction.setAttributeNode(att);
+
+	                    // Set Background Image Of Sticker Being Set
+	                    customStickerView.style.backgroundImage = 'url(\'' + url + '\')';
+
+
+	                } else if (state == 'inProgress') {
+	                    console.log("Take to status Check Page :: Send ID");
+	                    utils.removeClass(customStickerStatusCheck, 'hideClass');
+	                    utils.addClass(customStickerUploadScreen, 'hideClass');
+	                    utils.addClass(customStickerSent, 'hideClass');
+	                    utils.addClass(customStickerFtueWrapper, 'hideClass');
+	                }
+	            });
+	        }
+
+	    };
+
+	    // Reset To Default Sticker Image If Some Error Occurs While Selecting the Image :: Or uploading It
+	    CustomStickerController.prototype.setDefaultCustomStickerImage = function() {
+
+	        console.log('Setting the default custom sticker image');
+	        customStickerImage.style.backgroundImage = 'none';
+
+	    };
+
+	    // Show Error State
+	    CustomStickerController.prototype.showErrorState = function(text) {
+	        var errorMessage = document.getElementsByClassName('errorMessage')[0];
+
+	        errorMessage.innerHTML = text;
+	        utils.removeClass(errorMessage, 'hideClass');
+	    };
+
+	    // Check Full Form Before Sending Custom Sticker Data
+	    CustomStickerController.prototype.customStickerFormCheck = function() {
+
+	        console.log(customStickerTextPhrase.value);
+	        console.log(textLanguage.value);
+	        console.log(customImageUploaded);
+
+	        var sendForm = true;
+
+	        if (!customImageUploaded || !customStickerTextPhrase || !textLanguage.value) {
+	            this.showErrorState('Please fill all the details');
+	            sendForm = false;
+	        }
+
+	        return sendForm;
+
+	    };
+
+	    CustomStickerController.prototype.chooseStickerImageFromGallery = function() {
+
+	        console.log("Need to Test on the Phone");
+
+	        var that = this;
+
+	        try {
+	            platformSdk.nativeReq({
+	                ctx: self,
+	                fn: 'chooseFile',
+	                success: function(fileUrl) {
+
+	                    fileUrl = decodeURIComponent(fileUrl);
+	                    fileUrl = JSON.parse(fileUrl);
+
+	                    if (!fileUrl.filesize || fileUrl.filesize === 0) {
+
+	                        utils.showToast('Bummer. Your image could not be uploaded. Could you try again, please?');
+
+	                        //Hide loader
+	                        //profilePicLoader.classList.remove('picLoader');
+
+	                        customImageUploaded = false;
+	                        that.setDefaultCustomStickerImage();
+
+	                        return;
+
+	                    }
+
+	                    // Check Max Upload Size :: To Be Decided
+	                    if (fileUrl.filesize > 10000000) {
+
+	                        utils.showToast('Max file upload size is 10 Mb');
+	                        customImageUploaded = false;
+	                        that.setDefaultCustomStickerImage();
+
+	                        // Return To Default Image Here
+
+	                        return;
+	                    }
+
+	                    // If Gallery Fetch Of Data Is Possiblle
+
+	                    uploadCustomStickerData.filePath = fileUrl.filePath;
+	                    uploadCustomStickerData.uploadUrl = serverPath;
+	                    uploadCustomStickerData.doCompress = true;
+
+	                    // Show Profile Picture In the Round Tab
+	                    customStickerImage.style.backgroundImage = 'url(\'file://' + fileUrl.filePath + '\')';
+	                    customImageUploaded = true;
+
+	                }
+	            });
+
+	        } catch (err) {
+
+	            platformSdk.ui.showToast('Bummer. Your profile pic couldn’t be updated. Could you try again, please?');
+
+	            that.setDefaultCustomStickerImage();
+
+	            //Hide loader
+	            //profilePicLoader.classList.remove('picLoader');
+
+	            customImageUploaded = false;
+	        }
+	    };
+
+
+	    // Send Custom sticker Data To Server
+	    CustomStickerController.prototype.sendCustomStickerDataToServer = function() {
+
+	        var that = this;
+	        var formSend = that.customStickerFormCheck();
+
+	        if (formSend) {
+	            console.log('Uploading Image is in Progress');
+	            utils.removeClass(errorMessage, 'hideClass');
+
+	            // SHOW LOADER
+	            //profilePicLoader.classList.add('picLoader');
+
+	            try {
+	                platformSdk.nativeReq({
+	                    ctx: self,
+	                    fn: 'uploadFile',
+	                    data: platformSdk.utils.validateStringifyJson(uploadCustomStickerData),
+	                    success: function(res) {
+	                        console.log(res);
+	                        try {
+	                            res = JSON.parse(decodeURIComponent(res));
+
+	                            if (res.stat == 'success') {
+	                                //utils.showToast('Your Image has been updated.');
+	                                customStickerImage.style.backgroundImage = 'url(\'file://' + fileUrl.filePath + '\')';
+	                                // Show Sent Screen Here As below
+	                                utils.removeClass(customStickerSent, 'hideClass');
+	                            } else {
+	                                utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
+	                                that.setDefaultCustomStickerImage();
+	                            }
+	                        } catch (err) {
+	                            utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
+	                            that.setDefaultCustomStickerImage();
+	                        }
+
+	                        //Hide loader
+	                        //profilePicLoader.classList.remove('picLoader');
+	                    }
+	                });
+
+	            } catch (err) {
+	                utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
+
+	                //profilePicLoader.classList.remove('picLoader');
+	                that.setDefaultCustomStickerImage();
+	            }
+	        }
+	    };
+
+	    CustomStickerController.prototype.defineCustomStickerHistory = function(stickers) {
+
+	        // All Custom Sticker History
 	        var allCustomStickers = document.getElementsByClassName('customStickerIcon');
 
 	        console.log(stickers);
 
 	        for (var i = 0; i < stickers.length; i++) {
 	            if (stickers[i].url) {
-	                allCustomStickers[i].style.backgroundImage = "url('" + stickers[i].url + "')";
+	                allCustomStickers[i].style.backgroundImage = 'url(\'' + stickers[i].url + '\')';
 	            } else {
-	                console.log("Sticker Icon is not present, please try a default icon");
+	                console.log('Sticker Icon is not present, please try a default icon');
 	            }
 	            if (stickers[i].ts) {
 	                var timestamp = new Date(stickers[i].ts);
@@ -6096,11 +6361,12 @@
 	            } else {
 	                sticker[i].ts = 'Order date is unavailable';
 	            }
+
 	        }
 
 	    };
 
-	    CustomerStickerController.prototype.convertTimeStamp = function(stickers) {
+	    CustomStickerController.prototype.convertTimeStamp = function(stickers) {
 
 	        for (var i = 0; i < stickers.length; i++) {
 	            if (stickers[i].ts) {
@@ -6112,7 +6378,7 @@
 	        }
 	    };
 
-	    CustomerStickerController.prototype.render = function(ctr, App, data) {
+	    CustomStickerController.prototype.render = function(ctr, App, data) {
 
 	        console.log(data);
 
@@ -6137,11 +6403,11 @@
 	        that.bind(App, data);
 	    };
 
-	    CustomerStickerController.prototype.destroy = function() {
+	    CustomStickerController.prototype.destroy = function() {
 
 	    };
 
-	    module.exports = CustomerStickerController;
+	    module.exports = CustomStickerController;
 
 	})(window, platformSdk, platformSdk.events);
 
@@ -6150,7 +6416,7 @@
 /* 24 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n<div class=\"bottomIllustration\"></div>\n<div class=\"customStickerUploadScreen hideClass\">\n    {{#newStickerEligibility}}\n        <div class=\"uploadPhotoContainer\">\n            <div class=\"uploadPhoto\"></div>\n        </div>\n        <div class=\"customStickerText\">\n            <select>\n                <option value=\"\">Select your sticker language</option>\n                <option value=\"english\">English</option>\n                <option value=\"hindi\">Hindi</option>\n                <option value=\"marathi\">Marathi</option>\n                <option value=\"malyalam\">Malyalam</option>\n            </select>\n        </div>\n        <input type=\"text\" placeholder=\"Type your sticker text\" id=\"stickerPhrase\" onpaste=\"return false\" required value=\"\">\n        <div class=\"errorMessage hideClass\">If any error message on this screen</div>\n        <div class=\"sendButton hideClass\">Send</div>\n    {{/newStickerEligibility}}\n    <div class=\"customStickerHistory\">\n        <ul>\n            {{#customStickersList}}\n                <li class=\"customStickerRow\" data-id=\"{{id}}\">\n                    <div class=\"customStickerIcon\"></div>\n                    <div class=\"customStickerDetails\">\n                        <p class=\"stickerPhrase\">{{phrase}}</p>\n                        <p class=\"stickerOrderDate\">Order date - {{ts}}</p>\n                    </div>\n                    <div class=\"statusIcon\"></div>\n                </li>\n            {{/customStickersList}}\n        </ul>\n    </div>\n</div>\n<div class=\"customStickerWrapper centerToScreenWrapper align-center\">\n    <div class=\"customStickerFtueWrapper hideClass\">\n        <div class=\"customStickerHeaderImage\"></div>\n        <div class=\"customStickerDetail\">Get your own sticker made by Hike and share it with your friends.</div>\n        <div class=\"customStickerButton\">Start</div>\n        <div class=\"customStickerFaq\">FAQs</div>\n    </div>\n    <div class=\"customStickerSent hideClass\">\n        <div class=\"successSentImage\"></div>\n        <div class=\"successSentText\">Successfully sent, you will receive this sticker within 3-4 weeks.</div>\n        <div class=\"successSentAction\">Check Status</div>\n    </div>\n    <div class=\"customStickerStatusCheck hideClass\">\n        <div class=\"statusHeaderImage\"></div>\n        <div class=\"statusText\">We believe in making beautiful sticker. Your sticker will approximately take 3-4 weeks. Keep checking!</div>\n    </div>\n    <div class=\"customStickerReadyState hideClass\">\n        <div class=\"customStickerView\"></div>\n        <div class=\"customStickerShareText\">Hey Your sticker is ready and good to go, let's surprise your friends by sending it to them!</div>\n        <div class=\"customStickerShareAction\">Choose Friends</div>\n    </div>\n</div>\n</div>\n"
+	module.exports = "<div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n<div class=\"bottomIllustration\"></div>\n<div class=\"customStickerUploadScreen hideClass\">\n    {{#newStickerEligibility}}\n        <div class=\"uploadPhotoContainer\">\n            <div class=\"uploadPhoto\"></div>\n        </div>\n        <!-- <div id=\"profilePicLoader\"> -->\n        <div class=\"customStickerText\">\n            <select id=\"textLanguage\">\n                <option value=\"\">Select your sticker language</option>\n                <option value=\"english\">English</option>\n                <option value=\"hindi\">Hindi</option>\n                <option value=\"marathi\">Marathi</option>\n                <option value=\"malyalam\">Malyalam</option>\n            </select>\n        </div>\n        <input id=\"customStickerTextPhrase\" type=\"text\" placeholder=\"Type your sticker text\" id=\"stickerPhrase\" onpaste=\"return false\" required value=\"\">\n        <div class=\"errorMessage hideClass\">If any error message on this screen</div>\n        <div class=\"sendButton\">Send</div>\n    {{/newStickerEligibility}}\n    <div class=\"customStickerHistory\">\n        <ul>\n            {{#customStickersList}}\n                <li class=\"customStickerRow\" data-id=\"{{id}}\" data-status=\"{{status}}\" data-url=\"{{url}}\">\n                    <div class=\"customStickerIcon\"></div>\n                    <div class=\"customStickerDetails\">\n                        <p class=\"stickerPhrase\">{{phrase}}</p>\n                        <p class=\"stickerOrderDate\">Order date - {{ts}}</p>\n                    </div>\n                    <div class=\"statusIcon{{status}}\"></div>\n                </li>\n            {{/customStickersList}}\n        </ul>\n    </div>\n</div>\n<div class=\"customStickerWrapper centerToScreenWrapper align-center\">\n    <div class=\"customStickerFtueWrapper hideClass\">\n        <div class=\"customStickerHeaderImage\"></div>\n        <div class=\"customStickerDetail\">Get your own sticker made by Hike and share it with your friends.</div>\n        <div class=\"customStickerButton\">Start</div>\n        <div class=\"customStickerFaq\">FAQs</div>\n    </div>\n    <div class=\"customStickerSent hideClass\">\n        <div class=\"successSentImage\"></div>\n        <div class=\"successSentText\">Successfully sent, you will receive this sticker within 3-4 weeks.</div>\n        <div class=\"successSentAction\">Check Status</div>\n    </div>\n    <div class=\"customStickerStatusCheck hideClass\">\n        <div class=\"statusHeaderImage\"></div>\n        <div class=\"statusText\">We believe in making beautiful sticker. Your sticker will approximately take 3-4 weeks. Keep checking!</div>\n    </div>\n    <div class=\"customStickerReadyState hideClass\">\n        <div class=\"customStickerView\"></div>\n        <div class=\"customStickerShareText\">Hey Your sticker is ready and good to go, let's surprise your friends by sending it to them!</div>\n        <div class=\"customStickerShareAction\">Send</div>\n    </div>\n</div>\n</div>\n"
 
 /***/ },
 /* 25 */

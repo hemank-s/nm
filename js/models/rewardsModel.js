@@ -70,18 +70,17 @@
                         var data = {};
                         data.rewardId = rewardId;
 
-
                         // STUB TO REMOVE 
 
-                        var res1 = {'data':{'customStickers':[],'eligible':true}};
-                        var res2 = {'data':{'customStickers':[{"id":123,"ts":1470916209163,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
-                        var res3 = {'data':{'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"completed","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':false}};
+                        var res1 = {'data':{'customStickers':[],'rewardId':rewardId,'eligible':true}};
+                        var res2 = {'data':{'rewardId':rewardId,'customStickers':[{"id":123,"ts":1470916209163,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':false}};
+                        var res3 = {'data':{'rewardId':rewardId,'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"completed","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
                         
-                        App.router.navigateTo( rewardRouter, res2.data);
+                        App.router.navigateTo( rewardRouter, res3.data);
 
                         // STUB TO REMOVE
 
-                        // Reward Details API
+                        // Reward Details API :: Send Reward Id As well
                         App.NinjaService.getRewardDetails(data, function(res) {
                             console.log(res.data);
                             // Routing to the specific Router

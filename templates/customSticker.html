@@ -5,8 +5,9 @@
         <div class="uploadPhotoContainer">
             <div class="uploadPhoto"></div>
         </div>
+        <!-- <div id="profilePicLoader"> -->
         <div class="customStickerText">
-            <select>
+            <select id="textLanguage">
                 <option value="">Select your sticker language</option>
                 <option value="english">English</option>
                 <option value="hindi">Hindi</option>
@@ -14,14 +15,14 @@
                 <option value="malyalam">Malyalam</option>
             </select>
         </div>
-        <input type="text" placeholder="Type your sticker text" id="stickerPhrase" onpaste="return false" required value="">
+        <input id="customStickerTextPhrase" type="text" placeholder="Type your sticker text" id="stickerPhrase" onpaste="return false" required value="">
         <div class="errorMessage hideClass">If any error message on this screen</div>
-        <div class="sendButton hideClass">Send</div>
+        <div class="sendButton">Send</div>
     {{/newStickerEligibility}}
     <div class="customStickerHistory">
         <ul>
             {{#customStickersList}}
-                <li class="customStickerRow" data-id="{{id}}">
+                <li class="customStickerRow" data-id="{{id}}" data-status="{{status}}" data-url="{{url}}">
                     <div class="customStickerIcon"></div>
                     <div class="customStickerDetails">
                         <p class="stickerPhrase">{{phrase}}</p>
@@ -52,7 +53,7 @@
     <div class="customStickerReadyState hideClass">
         <div class="customStickerView"></div>
         <div class="customStickerShareText">Hey Your sticker is ready and good to go, let's surprise your friends by sending it to them!</div>
-        <div class="customStickerShareAction">Choose Friends</div>
+        <div class="customStickerShareAction">Send</div>
     </div>
 </div>
 </div>
