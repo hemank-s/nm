@@ -111,7 +111,6 @@
             });
 
             this.updateNinjaRewardsLinks( App );
-
         }
 
     };

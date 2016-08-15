@@ -59,7 +59,7 @@
                 // STUB TO REMOVE
 
 
-                // this.NinjaService.getNinjaRewards(function(res) {
+                // App.NinjaService.getNinjaRewards(function(res) {
                 //     console.log(res.data);
                 //     rewardsModel.updateNinjaRewards(res.data);
                 // }, this);

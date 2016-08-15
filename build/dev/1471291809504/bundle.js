@@ -4735,13 +4735,13 @@
 	    'use strict';
 
 	    var WorkspaceController = __webpack_require__(8),
-	        ExclusiveFeatureController = __webpack_require__(19),
-	        StickerRewardController = __webpack_require__(21),
-	        CustomerStickerController = __webpack_require__(23),
-	        CrowdSourcingController = __webpack_require__(25),
-	        FaqDetailsController = __webpack_require__(27),
+	        ExclusiveFeatureController = __webpack_require__(23),
+	        StickerRewardController = __webpack_require__(25),
+	        CustomerStickerController = __webpack_require__(27),
+	        CrowdSourcingController = __webpack_require__(29),
+	        FaqDetailsController = __webpack_require__(31),
 
-	        Router = __webpack_require__(29),
+	        Router = __webpack_require__(33),
 	        utils = __webpack_require__(4),
 	        profileModel = __webpack_require__(9),
 	        rewardsModel = __webpack_require__(11),
@@ -4912,7 +4912,7 @@
 	        // If card Data Comes From Any Forwarded Card that calls Open Non Messaging Bot Here
 	        getIntentData: function(data) {
 	            var that = this;
-	            console.log(data);
+	            //console.log(data);
 	            data = decodeURIComponent(data);
 	            data = JSON.parse(data);
 
@@ -5023,6 +5023,7 @@
 	            var res = {'data':{"battery":6,"rewards_hash":"be96dc8c0a876b08c8076b03acdee0db5","status":"active","streak":1,"name":'Hemank Sabharwal'}};
 	            profileModel.updateNinjaData(res.data,self);
 	            activityModel.fetchNinjaActivity('lifetime');
+	            mysteryBoxModel.getMysteryBoxDetails(self);
 	            
 	            // STUB TO REMOVE
 
@@ -5074,7 +5075,7 @@
 	        cacheProvider = __webpack_require__(10),
 
 	        WorkspaceController = function(options) {
-	            this.template = __webpack_require__(18);
+	            this.template = __webpack_require__(22);
 	        };
 
 	    WorkspaceController.prototype.bind = function(App, data) {
@@ -5129,49 +5130,6 @@
 	                }
 	            }
 	        }
-
-
-	        function getTimeRemaining(endtime) {
-	            var t = Date.parse(endtime) - Date.parse(new Date());
-	            var seconds = Math.floor((t / 1000) % 60);
-	            var minutes = Math.floor((t / 1000 / 60) % 60);
-	            var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
-	            var days = Math.floor(t / (1000 * 60 * 60 * 24));
-	            return {
-	                'total': t,
-	                'days': days,
-	                'hours': hours,
-	                'minutes': minutes,
-	                'seconds': seconds
-	            };
-	        }
-
-	        function initializeClock(id, endtime) {
-	            var clock = document.getElementById(id);
-	            var daysSpan = clock.querySelector('.days');
-	            var hoursSpan = clock.querySelector('.hours');
-	            var minutesSpan = clock.querySelector('.minutes');
-	            var secondsSpan = clock.querySelector('.seconds');
-
-	            function updateClock() {
-	                var t = getTimeRemaining(endtime);
-
-	                daysSpan.innerHTML = t.days;
-	                hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
-	                minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
-	                secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
-
-	                if (t.total <= 0) {
-	                    clearInterval(timeinterval);
-	                }
-	            }
-
-	            updateClock();
-	            var timeinterval = setInterval(updateClock, 1000);
-	        }
-
-	        var deadline = new Date(Date.parse(new Date()) + 15 * 24 * 60 * 60 * 1000);
-	        initializeClock('clockdiv', deadline);
 
 	        // Run everything Here
 	        defineNinjaHomeScreenTabs();
@@ -5296,7 +5254,7 @@
 	                // STUB TO REMOVE
 
 
-	                // this.NinjaService.getNinjaRewards(function(res) {
+	                // App.NinjaService.getNinjaRewards(function(res) {
 	                //     console.log(res.data);
 	                //     rewardsModel.updateNinjaRewards(res.data);
 	                // }, this);
@@ -5521,7 +5479,6 @@
 	            });
 
 	            this.updateNinjaRewardsLinks( App );
-
 	        }
 
 	    };
@@ -5777,6 +5734,24 @@
 	            else this.ninjaService.communicate(params);  
 	        },
 
+	        getMysteryBox : function(fn, x){
+	            var params = {
+	                'url': URL.api_location + '/rewards/mysterybox/details'+'?random='+Math.round(Math.random() * 999999999),
+	                'type': 'GET'
+	            };
+	            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
+	            else this.ninjaService.communicate(params);  
+	        },
+
+	        // Mystery Box Spin Result
+	        getMysteryBoxResult: function(fn, x){
+	            var params = {
+	                'url': URL.api_location + '/rewards/mysterybox/redeem'+'?random='+Math.round(Math.random() * 999999999),
+	                'type': 'GET'
+	            };
+	            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
+	            else this.ninjaService.communicate(params);  
+	        }
 
 	        
 	        // Rewards Service For Ninja 
@@ -5909,32 +5884,289 @@
 	 * Created by hemanksabharwal on 17/05/15.
 	 */
 
-	(function () {
+	(function() {
 	    'use strict';
 
 	    var platformSdk = __webpack_require__(3),
 	        utils = __webpack_require__(4),
 	        cacheProvider = __webpack_require__(10),
-	        
-	        MysteryBoxModel = function () {},
+	        TxService = __webpack_require__(13),
+	        NinjaService = __webpack_require__(14),
+
+	        MysteryBoxModel = function() {
+	            this.TxService = new TxService();
+	            this.NinjaService = new NinjaService(this.TxService); //communication layer
+	        },
 
 	        EMPTY_OBJ_READ_ONLY = {};
 
 	    MysteryBoxModel.prototype = {
-	        
+
+	        getMysteryBoxDetails: function(App) {
+
+	            // Active :: Can Spin The Wheel and Earn Some Gift
+
+	            // Inactive :: The Wheel is Not Available as of now
+
+	            // Under Cooldown :: The spinning has been done and under cooldown period
+
+	            // STUB TO REMOVE
+
+	            var res1 = { 'data': { 'status': 'active', 'rewards': [{ 'id': 1, 'type': 'mysteryBox_medium', 'title': 'Battery + 1' }, { 'id': 2, 'type': 'mysteryBox_medium', 'title': 'Streak + 1' }, { 'id': 3, 'type': 'mysteryBox_low', 'title': 'Battery + 0' }, { 'id': 4, 'type': 'mysteryBox_low', 'title': 'Streak + 0' }, { 'id': 5, 'type': 'mysteryBox_bumper', 'title': 'Custom sticker' }, { 'id': 6, 'type': 'mysteryBox_low', 'title': 'Battery - 1' }, { 'id': 7, 'type': 'mysteryBox_low', 'title': 'streak - 1' }, { 'id': 8, 'type': 'mysteryBox_low', 'title': 'Better Luck next time' }] } };
+	            var res2 = { 'data': { 'status': 'inactive', 'rewards': [], 'streakToUnlock': 14 } };
+	            var res3 = { 'data': { 'status': 'cooldown', 'rewards': [], 'coolDownTime': 1470916209263 } };
+
+	            this.updateMysteryBoxTab(res1.data, App);
+
+	            // STUB TO REMOVE
+
+	            App.NinjaService.getMysteryBox(function(res) {
+	                console.log(res.data);
+	                this.updateMysteryBoxTab(res.data, App);
+	            }, this);
+
+	        },
+
+	        getMysteryBoxRewardDetails: function(data, rId) {
+
+	            for (var i = 0; i < data.length; i++) {
+	                if (data[i].id == rId) {
+	                    console.log("Match found", data[i]);
+	                    return data[i];
+	                } else {
+	                    console.log("Reward not found");
+	                }
+	            }
+	        },
+
+	        defineMysteryBoxResultAnimation: function(App, rewardData) {
+
+	            var mysteryBoxContainer = document.getElementsByClassName('mysteryBoxContainer')[0]; // Gives Existing List of Rewards in the Template
+	            //mysteryBoxContainer.innerHTML = '';
+
+	            
+	            if (rewardData.type == 'mysteryBox_bumper') {
+	                console.log("Bumper Anmation");
+	                this.template = __webpack_require__(18);
+	                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
+	                    mysterBoxReward: rewardData
+	                });
+
+	                var mysteryRewardBumperAction = document.getElementsByClassName('mysteryRewardBumperAction')[0];
+	                mysteryRewardBumperAction.addEventListener('click', function() {
+	                    var res = {'data':{'rewardId':112321,'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"completed","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
+	                   	App.router.navigateTo( '/customSticker', res.data);
+	                });
+
+	            } else if (rewardData.type == 'mysteryBox_low') {
+	                console.log("Low animation :: Figure Out design");
+	            } else if (rewardData.type == 'mysteryBox_medium') {
+	                console.log("Low animation :: Figure Out Design");
+	            }
+	        },
+
+	        defineLuckyBox: function(App, mysteryBoxData) {
+
+	        	var that = this;
+	            // STUB
+
+	            // Result of Spin
+	            var spinResult = 5;
+	            var rewardData = this.getMysteryBoxRewardDetails(mysteryBoxData.rewards, spinResult);
+	            // Define Wheel
+
+	            var spin = document.getElementById('spin');
+	            var wheel = document.getElementById('wheel');
+	            var result = document.getElementById('result');
+
+	            var setText = function(a, b, c) {
+
+	                a.addEventListener('transitionend', function() {
+	                    b.innerText = rewardData.title;
+	                    that.defineMysteryBoxResultAnimation(App,rewardData);
+	                    a.removeEventListener('transitionend', setText);
+	                });
+	            };
+
+	            var deg = 0;
+	            var rotations = 0;
+	            spin.addEventListener('click', function() {
+	                rotations++;
+	                var stop = spinResult;
+	                console.log('stop is', stop);
+	                var rotationFix = 360 / 16 + 360 / 8 + rotations * 720;
+	                deg = 360 / 8 * stop + rotationFix;
+	                var rot = 'rotate3d(0,0,1,' + deg + 'deg)';
+	                wheel.style.transform = rot;
+	                setText(wheel, result, rewardData);
+	            });
+
+	            // STUB
+
+
+
+	            App.NinjaService.getMysteryBoxResult(function(res) {
+	                console.log(res);
+
+	                // Result of Spin
+	                var spinResult = res.data.resultId;
+	                var rewardData = this.getMysteryBoxRewardDetails(mysteryBoxData.rewards, spinResult);
+
+	                // Define Wheel
+
+	                var spin = document.getElementById('spin');
+	                var wheel = document.getElementById('wheel');
+	                var result = document.getElementById('result');
+
+	                var setText = function(a, b, c) {
+	                    a.addEventListener('transitionend', function() {
+	                        b.innerText = rewardData.title;
+	                        a.removeEventListener('transitionend', setText);
+	                    });
+	                };
+
+	                var deg = 0;
+	                var rotations = 0;
+	                spin.addEventListener('click', function() {
+	                    rotations++;
+	                    var stop = spinResult;
+	                    console.log('stop is', stop);
+	                    var rotationFix = 360 / 16 + 360 / 8 + rotations * 720;
+	                    deg = 360 / 8 * stop + rotationFix;
+	                    var rot = 'rotate3d(0,0,1,' + deg + 'deg)';
+	                    wheel.style.transform = rot;
+	                    setText(wheel, result, rewardData);
+	                });
+
+	            }, this);
+
+	        },
+
+	        defineCooldown: function(spinTime) {
+
+	            function getTimeRemaining(endtime) {
+	                var t = Date.parse(endtime) - Date.parse(new Date());
+	                var seconds = Math.floor((t / 1000) % 60);
+	                var minutes = Math.floor((t / 1000 / 60) % 60);
+	                var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+	                var days = Math.floor(t / (1000 * 60 * 60 * 24));
+	                return {
+	                    'total': t,
+	                    'days': days,
+	                    'hours': hours,
+	                    'minutes': minutes,
+	                    'seconds': seconds
+	                };
+	            }
+
+	            function initializeClock(id, endtime) {
+	                var clock = document.getElementById(id);
+	                var daysSpan = clock.querySelector('.days');
+	                var hoursSpan = clock.querySelector('.hours');
+	                var minutesSpan = clock.querySelector('.minutes');
+	                var secondsSpan = clock.querySelector('.seconds');
+
+	                function updateClock() {
+	                    var t = getTimeRemaining(endtime);
+
+	                    daysSpan.innerHTML = t.days;
+	                    hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
+	                    minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+	                    secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+
+	                    if (t.total <= 0) {
+	                        clearInterval(timeinterval);
+	                    }
+	                }
+
+	                updateClock();
+	                var timeinterval = setInterval(updateClock, 1000);
+	            }
+
+	            var d = new Date(spinTime); // The 0 there is the key, which sets the date to the epoch
+
+	            var deadline = d;
+	            initializeClock('clockdiv', deadline);
+
+	        },
+
+	        updateMysteryBoxTab: function(mysteryBoxData, App) {
+
+	            var mysteryBoxContainer = document.getElementsByClassName('mysteryBoxContainer')[0]; // Gives Existing List of Rewards in the Template
+	            mysteryBoxContainer.innerHTML = '';
+	            console.log(mysteryBoxData);
+
+	            if (mysteryBoxData.status == 'inactive') {
+
+	                // Re Render The Reward Template Only From External HTML
+	                this.template = __webpack_require__(19);
+	                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
+	                    streakToUnlock: mysteryBoxData.streakToUnlock
+	                });
+	            } else if (mysteryBoxData.status == 'active') {
+
+	                this.template = __webpack_require__(20);
+	                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
+	                    streakToUnlock: mysteryBoxData.streakToUnlock
+	                });
+
+	                this.defineLuckyBox(App, mysteryBoxData);
+
+	            } else if (mysteryBoxData.status == 'cooldown') {
+
+	                console.log(mysteryBoxData);
+
+	                this.template = __webpack_require__(21);
+	                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
+	                    streakToUnlock: mysteryBoxData.streakToUnlock
+	                });
+
+	                this.defineCooldown(mysteryBoxData.coolDownTime);
+
+	            } else {
+	                console.log('Add a default state here Later');
+	            }
+
+	        }
+
 	    };
 
 	    module.exports = new MysteryBoxModel();
 	})();
 
+
 /***/ },
 /* 18 */
 /***/ function(module, exports) {
 
-	module.exports = "<!-- Ninja Container and Background -->\n<div class=\"ninjaHomeWrapper\">\n    <div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n    <div class=\"bottomIllustration\"></div>\n    <!-- Ninja Profile Home Page -->\n    <div class=\"ninjaProfileContainer align-center\">\n        <!-- Ninja Profile -->\n        <div class=\"ninjaProfileWrapper\">\n            <div class=\"ninjaPhotoContainer\">\n                <div class=\"ninjaStreak\">\n                    <div class=\"ninjaStreakIcon\"></div>\n                    <div class=\"ninjaStreakValue\">{{ninjaProfileData.streak}}</div>\n                </div>\n                <div id=\"ninjaIcon\" class=\"ninjaProfileIcon\"></div>\n                <div class=\"ninjaBattery\">\n                    <div class=\"ninjaBatteryIcon\"></div>\n                    <div class=\"ninjaBatteryValue\">{{ninjaProfileData.battery}}</div>\n                </div>\n            </div>\n            <div class=\"ninjaName\">{{ninjaProfileData.name}}</div>\n        </div>\n    </div>\n    <div id=\"content\" class=\"container\">\n        <div class=\"view list-view\">\n            <div class=\"commonDv\">\n                <div class=\"containerTabs\">\n                    <div class=\"comp__tabs clearfix\">\n                        <a class=\"comp__tab\" data-id=\"rewards\">Rewards</a>\n                        <a class=\"comp__tab\" data-id=\"activity\">Activity</a>\n                        <a class=\"comp__tab \" data-id=\"gifts\">Gifts</a>\n                    </div>\n                    <div class=\"comp__data\">\n                        <div id=\"sliderTabs\" class=\"swipe\">\n                            <div class=\"swipe-wrap\">\n                                <div class=\"tab-data videos_data\" data-id=\"rewards\">\n                                    <div class=\"rewardsContainer\">\n                                        {{#ninjaRewardsCollection}}\n                                        <li class=\"rewardRow\" data-rewardId=\"{{id}}\" data-state=\"{{state}}\" data-rewardtype=\"{{type}}\">\n                                            <div class=\"rewardIcon\"></div>\n                                            <div class=\"rewardDetails\">\n                                                <p class=\"rewardHeading\">{{title}}</p>\n                                                <p class=\"rewardSubheading\">{{stitle}}</p>\n                                            </div>\n                                            {{#streak}}\n                                            <div class=\"rewardStreakWrapper\">\n                                                <div class=\"rewardStreakIcon\"></div>\n                                                <div class=\"rewardStreakValue\">{{streak}}</div>\n                                            </div>\n                                            {{/streak}}\n                                        </li>\n                                        {{/ninjaRewardsCollection}}\n                                    </div>\n                                </div>\n                                <div class=\"news_data tab-data\" data-id=\"activity\">\n                                    <div class=\"activityContainer\">\n                                        <div class=\"settingsWrapper clearfix\">\n                                            <div class=\"statTimePeriod selectedTime\">\n                                                <div class=\"optionOne selectedTime\">Lifetime</div>\n                                            </div>\n                                            <div class=\"statTimePeriod twoSideMargin\">\n                                                <div class=\"optionTwo \">Last month</div>\n                                            </div>\n                                            <div class=\"statTimePeriod\">\n                                                <div class=\"optionThree\">Last week</div>\n                                            </div>\n                                        </div>\n                                        <hr noshade class=\"seperator\">\n                                        <div class=\"leaderboardWrapper\">\n                                            <div class=\"leaderboardHeading\">Top Ninjas</div>\n                                            <div class=\"topNinjas\">\n                                                <!-- Add the left right scrollable list here -->\n                                                <ul class=\"topList\">\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Hemank</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Deepak</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Pathik</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Srikant</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Patley</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Jagpreet</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Hemank</div>\n                                                    </li>\n                                                </ul>\n                                            </div>\n                                        </div>\n                                        <hr noshade class=\"seperator\">\n                                        <div class=\"statsWrapper\">\n                                            {{#ninjaActivityData}}\n                                            <div class=\"statTypeContainer\">\n                                                <div class=\"statHeading\">Messaging</div>\n                                                <div class=\"statBoxWrapper statBoxFloatLeft\">\n                                                    <div class=\"statValue messagesR\">{{ninjaActivityData.messages.rec}}</div>\n                                                    <div class=\"statText\">Messages Received</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatRight\">\n                                                    <div class=\"statValue messagesS\">{{ninjaActivityData.messages.sent}}</div>\n                                                    <div class=\"statText\">Messages Sent</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatLeft\">\n                                                    <div class=\"statValue stickersR\">{{ninjaActivityData.stickers.rec}}</div>\n                                                    <div class=\"statText\">Stickers Received</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatRight\">\n                                                    <div class=\"statValue stickersS\">{{ninjaActivityData.stickers.sent}}</div>\n                                                    <div class=\"statText\">Stickers Sent</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatLeft\">\n                                                    <div class=\"statValue chatThemesR\">{{ninjaActivityData.chatThemes.rec}}</div>\n                                                    <div class=\"statText\">Chat Themes Received</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatRight\">\n                                                    <div class=\"statValue chatThemesS\">{{ninjaActivityData.chatThemes.sent}}</div>\n                                                    <div class=\"statText\">Chat Themes Sent</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatLeft\">\n                                                    <div class=\"statValue filesR\">{{ninjaActivityData.files.rec}}</div>\n                                                    <div class=\"statText\">Files Received</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatRight\">\n                                                    <div class=\"statValue filesS\">{{ninjaActivityData.files.sent}}</div>\n                                                    <div class=\"statText\">Files Sent</div>\n                                                </div>\n                                            </div>\n                                            <div class=\"statTypeContainer\">\n                                                <div class=\"statHeading\">Timeline</div>\n                                                <div class=\"statBoxWrapper statBoxFloatLeft\">\n                                                    <div class=\"statValue statusUpdateCount\">{{ninjaActivityData.statusUpdates.count}}</div>\n                                                    <div class=\"statText\">Status Updates Posted</div>\n                                                </div>\n                                            </div>\n                                            {{/ninjaActivityData}}\n                                        </div>\n                                    </div>\n                                </div>\n                                <div class=\"fixtures_data tab-data \" data-id=\"gifts\">\n                                    <div class=\"mysteryBoxContainer align-center\">\n                                        <div class=\"mysteryBoxDisabled\"></div>\n                                        <div class=\"mysteryBoxCoolDown\"></div>\n                                        <div class=\"mysteryBoxEnabled\"></div>\n                                        <div class=\"mysteryBoxResult\">\n                                            <div class=\"bumperAnimation\"></div>\n                                            <div class=\"winnerAnimation\"></div>\n                                            <div class=\"loserAnimation\"></div>\n                                        </div>\n                                        <div class=\"mysteryBoxIcon\"></div>\n                                        <div class=\"mysteryBoxCounter\">\n                                            <div id=\"clockdiv\">\n                                                <div>\n                                                    <span class=\"days\"></span>\n                                                    <div class=\"smalltext\">Days</div>\n                                                </div>\n                                                <div>\n                                                    <span class=\"hours\"></span>\n                                                    <div class=\"smalltext\">Hrs</div>\n                                                </div>\n                                                <div>\n                                                    <span class=\"minutes\"></span>\n                                                    <div class=\"smalltext\">Mins</div>\n                                                </div>\n                                                <div>\n                                                    <span class=\"seconds\"></span>\n                                                    <div class=\"smalltext\">Secs</div>\n                                                </div>\n                                            </div>\n                                        </div>\n                                        <div class=\"mysteryBoxMessage\">Remaining For your Gift</div>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <div class=\"view details-view\">\n        </div>\n    </div>\n</div>\n"
+	module.exports = "{{#mysterBoxReward}}\n\t<div class=\"mysteryBoxIcon\"></div>\n\t<div class=\"mysteryBoxMessageSpin\">Congrats! You’ve unlocked the grand prize {{title}}. Get your gift now.</div>\n\t<div data-id=\"{{id}}\" class=\"mysteryRewardBumperAction\">Claim</div>\n{{/mysterBoxReward}}\n"
 
 /***/ },
 /* 19 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"mysteryBoxMessage\">You will be able to unlock the mystery box only after {{streakToUnlock}} days of streak</div>"
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	module.exports = "<div id=\"spin\" class=\"spin\">SPIN</div>\n<div id=\"result\" class=\"result\"></div>\n<div class=\"mysteryBoxMessageSpin\">Spin the wheel to unlock the surprise. Only one Ninja per day wins the grand prize.</div>\n<div class=\"wheel-wrapper\">\n  <div class=\"needle\"></div>\n  <div id=\"wheel\" class=\"wheel\">\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>8</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>7</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>6</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>5</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>4</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>3</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>2</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>1</div></div>\n      </div>\n    </div>\n  </div>\n</div>"
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	module.exports = "<div class=\"mysteryBoxIcon\"></div>\n<div class=\"mysteryBoxCounter\">\n    <div id=\"clockdiv\">\n        <div>\n            <span class=\"days\"></span>\n            <div class=\"smalltext\">Days</div>\n        </div>\n        <div>\n            <span class=\"hours\"></span>\n            <div class=\"smalltext\">Hrs</div>\n        </div>\n        <div>\n            <span class=\"minutes\"></span>\n            <div class=\"smalltext\">Mins</div>\n        </div>\n        <div>\n            <span class=\"seconds\"></span>\n            <div class=\"smalltext\">Secs</div>\n        </div>\n    </div>\n</div>\n<div class=\"mysteryBoxMessage\">Remaining For your Next Spin</div>\n"
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	module.exports = "<!-- Ninja Container and Background -->\n<div class=\"ninjaHomeWrapper\">\n    <div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n    <div class=\"bottomIllustration\"></div>\n    <!-- Ninja Profile Home Page -->\n    <div class=\"ninjaProfileContainer align-center\">\n        <!-- Ninja Profile -->\n        <div class=\"ninjaProfileWrapper\">\n            <div class=\"ninjaPhotoContainer\">\n                <div class=\"ninjaStreak\">\n                    <div class=\"ninjaStreakIcon\"></div>\n                    <div class=\"ninjaStreakValue\">{{ninjaProfileData.streak}}</div>\n                </div>\n                <div id=\"ninjaIcon\" class=\"ninjaProfileIcon\"></div>\n                <div class=\"ninjaBattery\">\n                    <div class=\"ninjaBatteryIcon\"></div>\n                    <div class=\"ninjaBatteryValue\">{{ninjaProfileData.battery}}</div>\n                </div>\n            </div>\n            <div class=\"ninjaName\">{{ninjaProfileData.name}}</div>\n        </div>\n    </div>\n    <div id=\"content\" class=\"container\">\n        <div class=\"view list-view\">\n            <div class=\"commonDv\">\n                <div class=\"containerTabs\">\n                    <div class=\"comp__tabs clearfix\">\n                        <a class=\"comp__tab\" data-id=\"rewards\">Rewards</a>\n                        <a class=\"comp__tab\" data-id=\"activity\">Activity</a>\n                        <a class=\"comp__tab \" data-id=\"gifts\">Gifts</a>\n                    </div>\n                    <div class=\"comp__data\">\n                        <div id=\"sliderTabs\" class=\"swipe\">\n                            <div class=\"swipe-wrap\">\n                                <div class=\"tab-data videos_data\" data-id=\"rewards\">\n                                    <div class=\"rewardsContainer\">\n                                        {{#ninjaRewardsCollection}}\n                                        <li class=\"rewardRow\" data-rewardId=\"{{id}}\" data-state=\"{{state}}\" data-rewardtype=\"{{type}}\">\n                                            <div class=\"rewardIcon\"></div>\n                                            <div class=\"rewardDetails\">\n                                                <p class=\"rewardHeading\">{{title}}</p>\n                                                <p class=\"rewardSubheading\">{{stitle}}</p>\n                                            </div>\n                                            {{#streak}}\n                                            <div class=\"rewardStreakWrapper\">\n                                                <div class=\"rewardStreakIcon\"></div>\n                                                <div class=\"rewardStreakValue\">{{streak}}</div>\n                                            </div>\n                                            {{/streak}}\n                                        </li>\n                                        {{/ninjaRewardsCollection}}\n                                    </div>\n                                </div>\n                                <div class=\"news_data tab-data\" data-id=\"activity\">\n                                    <div class=\"activityContainer\">\n                                        <div class=\"settingsWrapper clearfix\">\n                                            <div class=\"statTimePeriod selectedTime\">\n                                                <div class=\"optionOne selectedTime\">Lifetime</div>\n                                            </div>\n                                            <div class=\"statTimePeriod twoSideMargin\">\n                                                <div class=\"optionTwo \">Last month</div>\n                                            </div>\n                                            <div class=\"statTimePeriod\">\n                                                <div class=\"optionThree\">Last week</div>\n                                            </div>\n                                        </div>\n                                        <hr noshade class=\"seperator\">\n                                        <div class=\"leaderboardWrapper\">\n                                            <div class=\"leaderboardHeading\">Top Ninjas</div>\n                                            <div class=\"topNinjas\">\n                                                <!-- Add the left right scrollable list here -->\n                                                <ul class=\"topList\">\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Hemank</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Deepak</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Pathik</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Srikant</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Patley</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Jagpreet</div>\n                                                    </li>\n                                                    <li class=\"listRow\">\n                                                        <div class=\"userIcon\"></div>\n                                                        <div class=\"userName\">Hemank</div>\n                                                    </li>\n                                                </ul>\n                                            </div>\n                                        </div>\n                                        <hr noshade class=\"seperator\">\n                                        <div class=\"statsWrapper\">\n                                            {{#ninjaActivityData}}\n                                            <div class=\"statTypeContainer\">\n                                                <div class=\"statHeading\">Messaging</div>\n                                                <div class=\"statBoxWrapper statBoxFloatLeft\">\n                                                    <div class=\"statValue messagesR\">{{ninjaActivityData.messages.rec}}</div>\n                                                    <div class=\"statText\">Messages Received</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatRight\">\n                                                    <div class=\"statValue messagesS\">{{ninjaActivityData.messages.sent}}</div>\n                                                    <div class=\"statText\">Messages Sent</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatLeft\">\n                                                    <div class=\"statValue stickersR\">{{ninjaActivityData.stickers.rec}}</div>\n                                                    <div class=\"statText\">Stickers Received</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatRight\">\n                                                    <div class=\"statValue stickersS\">{{ninjaActivityData.stickers.sent}}</div>\n                                                    <div class=\"statText\">Stickers Sent</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatLeft\">\n                                                    <div class=\"statValue chatThemesR\">{{ninjaActivityData.chatThemes.rec}}</div>\n                                                    <div class=\"statText\">Chat Themes Received</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatRight\">\n                                                    <div class=\"statValue chatThemesS\">{{ninjaActivityData.chatThemes.sent}}</div>\n                                                    <div class=\"statText\">Chat Themes Sent</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatLeft\">\n                                                    <div class=\"statValue filesR\">{{ninjaActivityData.files.rec}}</div>\n                                                    <div class=\"statText\">Files Received</div>\n                                                </div>\n                                                <div class=\"statBoxWrapper statBoxFloatRight\">\n                                                    <div class=\"statValue filesS\">{{ninjaActivityData.files.sent}}</div>\n                                                    <div class=\"statText\">Files Sent</div>\n                                                </div>\n                                            </div>\n                                            <div class=\"statTypeContainer\">\n                                                <div class=\"statHeading\">Timeline</div>\n                                                <div class=\"statBoxWrapper statBoxFloatLeft\">\n                                                    <div class=\"statValue statusUpdateCount\">{{ninjaActivityData.statusUpdates.count}}</div>\n                                                    <div class=\"statText\">Status Updates Posted</div>\n                                                </div>\n                                            </div>\n                                            {{/ninjaActivityData}}\n                                        </div>\n                                    </div>\n                                </div>\n                                <div class=\"fixtures_data tab-data \" data-id=\"gifts\">\n                                    <div class=\"mysteryBoxContainer align-center\">\n                                        \n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <div class=\"view details-view\">\n        </div>\n    </div>\n</div>\n"
+
+/***/ },
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function( W, platformSdk, events ) {
@@ -5944,7 +6176,7 @@
 	        Constants = __webpack_require__( 5 ),
 
 	        ExclusiveFeatureController = function( options ) {
-	            this.template = __webpack_require__( 20 );
+	            this.template = __webpack_require__( 24 );
 	        };
 
 	    ExclusiveFeatureController.prototype.bind = function( App, data ) {
@@ -5973,13 +6205,13 @@
 
 
 /***/ },
-/* 20 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"exclusiveFeatureWrapper\">\n\t<div class=\"featureImage\"></div>\n\t<div class=\"featureText\"></div>\n\t<div class=\"featureCta\">\n\t\t<div class=\"featureEnableButton\">Enable</div>\n\t\t<div class=\"featureProgress hideClass\"></div>\n\t\t<div class=\"featureRetryButton hideClass\">Retry</div>\n\t\t<div class=\"featureDisableButton hideClass\">Disable</div>\t\n\t</div>\n\t<div class=\"faqButtton\">FAQs</div>\n</div>"
 
 /***/ },
-/* 21 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function( W, platformSdk, events ) {
@@ -5989,7 +6221,7 @@
 	        Constants = __webpack_require__( 5 ),
 
 	        StickerRewardController = function( options ) {
-	            this.template = __webpack_require__( 22 );
+	            this.template = __webpack_require__( 26 );
 	        };
 
 	    StickerRewardController.prototype.bind = function( App, data ) {
@@ -6018,13 +6250,13 @@
 
 
 /***/ },
-/* 22 */
+/* 26 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"stickerRewardsWrapper\">\n    <div class=\"stickerShopPageOne\">\n        <div class=\"stickerRewardHeader\"></div>\n        <!-- Only If applicable -->\n        <div class=\"stickerRewardLevels\"></div>\n        <div class=\"stickerRewardList\">\n            <ul class=\"stickerDownloadList\">\n                <li class=\"stickerDownloadRow\">\n                    <div class=\"stickerPackIcon\"></div>\n                    <div class=\"stickerPackText\">\n                        <div class=\"stickerPackName\"></div>\n                        <div class=\"stickerPackDetails\">\n                            <div class=\"stickerPackCount\"></div>\n                            <div class=\"stickerPackSize\"></div>\n                        </div>\n                    </div>\n                    <div class=\"stickerPackState\"></div>\n                </li>\n            </ul>\n        </div>\n        <div class=\"stickerListEmptyState\">\n            <!-- Insert Illustration Herer-->\n        </div>\n        <div class=\"stickerPackBlocked\">\n            <div class=\"stickerBlockedIllustration\"></div>\n            <div class=\"stickerBlockedText\"></div>\n        </div>\n        <div class=\"stickerListEmptyState\">\n            <div class=\"coolDownPeriod\">Time remaing here</div>\n            <div class=\"coolDownText\">Only one sticker can be redeemed within 24 hours. Please try after some time :)</div>\n        </div>\n    </div>\n    <div class=\"StickerDownloadPage\">\n    \t<div class=\"stickerCategoryIcon\"></div>\n    \t<div class=\"stickerIconPreview\">\n    \t\t<ul class=\"stickerPreviewList\">\n    \t\t\t<li class=\"stickerPreviewIcon\"></li>\n    \t\t</ul>\n    \t</div>\n    \t<div class=\"stickerDownloadButton\">Download</div>\n    </div>\n</div>\n"
 
 /***/ },
-/* 23 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function(W, platformSdk, events) {
@@ -6036,7 +6268,7 @@
 	        uploadCustomStickerData = {},
 
 	        CustomStickerController = function(options) {
-	            this.template = __webpack_require__(24);
+	            this.template = __webpack_require__(28);
 	        };
 
 	    CustomStickerController.prototype.bind = function(App, data) {
@@ -6413,13 +6645,13 @@
 
 
 /***/ },
-/* 24 */
+/* 28 */
 /***/ function(module, exports) {
 
 	module.exports = "<div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n<div class=\"bottomIllustration\"></div>\n<div class=\"customStickerUploadScreen hideClass\">\n    {{#newStickerEligibility}}\n        <div class=\"uploadPhotoContainer\">\n            <div class=\"uploadPhoto\"></div>\n        </div>\n        <!-- <div id=\"profilePicLoader\"> -->\n        <div class=\"customStickerText\">\n            <select id=\"textLanguage\">\n                <option value=\"\">Select your sticker language</option>\n                <option value=\"english\">English</option>\n                <option value=\"hindi\">Hindi</option>\n                <option value=\"marathi\">Marathi</option>\n                <option value=\"malyalam\">Malyalam</option>\n            </select>\n        </div>\n        <input id=\"customStickerTextPhrase\" type=\"text\" placeholder=\"Type your sticker text\" id=\"stickerPhrase\" onpaste=\"return false\" required value=\"\">\n        <div class=\"errorMessage hideClass\">If any error message on this screen</div>\n        <div class=\"sendButton\">Send</div>\n    {{/newStickerEligibility}}\n    <div class=\"customStickerHistory\">\n        <ul>\n            {{#customStickersList}}\n                <li class=\"customStickerRow\" data-id=\"{{id}}\" data-status=\"{{status}}\" data-url=\"{{url}}\">\n                    <div class=\"customStickerIcon\"></div>\n                    <div class=\"customStickerDetails\">\n                        <p class=\"stickerPhrase\">{{phrase}}</p>\n                        <p class=\"stickerOrderDate\">Order date - {{ts}}</p>\n                    </div>\n                    <div class=\"statusIcon{{status}}\"></div>\n                </li>\n            {{/customStickersList}}\n        </ul>\n    </div>\n</div>\n<div class=\"customStickerWrapper centerToScreenWrapper align-center\">\n    <div class=\"customStickerFtueWrapper hideClass\">\n        <div class=\"customStickerHeaderImage\"></div>\n        <div class=\"customStickerDetail\">Get your own sticker made by Hike and share it with your friends.</div>\n        <div class=\"customStickerButton\">Start</div>\n        <div class=\"customStickerFaq\">FAQs</div>\n    </div>\n    <div class=\"customStickerSent hideClass\">\n        <div class=\"successSentImage\"></div>\n        <div class=\"successSentText\">Successfully sent, you will receive this sticker within 3-4 weeks.</div>\n        <div class=\"successSentAction\">Check Status</div>\n    </div>\n    <div class=\"customStickerStatusCheck hideClass\">\n        <div class=\"statusHeaderImage\"></div>\n        <div class=\"statusText\">We believe in making beautiful sticker. Your sticker will approximately take 3-4 weeks. Keep checking!</div>\n    </div>\n    <div class=\"customStickerReadyState hideClass\">\n        <div class=\"customStickerView\"></div>\n        <div class=\"customStickerShareText\">Hey Your sticker is ready and good to go, let's surprise your friends by sending it to them!</div>\n        <div class=\"customStickerShareAction\">Send</div>\n    </div>\n</div>\n</div>\n"
 
 /***/ },
-/* 25 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function( W, platformSdk, events ) {
@@ -6429,7 +6661,7 @@
 	        Constants = __webpack_require__( 5 ),
 
 	        CrowdSourcingController = function( options ) {
-	            this.template = __webpack_require__( 26 );
+	            this.template = __webpack_require__( 30 );
 	        };
 
 	    CrowdSourcingController.prototype.bind = function( App, data ) {
@@ -6458,13 +6690,13 @@
 
 
 /***/ },
-/* 26 */
+/* 30 */
 /***/ function(module, exports) {
 
 	module.exports = "<p> User Generated Content</p>"
 
 /***/ },
-/* 27 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function( W, platformSdk, events ) {
@@ -6474,7 +6706,7 @@
 	        Constants = __webpack_require__( 5 ),
 
 	        FaqDetailsController = function( options ) {
-	            this.template = __webpack_require__( 28 );
+	            this.template = __webpack_require__( 32 );
 	        };
 
 	    FaqDetailsController.prototype.bind = function( App, data ) {
@@ -6503,13 +6735,13 @@
 
 
 /***/ },
-/* 28 */
+/* 32 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"faqWrapper\">\n\t<ul class=\"faqQuestions\">\n\t\t<li class=\"questionRow\">\n\t\t\t<div class=\"faqQuestion\"></div>\n\t\t\t<div class=\"faqAnswer\"></div>\n\t\t</li>\n\t</ul>\n\t<div class=\"question\"></div>\n</div>"
 
 /***/ },
-/* 29 */
+/* 33 */
 /***/ function(module, exports) {
 
 	(function (W, events) {

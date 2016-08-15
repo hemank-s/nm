@@ -179,7 +179,7 @@
         // If card Data Comes From Any Forwarded Card that calls Open Non Messaging Bot Here
         getIntentData: function(data) {
             var that = this;
-            console.log(data);
+            //console.log(data);
             data = decodeURIComponent(data);
             data = JSON.parse(data);
 
@@ -290,6 +290,7 @@
             var res = {'data':{"battery":6,"rewards_hash":"be96dc8c0a876b08c8076b03acdee0db5","status":"active","streak":1,"name":'Hemank Sabharwal'}};
             profileModel.updateNinjaData(res.data,self);
             activityModel.fetchNinjaActivity('lifetime');
+            mysteryBoxModel.getMysteryBoxDetails(self);
             
             // STUB TO REMOVE
 
