@@ -82,6 +82,17 @@
             else this.ninjaService.communicate(params);
         },
 
+        uploadCustomStickerData: function(data, fn, x){
+            console.log(data);
+            var params = {
+                'url': URL.api_location + '/rewards/'+data.rid+'?random='+Math.round(Math.random() * 999999999),
+                'type': 'POST',
+                'data': data.send
+            };
+            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
+            else this.ninjaService.communicate(params);
+        },
+
         sendCustomSticker : function(data, fn, x){
             var params = {
                 'url': URL.api_location + '/rewards/'+data.rewardId+'/custom_sticker/'+data.customStickerId+'?random='+Math.round(Math.random() * 999999999),
@@ -108,9 +119,20 @@
             };
             if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
             else this.ninjaService.communicate(params);  
-        }
+        },
 
-        
+        getStickerPack: function(data, fn, x){
+            console.log("Getting Sticker Pack For the User");
+            var params = {
+                'url': URL.api_location + '/rewards/'+data.rid+'?random='+Math.round(Math.random() * 999999999),
+                'type': 'POST',
+                'data':data.send
+            };
+            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
+            else this.ninjaService.communicate(params);
+
+        },
+
         // Rewards Service For Ninja 
 
         // Activity Service For Ninja

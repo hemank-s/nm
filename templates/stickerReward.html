@@ -1,25 +1,34 @@
+<div id="animate-area" class="topIllustration animate-area"></div>
+<div class="bottomIllustration"></div>
 <div class="stickerRewardsWrapper">
     <div class="stickerShopPageOne">
-        <div class="stickerRewardHeader"></div>
+        <div class="stickerRewardHeader">
+            <div class="stickerRewardHeaderImage"></div>
+            <div class="stickerRewardHeadingContainer">
+                <p class="stickerRewardHead">{{title}}</p>
+                <p class="stickerRewardSub">{{stitle}}</p>
+            </div>
+        </div>
         <!-- Only If applicable -->
         <div class="stickerRewardLevels"></div>
         <div class="stickerRewardList">
-            <ul class="stickerDownloadList">
-                <li class="stickerDownloadRow">
-                    <div class="stickerPackIcon"></div>
-                    <div class="stickerPackText">
-                        <div class="stickerPackName"></div>
-                        <div class="stickerPackDetails">
-                            <div class="stickerPackCount"></div>
-                            <div class="stickerPackSize"></div>
+            <div class="stickerDownloadList">
+                <ul>
+                {{#stickerPacks}}
+                    <li class="stickerDownloadRow" data-status="{{status}}" data-catId="{{catId}}">
+                        <div class="stickerPackIcon"></div>
+                        <!-- <div class="stickerPackIcon"></div> -->
+                        <div class="stickerPackText">
+                            <p class="stickerPackName">{{name}}</p>
+                            <p class="stickerPackCount">{{nos}} Stickers</p>
                         </div>
-                    </div>
-                    <div class="stickerPackState"></div>
-                </li>
-            </ul>
+                        <div class="stickerPackState{{status}}"></div>
+                    </li>
+                {{/stickerPacks}}
+                </ul>
+            </div>
         </div>
-        <div class="stickerListEmptyState">
-            <!-- Insert Illustration Herer-->
+        <!-- <div class="stickerListEmptyState">
         </div>
         <div class="stickerPackBlocked">
             <div class="stickerBlockedIllustration"></div>
@@ -28,15 +37,15 @@
         <div class="stickerListEmptyState">
             <div class="coolDownPeriod">Time remaing here</div>
             <div class="coolDownText">Only one sticker can be redeemed within 24 hours. Please try after some time :)</div>
+        </div> -->
+    </div>
+    <!-- <div class="stickerDownloadPage">
+        <div class="stickerCategoryIcon"></div>
+        <div class="stickerIconPreview">
+            <ul class="stickerPreviewList">
+                <li class="stickerPreviewIcon"></li>
+            </ul>
         </div>
-    </div>
-    <div class="StickerDownloadPage">
-    	<div class="stickerCategoryIcon"></div>
-    	<div class="stickerIconPreview">
-    		<ul class="stickerPreviewList">
-    			<li class="stickerPreviewIcon"></li>
-    		</ul>
-    	</div>
-    	<div class="stickerDownloadButton">Download</div>
-    </div>
+        <div class="stickerDownloadButton">Download</div>
+    </div> -->
 </div>

@@ -72,11 +72,13 @@
 
                         // STUB TO REMOVE 
 
-                        var res1 = {'data':{'customStickers':[],'rewardId':rewardId,'eligible':true}};
-                        var res2 = {'data':{'rewardId':rewardId,'customStickers':[{"id":123,"ts":1470916209163,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':false}};
-                        var res3 = {'data':{'rewardId':rewardId,'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"completed","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
+                        // var res1 = {'data':{'customStickers':[],'rewardId':rewardId,'eligible':true}};
+                        // var res2 = {'data':{'rewardId':rewardId,'customStickers':[{"id":123,"ts":1470916209163,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':false}};
+                        // var res3 = {'data':{'rewardId':rewardId,'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"completed","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
                         
-                        App.router.navigateTo( rewardRouter, res3.data);
+                        // var stickerRes = {"title":"Early Access Stickers","stitle":"Get the best stickers on hike way before everyone else does. You get these 2 weeks before mere mortals. You're a Ninja!","hicon":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png","packs":[{"catId":"bengalibabu","copyright":"Copyright \u00a92016 Hike Limited","desc":"Check out these funny Bong Babu stickers!","name":"Bong Babu","new":1,"nos":30,"size":864090,"status":"notdownloaded","sticker_list":["030_benbabu_humkiptenahihai.png","029_benbabu_matlab.png","028_benbabu_bahutburahua.png","027_benbabu_sobshottihai.png","026_benbabu_kisikobolnamat.png"]},{"catId":"bengalibabu","copyright":"Copyright \u00a92016 Hike Limited","desc":"Check out these funny Bong Babu stickers!","name":"Bong Babu","new":1,"nos":30,"size":864090,"status":"notdownloaded","sticker_list":["030_benbabu_humkiptenahihai.png","029_benbabu_matlab.png","028_benbabu_bahutburahua.png","027_benbabu_sobshottihai.png","026_benbabu_kisikobolnamat.png"]},{"catId":"bengalibabu","copyright":"Copyright \u00a92016 Hike Limited","desc":"Check out these funny Bong Babu stickers!","name":"Bong Babu","new":1,"nos":30,"size":864090,"status":"notdownloaded","sticker_list":["030_benbabu_humkiptenahihai.png","029_benbabu_matlab.png","028_benbabu_bahutburahua.png","027_benbabu_sobshottihai.png","026_benbabu_kisikobolnamat.png"]}]};
+
+                        // App.router.navigateTo( rewardRouter, res3.data);
 
                         // STUB TO REMOVE
 
@@ -107,7 +109,7 @@
             // Re Render The Reward Template Only From External HTML
             this.template = require( 'raw!../../templates/newRewardTemplate.html' );
             ninjaRewardsListOld.innerHTML = Mustache.render( this.template, {
-                ninjaRewardsCollection: rewardsData
+                ninjaRewardsCollection: rewardsData.rewards
             });
 
             this.updateNinjaRewardsLinks( App );

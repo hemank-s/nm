@@ -7,7 +7,12 @@
 @import 'loader';
 @import 'emotions';
 @import 'mysteryBox';
+@import 'stickerReward';
 
+
+.tab-activity{
+    height: 800px !important; 
+}
 
 .swipe {
     overflow: hidden;

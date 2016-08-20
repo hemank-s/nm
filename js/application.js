@@ -7,6 +7,8 @@
         CustomerStickerController = require('./controllers/CustomerStickerController'),
         CrowdSourcingController = require('./controllers/CrowdSourcingController'),
         FaqDetailsController = require('./controllers/FaqDetailsController'),
+        StickerPackViewController = require('./controllers/StickerPackViewController'),
+
 
         Router = require('./util/router'),
         utils = require('./util/utils'),
@@ -95,6 +97,7 @@
         this.customerStickerController = new CustomerStickerController();
         this.crowdSourcingController = new CrowdSourcingController();
         this.faqDetailsController = new FaqDetailsController();
+        this.stickerPackViewController = new StickerPackViewController();
 
         // Communication Controller
         this.TxService = new TxService();
@@ -186,7 +189,7 @@
         },
 
         backPressTrigger: function() {
-            events.publish('back.press');
+            this.router.back();
         },
 
         getRoute: function() {
@@ -262,6 +265,14 @@
                 utils.toggleBackNavigation(true);
             });
 
+            this.router.route('/stickerPackView', function(data) {
+                self.container.innerHTML = '';
+                self.stickerPackViewController.render(self.container, self, data);
+                utils.toggleBackNavigation(true);
+            });
+
+
+
             // Custom Sticker Controller 
             this.router.route('/customSticker', function(data) {
                 self.container.innerHTML = '';
@@ -285,38 +296,38 @@
             
             // STUB TO REMOVE
 
-            self.router.navigateTo('/');
-            // Profile Call Fetches this res and sends to the profile udpater
-            var res = {'data':{"battery":6,"rewards_hash":"be96dc8c0a876b08c8076b03acdee0db5","status":"active","streak":1,"name":'Hemank Sabharwal'}};
-            profileModel.updateNinjaData(res.data,self);
-            activityModel.fetchNinjaActivity('lifetime');
-            mysteryBoxModel.getMysteryBoxDetails(self);
+            // self.router.navigateTo('/');
+            // // Profile Call Fetches this res and sends to the profile udpater
+            // var res = {'data':{"battery":6,"rewards_hash":"be96dc8c0a876b08c8076b03acdee0db5","status":"active","streak":1,"name":'Hemank Sabharwal'}};
+            // profileModel.updateNinjaData(res.data,self);
+            // activityModel.fetchNinjaActivity('lifetime');
+            // mysteryBoxModel.getMysteryBoxDetails(self);
             
             // STUB TO REMOVE
 
 
-            // var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
-            
-            // if (ftueCompleted) {
-            //     console.log("This is and old user :: Fetching Profile battery and streak for the user");
-            //     this.NinjaService.getNinjaProfile(function(res) {
-            //         console.log(res.data);
-            //         if (profileModel.checkNinjaState(res.data.status) == 'lapsed') {
-            //             // To Add Ninja Lapsed State Here
-            //             console.log("Go to lapsed ninja Controller");
-            //         } else {
-            //             // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
-            //             console.log("Going to normal ninja Application :: Calling battery/streak updater and activity and rewards updater");
-            //             self.router.navigateTo('/');
-            //             profileModel.updateNinjaData(res.data);
-            //             activityModel.fetchNinjaActivity('lifetime');
-            //         }
-            //     }, this);
-            // }
-            // // Show FTUE To the User
-            // else {
-            //     console.log("Go to the FTUE Controller and complete the FTUE");
-            // }
+            //var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
+            var ftueCompleted = true;
+            if (ftueCompleted) {
+                console.log("This is and old user :: Fetching Profile battery and streak for the user");
+                this.NinjaService.getNinjaProfile(function(res) {
+                    console.log(res.data);
+                    if (profileModel.checkNinjaState(res.data.status) == 'lapsed') {
+                        // To Add Ninja Lapsed State Here
+                        console.log("Go to lapsed ninja Controller");
+                    } else {
+                        // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
+                        self.router.navigateTo('/');
+                        profileModel.updateNinjaData(res.data,self);
+                        activityModel.fetchNinjaActivity('lifetime');
+                        mysteryBoxModel.getMysteryBoxDetails(self);
+                    }
+                }, this);
+            }
+            // Show FTUE To the User
+            else {
+                console.log("Go to the FTUE Controller and complete the FTUE");
+            }
 
         }
     };

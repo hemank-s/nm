@@ -671,10 +671,7 @@ a:visited {
     background-position: 100% 0; } }
 
 #animate-area {
-  background-image: url(images/illustration_top.png);
-  background-position: 0px 0px;
-  background-repeat: repeat-x;
-  animation: animatedBackground 20s linear infinite; }
+  background-image: url(images/illustration_top.png); }
 
 .bottomIllustration {
   background: url(images/illustration_lower.png);
@@ -956,10 +953,7 @@ a:visited {
     background-position: 100% 0; } }
 
 #animate-area {
-  background-image: url(images/illustration_top.png);
-  background-position: 0px 0px;
-  background-repeat: repeat-x;
-  animation: animatedBackground 20s linear infinite; }
+  background-image: url(images/illustration_top.png); }
 
 .bottomIllustration {
   background: url(images/illustration_lower.png);
@@ -1192,7 +1186,7 @@ input:-ms-input-placeholder {
   margin-top: 18px;
   position: absolute; }
 
-.statusIconinProgress {
+.statusIconin_progress {
   background: url(images/stickerPackDownload.png);
   background-size: contain;
   background-repeat: no-repeat;
@@ -1562,6 +1556,160 @@ input:-ms-input-placeholder {
   border-radius: 4px;
   padding: 12px 32px;
   text-transform: uppercase; }
+
+.stickerRewardContainer {
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #7cd0d5, #FFF9EB, #FFF9EB, #FFF9EB, #FFD6B8); }
+
+.topStickerIllustration {
+  width: 100%;
+  height: 125px;
+  top: 32px;
+  position: absolute; }
+
+@keyframes animatedBackground {
+  from {
+    background-position: 0 0; }
+  to {
+    background-position: 100% 0; } }
+
+#animate-area {
+  background-image: url(images/illustration_top.png); }
+
+.bottomIllustration {
+  background: url(images/illustration_lower.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 49px;
+  bottom: 0px;
+  position: absolute; }
+
+.stickerRewardHeaderImage {
+  background: url(images/secretStickerShopIllustration.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 250px;
+  position: absolute;
+  z-index: 0; }
+
+.stickerDownloadList {
+  padding: 32px 20px 0px 20px; }
+
+.stickerPackIcon {
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 50%; }
+
+.stickerRewardHeader {
+  height: 250px; }
+
+.stickerDownloadRow {
+  list-style: none;
+  margin-bottom: 16px;
+  padding-bottom: 16px; }
+
+.stickerPackText {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 10px; }
+
+.stickerPackName {
+  font-size: 16px;
+  color: #3D475B;
+  margin-bottom: 7px; }
+
+.stickerPackCount {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.64); }
+
+.stickerPackStatedownloaded {
+  background: url(images/stickerPackDownloaded.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 18px;
+  height: 12px;
+  display: inline-block;
+  right: 22px;
+  margin-top: 18px;
+  position: absolute; }
+
+.stickerPackStatenotdownloaded {
+  background: url(images/stickerPackDownload.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  right: 22px;
+  margin-top: 18px;
+  position: absolute; }
+
+.stickerRewardHeadingContainer {
+  z-index: 10;
+  color: white;
+  position: absolute;
+  margin: 0px auto;
+  text-align: center;
+  top: 40px;
+  padding: 12px 35px; }
+
+.stickerRewardHead {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 300; }
+
+.stickerRewardSub {
+  line-height: 21px;
+  font-weight: 400;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.64); }
+
+.stickerPreviewWrapper {
+  padding: 24px; }
+
+.selectedSticker {
+  background: url(data:image/png;base64,R0lGODlhFAAUAIAAAP///wAAACH5BAEAAAAALAAAAAAUABQAAAIRhI+py+0Po5y02ouz3rz7rxUAOw==);
+  background-size: contain;
+  background-repeat: no-repeat;
+  text-align: center;
+  margin: 0px auto;
+  width: 200px;
+  height: 200px; }
+
+.stickerIcon {
+  background: url(data:image/png;base64,R0lGODlhFAAUAIAAAP///wAAACH5BAEAAAAALAAAAAAUABQAAAIRhI+py+0Po5y02ouz3rz7rxUAOw==);
+  background-size: contain;
+  background-repeat: no-repeat;
+  text-align: center;
+  margin: 0px auto;
+  width: 80px;
+  height: 80px; }
+
+.downloadStickerPackButton {
+  position: absolute;
+  background: #1da8e8;
+  width: 100%;
+  bottom: 0px;
+  padding: 20px 0px 20px 0px;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 16px;
+  font-weight: 300; }
+
+.stickerRow {
+  display: inline-flex;
+  width: 23.4%; }
+
+.tab-activity {
+  height: 800px !important; }
 
 .swipe {
   overflow: hidden;

@@ -13,7 +13,7 @@
     CustomStickerController.prototype.bind = function(App, data) {
 
         var that = this;
-        console.log("data is",data);
+        console.log("data is", data);
         var rewardId = data.rewardId;
 
         // All Custom Sticker Views Defined
@@ -33,7 +33,7 @@
         //var profilePicLoader = document.getElementById('profilePicLoader');
         var errorMessage = document.getElementsByClassName('errorMessage')[0];
         var customStickerTextPhrase = document.getElementById('customStickerTextPhrase');
-        var textLanguage = document.getElementById('textLanguage');
+        //var textLanguage = document.getElementById('textLanguage');
         var sendButton = document.getElementsByClassName('sendButton')[0];
 
         // All Custom Sticker Actions
@@ -43,15 +43,17 @@
         var customStickerFaq = document.getElementsByClassName('customStickerFaq')[0];
         var customStickerShareAction = document.getElementsByClassName('customStickerShareAction')[0];
 
-        if (data.customStickers.length > 0) {
-            console.log('The user is not new to custom Sticker');
-            utils.removeClass(customStickerUploadScreen, 'hideClass');
-        } else {
-            console.log('First Time user');
-            utils.removeClass(customStickerFtueWrapper, 'hideClass');
+        if (data.custom_stickers) {
+            that.defineCustomStickerHistory(data.custom_stickers);
+            if (data.custom_stickers.length > 0) {
+                console.log('The user is not new to custom Sticker');
+                utils.removeClass(customStickerUploadScreen, 'hideClass');
+            } else {
+                console.log('First Time user');
+                utils.removeClass(customStickerFtueWrapper, 'hideClass');
+            }
         }
 
-        that.defineCustomStickerHistory(data.customStickers);
 
         // Event Definations
 
@@ -67,36 +69,42 @@
         });
 
         // Choose Sticker Image From gallery
-        customStickerImage.addEventListener('click', function(ev) {
-            utils.removeClass(errorMessage, 'hideClass');
-            that.chooseStickerImageFromGallery();
-        });
+        if (customStickerImage) {
+            customStickerImage.addEventListener('click', function(ev) {
+                utils.removeClass(errorMessage, 'hideClass');
+                that.chooseStickerImageFromGallery(data);
+            });
+        }
 
         // Send the Data to Server
-        sendButton.addEventListener('click', function(ev) {
-            that.sendCustomStickerDataToServer();
-        });
+        if (sendButton) {
+            sendButton.addEventListener('click', function(ev) {
+                that.sendCustomStickerDataToServer(rewardId);
+            });
+
+        }
 
         customStickerShareAction.addEventListener('click', function(ev) {
-            
             var customStickerId = this.getAttribute('data-id');
-
-            that.sendCustomStickerToUser(App,rewardId,customStickerId);
+            that.sendCustomStickerToUser(App, rewardId, customStickerId);
         });
 
-        that.defineCustomStickerClick(customStickerRow, data.customStickers);
+        if (data.custom_stickers) {
+            that.defineCustomStickerClick(customStickerRow, data.custom_stickers);
+
+        }
 
     };
 
 
-    CustomStickerController.prototype.sendCustomStickerToUser = function(App,rewardId,customStickerId) {
+    CustomStickerController.prototype.sendCustomStickerToUser = function(App, rewardId, customStickerId) {
 
         console.log("Sending the custom sticker to the user via packet");
 
         console.log(rewardId);
         console.log(customStickerId);
 
-        var data ={};
+        var data = {};
         data.rewardId = rewardId;
         data.customStickerId = customStickerId;
 
@@ -148,7 +156,7 @@
                     customStickerView.style.backgroundImage = 'url(\'' + url + '\')';
 
 
-                } else if (state == 'inProgress') {
+                } else if (state == 'in_progress') {
                     console.log("Take to status Check Page :: Send ID");
                     utils.removeClass(customStickerStatusCheck, 'hideClass');
                     utils.addClass(customStickerUploadScreen, 'hideClass');
@@ -180,12 +188,12 @@
     CustomStickerController.prototype.customStickerFormCheck = function() {
 
         console.log(customStickerTextPhrase.value);
-        console.log(textLanguage.value);
+        //console.log(textLanguage.value);
         console.log(customImageUploaded);
 
         var sendForm = true;
 
-        if (!customImageUploaded || !customStickerTextPhrase || !textLanguage.value) {
+        if (!customImageUploaded || !customStickerTextPhrase) {
             this.showErrorState('Please fill all the details');
             sendForm = false;
         }
@@ -194,11 +202,12 @@
 
     };
 
-    CustomStickerController.prototype.chooseStickerImageFromGallery = function() {
-
-        console.log("Need to Test on the Phone");
+    CustomStickerController.prototype.chooseStickerImageFromGallery = function(data) {
 
         var that = this;
+
+        var serverPath = 'http://54.169.82.65:5016/v1/rewards/' + '57b49497c005f8132b79921f';
+        var customStickerImage = document.getElementsByClassName('uploadPhotoContainer')[0];
 
         try {
             platformSdk.nativeReq({
@@ -245,6 +254,44 @@
                     customStickerImage.style.backgroundImage = 'url(\'file://' + fileUrl.filePath + '\')';
                     customImageUploaded = true;
 
+
+
+                    try {
+                        platformSdk.nativeReq({
+                            ctx: self,
+                            fn: 'uploadFile',
+                            data: platformSdk.utils.validateStringifyJson(uploadCustomStickerData),
+                            success: function(res) {
+                                console.log(res);
+                                try {
+                                    res = JSON.parse(decodeURIComponent(res));
+
+                                    if (res.stat == 'success') {
+                                        //utils.showToast('Your Image has been updated.');
+                                        customStickerImage.style.backgroundImage = 'url(\'file://' + fileUrl.filePath + '\')';
+                                        // Show Sent Screen Here As below
+                                        utils.removeClass(customStickerSent, 'hideClass');
+                                    } else {
+                                        utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
+                                        that.setDefaultCustomStickerImage();
+                                    }
+                                } catch (err) {
+                                    utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
+                                    that.setDefaultCustomStickerImage();
+                                }
+
+                                //Hide loader
+                                //profilePicLoader.classList.remove('picLoader');
+                            }
+                        });
+
+                    } catch (err) {
+                        utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
+
+                        //profilePicLoader.classList.remove('picLoader');
+                        that.setDefaultCustomStickerImage();
+                    }
+
                 }
             });
 
@@ -263,7 +310,7 @@
 
 
     // Send Custom sticker Data To Server
-    CustomStickerController.prototype.sendCustomStickerDataToServer = function() {
+    CustomStickerController.prototype.sendCustomStickerDataToServer = function(rid) {
 
         var that = this;
         var formSend = that.customStickerFormCheck();
@@ -272,44 +319,19 @@
             console.log('Uploading Image is in Progress');
             utils.removeClass(errorMessage, 'hideClass');
 
-            // SHOW LOADER
-            //profilePicLoader.classList.add('picLoader');
+            var data = {};
+            dat.rid = rid;
+            data.text_phrase = customStickerTextPhrase.value;
 
-            try {
-                platformSdk.nativeReq({
-                    ctx: self,
-                    fn: 'uploadFile',
-                    data: platformSdk.utils.validateStringifyJson(uploadCustomStickerData),
-                    success: function(res) {
-                        console.log(res);
-                        try {
-                            res = JSON.parse(decodeURIComponent(res));
+            // Reward Details API :: Send Reward Id As well
+            App.NinjaService.uploadCustomStickerData(data, function(res) {
+                // Show Toast if Success
+                console.log(res);
+                utils.showToast('You will receive your sticker via the team hike bot shortly, start sharing.');
+                // Routing to the specific Router
+                //App.router.navigateTo(rewardRouter, res.data);
+            }, this);
 
-                            if (res.stat == 'success') {
-                                //utils.showToast('Your Image has been updated.');
-                                customStickerImage.style.backgroundImage = 'url(\'file://' + fileUrl.filePath + '\')';
-                                // Show Sent Screen Here As below
-                                utils.removeClass(customStickerSent, 'hideClass');
-                            } else {
-                                utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
-                                that.setDefaultCustomStickerImage();
-                            }
-                        } catch (err) {
-                            utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
-                            that.setDefaultCustomStickerImage();
-                        }
-
-                        //Hide loader
-                        //profilePicLoader.classList.remove('picLoader');
-                    }
-                });
-
-            } catch (err) {
-                utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
-
-                //profilePicLoader.classList.remove('picLoader');
-                that.setDefaultCustomStickerImage();
-            }
         }
     };
 
@@ -356,9 +378,9 @@
         var that = this;
         that.customStickersList = [];
 
-        if (data) {
-            that.customStickersList = data.customStickers;
-            that.convertTimeStamp(data.customStickers);
+        if (data.custom_stickers) {
+            that.customStickersList = data.custom_stickers;
+            that.convertTimeStamp(data.custom_stickers);
         }
 
         console.log(that.customStickersList);

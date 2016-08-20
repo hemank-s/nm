@@ -11,17 +11,17 @@
 			"bot_type": "nm_bot",
 			"nameSpace": "hikeninja",
 			"config": "237",
-			"enable_bot": true,
+			"enable_bot": false,
 			"md": {
 				"replace": true,
 				"cardObj": {
 					"ld": {},
-					"hm": "Exclusive ninja stuff",
+					"hm": "Exclusive ninja stuff only for you",
 					"layoutId": "app.html",
 					"appName": "hikeninja",
-					"appVersion": "506",
-					"mAppVersionCode": 506,
-					"appPackage": "http://static.platform.hike.in/download/microapp/hikeninja/v5/hikeninja.zip"
+					"appVersion": "510",
+					"mAppVersionCode": 510,
+					"appPackage": "http://static.platform.hike.in/download/microapp/hikeninja/v9/hikeninja.zip"
 				}
 			},
 			"cd": {
