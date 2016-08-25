@@ -65,6 +65,13 @@
                 }
             }
         }
+        var elem = document.getElementsByClassName('rewardRow')
+        for (var i = 0; i < elem.length; i++) {
+            var H = window.getComputedStyle(elem[i]).height;
+            elem[i].querySelector('.rewardIcon').style.height = H;
+            if(elem[i].querySelector('.rewardStreakWrapper'))
+                elem[i].querySelector('.rewardStreakWrapper').style.lineHeight = H;
+        }
 
         // Run everything Here
         defineNinjaHomeScreenTabs();

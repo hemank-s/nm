@@ -14,8 +14,8 @@
         <div class="stickerRewardList">
             <div class="stickerDownloadList">
                 <ul>
-                {{#stickerPacks}}
-                    <li class="stickerDownloadRow" data-status="{{status}}" data-catId="{{catId}}">
+                    {{#stickerPacks}}
+                    <li class="stickerDownloadRow" data-status="{{downloaded}}" data-catId="{{catId}}" data-rewardid="{{rewardId}}">
                         <div class="stickerPackIcon"></div>
                         <!-- <div class="stickerPackIcon"></div> -->
                         <div class="stickerPackText">
@@ -24,7 +24,7 @@
                         </div>
                         <div class="stickerPackState{{status}}"></div>
                     </li>
-                {{/stickerPacks}}
+                    {{/stickerPacks}}
                 </ul>
             </div>
         </div>

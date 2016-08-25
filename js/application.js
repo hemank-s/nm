@@ -8,6 +8,7 @@
         CrowdSourcingController = require('./controllers/CrowdSourcingController'),
         FaqDetailsController = require('./controllers/FaqDetailsController'),
         StickerPackViewController = require('./controllers/StickerPackViewController'),
+        CoolDownController = require('./controllers/CoolDownController'),
 
 
         Router = require('./util/router'),
@@ -98,6 +99,9 @@
         this.crowdSourcingController = new CrowdSourcingController();
         this.faqDetailsController = new FaqDetailsController();
         this.stickerPackViewController = new StickerPackViewController();
+        this.coolDownController = new CoolDownController();
+
+        
 
         // Communication Controller
         this.TxService = new TxService();
@@ -241,7 +245,7 @@
             });
 
             platformSdk.events.subscribe('onUpPressed', function() {
-               self.backPressTrigger();
+                self.backPressTrigger();
             });
 
             // Ninja Home Screen Router :: Three Tabs (Rewards/Activity/Mystery Box)
@@ -293,16 +297,23 @@
                 self.faqDetailsController.render(self.container, self, data);
                 utils.toggleBackNavigation(true);
             });
-            
+
+             // FAQ All Rewards Controller 
+            this.router.route('/coolDown', function(data) {
+                self.container.innerHTML = '';
+                self.coolDownController.render(self.container, self, data);
+                utils.toggleBackNavigation(true);
+            });
+
             // STUB TO REMOVE
 
-            // self.router.navigateTo('/');
-            // // Profile Call Fetches this res and sends to the profile udpater
-            // var res = {'data':{"battery":6,"rewards_hash":"be96dc8c0a876b08c8076b03acdee0db5","status":"active","streak":1,"name":'Hemank Sabharwal'}};
-            // profileModel.updateNinjaData(res.data,self);
-            // activityModel.fetchNinjaActivity('lifetime');
-            // mysteryBoxModel.getMysteryBoxDetails(self);
-            
+            self.router.navigateTo('/');
+            // Profile Call Fetches this res and sends to the profile udpater
+            var res = { 'data': { "battery": 6, "rewards_hash": "be96dc8c0a876b08c8076b03acdee0db5", "status": "active", "streak": 1, "name": 'Hemank Sabharwal' } };
+            profileModel.updateNinjaData(res.data, self);
+            activityModel.fetchNinjaActivity('lifetime');
+            mysteryBoxModel.getMysteryBoxDetails(self);
+
             // STUB TO REMOVE
 
 
@@ -318,7 +329,7 @@
                     } else {
                         // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
                         self.router.navigateTo('/');
-                        profileModel.updateNinjaData(res.data,self);
+                        profileModel.updateNinjaData(res.data, self);
                         activityModel.fetchNinjaActivity('lifetime');
                         mysteryBoxModel.getMysteryBoxDetails(self);
                     }

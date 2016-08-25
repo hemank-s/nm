@@ -25,13 +25,14 @@
 
                 var stickerState = this.getAttribute('data-status');
                 var catId = this.getAttribute('data-catId');
+                var rewardId = this.getAttribute('data-rewardid');
                 var stickerDetails = that.getStickerDetails(catId, stickerPacks);
 
-                if (stickerState == 'downloaded') {
+                if (stickerState == '1') {
                     utils.showToast('You have already downloaded this sticker pack');
                 } else {
                     console.log('Fetching sticker pack');
-                    App.router.navigateTo('/stickerPackView', stickerDetails);
+                    App.router.navigateTo('/stickerPackView', {"stickerDetails":stickerDetails ,"rewardId":rewardId});
                 }
             });
         }
@@ -59,7 +60,6 @@
         for (var i = 0; i < rows.length; i++) {
             var icon = rows[i].getElementsByClassName('stickerPackIcon')[0];
             console.log(icon);
-
             icon.style.backgroundImage = 'url(\'' + stickerCatUrl + packs[i].catId + '/preview' + '\')';
 
         }
@@ -75,10 +75,13 @@
         that.el.className = 'stickerRewardContainer ftueController animation_fadein noselect';
 
         that.el.innerHTML = Mustache.render(that.template, {
-            stickerPacks: data.packs,
-            title: data.title,
-            stitle: data.stitle
+            stickerPacks: data.rewardDetails.packs,
+            title: data.rewardDetails.title,
+            stitle: data.rewardDetails.stitle ,
+            rewardId :data.rewardId           
         });
+
+        data= data.rewardDetails;
 
         ctr.appendChild(that.el);
         events.publish('update.loader', { show: false });

@@ -747,7 +747,8 @@ a:visited {
   background-repeat: no-repeat;
   width: 26px;
   height: 26px;
-  display: inline-block; }
+  display: inline-block;
+  background-position: center; }
 
 .rewardDetails {
   display: inline-block;
@@ -887,7 +888,9 @@ a:visited {
   margin-bottom: 14px;
   text-align: center; }
 
-.optionOne, .optionTwo, .optionThree {
+.optionOne,
+.optionTwo,
+.optionThree {
   font-size: 12px;
   color: #3D475B;
   font-weight: 300;
@@ -1557,10 +1560,13 @@ input:-ms-input-placeholder {
   padding: 12px 32px;
   text-transform: uppercase; }
 
-.stickerRewardContainer {
+.stickerRewardContainer, .StickerPackViewController {
   height: 100%;
   overflow: hidden;
   background: linear-gradient(to bottom, #7cd0d5, #FFF9EB, #FFF9EB, #FFF9EB, #FFD6B8); }
+
+.StickerPackViewController {
+  overflow: scroll; }
 
 .topStickerIllustration {
   width: 100%;
@@ -1680,8 +1686,9 @@ input:-ms-input-placeholder {
   background-repeat: no-repeat;
   text-align: center;
   margin: 0px auto;
-  width: 200px;
-  height: 200px; }
+  width: 130px;
+  height: 130px;
+  margin-bottom: 33px; }
 
 .stickerIcon {
   background: url(data:image/png;base64,R0lGODlhFAAUAIAAAP///wAAACH5BAEAAAAALAAAAAAUABQAAAIRhI+py+0Po5y02ouz3rz7rxUAOw==);
@@ -1689,8 +1696,8 @@ input:-ms-input-placeholder {
   background-repeat: no-repeat;
   text-align: center;
   margin: 0px auto;
-  width: 80px;
-  height: 80px; }
+  width: 65px;
+  height: 65px; }
 
 .downloadStickerPackButton {
   position: absolute;
@@ -1704,9 +1711,38 @@ input:-ms-input-placeholder {
   font-size: 16px;
   font-weight: 300; }
 
+.stickerList {
+  margin-bottom: 30px; }
+
 .stickerRow {
   display: inline-flex;
-  width: 23.4%; }
+  width: 23.4%;
+  margin-bottom: 22px; }
+
+/*   Screen Resolution - 120   */
+@media screen and (max-width: 320px) {
+  .rewardDetails {
+    width: 160px; } }
+
+@media screen and (min-width: 321px) and (max-width: 340px) {
+  .rewardDetails {
+    width: 180px; } }
+
+@media screen and (min-width: 341px) and (max-width: 360px) {
+  .rewardDetails {
+    width: 200px; } }
+
+@media screen and (min-width: 361px) and (max-width: 380px) {
+  .rewardDetails {
+    width: 220px; } }
+
+@media screen and (min-width: 381px) and (max-width: 400px) {
+  .rewardDetails {
+    width: 240px; } }
+
+@media screen and (min-width: 401px) and (max-width: 420px) {
+  .rewardDetails {
+    width: 260px; } }
 
 .tab-activity {
   height: 800px !important; }

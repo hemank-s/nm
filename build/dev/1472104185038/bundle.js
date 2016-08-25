@@ -4707,19 +4707,25 @@
 	        if (env === Constants.DEV_ENV) {
 	            return {
 	                API_URL: 'http://54.169.82.65:5016/v1',
-	                LOG_URL:'http://54.169.82.65:5016/v1',
+	                LOG_URL: 'http://54.169.82.65:5016/v1',
+	                STICKER_PREFIX: "http://staging.im.hike.in/sticker?",
+	                STICKER_SUFFIX: "&resId=LDPI&image=true"
 
 	            };
 	        } else if (env === Constants.STAGING_ENV) {
 	            return {
 	                API_URL: 'http://54.169.82.65:5016/v1',
-	                LOG_URL:'http://54.169.82.65:5016/v1',
+	                LOG_URL: 'http://54.169.82.65:5016/v1',
+	                STICKER_PREFIX: "http://staging.im.hike.in/sticker?",
+	                STICKER_SUFFIX: "&resId=LDPI&image=true"
 
 	            };
 	        } else if (env === Constants.PROD_ENV) {
 	            return {
 	                API_URL: 'http://54.169.82.65:5016/v1',
-	                LOG_URL:'http://54.169.82.65:5016/v1',
+	                LOG_URL: 'http://54.169.82.65:5016/v1',
+	                STICKER_PREFIX: "http://staging.im.hike.in/sticker?",
+	                STICKER_SUFFIX: "&resId=LDPI&image=true"
 	            };
 	        }
 
@@ -4741,9 +4747,10 @@
 	        CrowdSourcingController = __webpack_require__(29),
 	        FaqDetailsController = __webpack_require__(31),
 	        StickerPackViewController = __webpack_require__(33),
+	        CoolDownController = __webpack_require__(35),
 
 
-	        Router = __webpack_require__(35),
+	        Router = __webpack_require__(36),
 	        utils = __webpack_require__(4),
 	        profileModel = __webpack_require__(9),
 	        rewardsModel = __webpack_require__(11),
@@ -4831,6 +4838,9 @@
 	        this.crowdSourcingController = new CrowdSourcingController();
 	        this.faqDetailsController = new FaqDetailsController();
 	        this.stickerPackViewController = new StickerPackViewController();
+	        this.coolDownController = new CoolDownController();
+
+	        
 
 	        // Communication Controller
 	        this.TxService = new TxService();
@@ -4974,7 +4984,7 @@
 	            });
 
 	            platformSdk.events.subscribe('onUpPressed', function() {
-	               self.backPressTrigger();
+	                self.backPressTrigger();
 	            });
 
 	            // Ninja Home Screen Router :: Three Tabs (Rewards/Activity/Mystery Box)
@@ -5026,16 +5036,23 @@
 	                self.faqDetailsController.render(self.container, self, data);
 	                utils.toggleBackNavigation(true);
 	            });
-	            
+
+	             // FAQ All Rewards Controller 
+	            this.router.route('/coolDown', function(data) {
+	                self.container.innerHTML = '';
+	                self.coolDownController.render(self.container, self, data);
+	                utils.toggleBackNavigation(true);
+	            });
+
 	            // STUB TO REMOVE
 
-	            // self.router.navigateTo('/');
-	            // // Profile Call Fetches this res and sends to the profile udpater
-	            // var res = {'data':{"battery":6,"rewards_hash":"be96dc8c0a876b08c8076b03acdee0db5","status":"active","streak":1,"name":'Hemank Sabharwal'}};
-	            // profileModel.updateNinjaData(res.data,self);
-	            // activityModel.fetchNinjaActivity('lifetime');
-	            // mysteryBoxModel.getMysteryBoxDetails(self);
-	            
+	            self.router.navigateTo('/');
+	            // Profile Call Fetches this res and sends to the profile udpater
+	            var res = { 'data': { "battery": 6, "rewards_hash": "be96dc8c0a876b08c8076b03acdee0db5", "status": "active", "streak": 1, "name": 'Hemank Sabharwal' } };
+	            profileModel.updateNinjaData(res.data, self);
+	            activityModel.fetchNinjaActivity('lifetime');
+	            mysteryBoxModel.getMysteryBoxDetails(self);
+
 	            // STUB TO REMOVE
 
 
@@ -5051,7 +5068,7 @@
 	                    } else {
 	                        // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
 	                        self.router.navigateTo('/');
-	                        profileModel.updateNinjaData(res.data,self);
+	                        profileModel.updateNinjaData(res.data, self);
 	                        activityModel.fetchNinjaActivity('lifetime');
 	                        mysteryBoxModel.getMysteryBoxDetails(self);
 	                    }
@@ -5068,7 +5085,6 @@
 	    module.exports = Application;
 
 	})(window, platformSdk.events);
-
 
 /***/ },
 /* 8 */
@@ -5140,6 +5156,13 @@
 	                    });
 	                }
 	            }
+	        }
+	        var elem = document.getElementsByClassName('rewardRow')
+	        for (var i = 0; i < elem.length; i++) {
+	            var H = window.getComputedStyle(elem[i]).height;
+	            elem[i].querySelector('.rewardIcon').style.height = H;
+	            if(elem[i].querySelector('.rewardStreakWrapper'))
+	                elem[i].querySelector('.rewardStreakWrapper').style.lineHeight = H;
 	        }
 
 	        // Run everything Here
@@ -5383,9 +5406,9 @@
 	(function() {
 	    'use strict';
 
-	    var platformSdk = __webpack_require__( 3 ),
-	        utils = __webpack_require__( 4 ),
-	        cacheProvider = __webpack_require__( 10 ),
+	    var platformSdk = __webpack_require__(3),
+	        utils = __webpack_require__(4),
+	        cacheProvider = __webpack_require__(10),
 
 	        RewardsModel = function() {},
 
@@ -5394,55 +5417,55 @@
 	    RewardsModel.prototype = {
 
 	        // Get Reward Router Associated To Type Of Reward
-	        getRewardRouter : function(rewardType){
-	            if ( rewardType == 'sticker_reward' ) {
-	                    return '/stickerReward';
-	                } else if ( rewardType == 'exclusive_feature' ) {
-	                    return '/exclusiveFeature';
-	                } else if ( rewardType == 'user_generated_content' ) {
-	                    return '/ugc';
-	                } else if ( rewardType == 'custom_sticker' ) {
-	                    return '/customSticker';
-	                }
+	        getRewardRouter: function(rewardType) {
+	            if (rewardType == 'sticker_reward') {
+	                return '/stickerReward';
+	            } else if (rewardType == 'exclusive_feature') {
+	                return '/exclusiveFeature';
+	            } else if (rewardType == 'user_generated_content') {
+	                return '/ugc';
+	            } else if (rewardType == 'custom_sticker') {
+	                return '/customSticker';
+	            }
 	        },
 
-	        showRewardStateToast : function(state){
-	            if(state == 'unlocked'){
+	        showRewardStateToast: function(state) {
+	            if (state == 'unlocked') {
 	                console.log("The state is currently unlocked :: Can open the reward");
-	            }else if (state == 'locked'){
+	            } else if (state == 'locked') {
 	                utils.showToast('The reward is currently under locked state. Try again once you unlock it at a higher streak');
-	            }else if (state == 'redeemed'){
+	            } else if (state == 'redeemed') {
 	                console.log("Reward already redeemed once or more.");
-	            }else if (state == 'disabled'){
+	            } else if (state == 'disabled') {
 	                utils.showToast('The reward is in disabled state, sorry for the inconvienience');
 	            }
 	        },
 
 	        // Update the ninja Click Events For rewards
-	        updateNinjaRewardsLinks: function(App){
-	            
+	        updateNinjaRewardsLinks: function(App) {
+
 	            var that = this;
 
-	            var allRewards = document.getElementsByClassName( 'rewardRow' );
+	            var allRewards = document.getElementsByClassName('rewardRow');
 
-	            if ( allRewards.length ) {
-	                console.log( allRewards );
-	                for ( var i = 0; i < allRewards.length; i++ ) {
-	                    allRewards[i].addEventListener( 'click', function( event ) {
-	                        
+	            if (allRewards.length) {
+	                console.log(allRewards);
+	                for (var i = 0; i < allRewards.length; i++) {
+	                    allRewards[i].addEventListener('click', function(event) {
+
 	                        // Get Reward related information
 	                        var rewardState = this.getAttribute('data-state');
 
-	                        if(rewardState == 'locked'){
+	                        if (rewardState == 'locked') {
 	                            that.showRewardStateToast(rewardState);
 	                            return;
-	                        } else if (rewardState == 'disabled'){
+	                        } else if (rewardState == 'disabled') {
 	                            that.schowRewardStateToast(rewardState);
 	                            return;
 	                        }
-	                        
-	                        var rewardType = this.getAttribute( 'data-rewardtype' );
-	                        var rewardRouter = that.getRewardRouter( rewardType );
+
+	                        var rewardType = this.getAttribute('data-rewardtype');
+	                        var rewardRouter = that.getRewardRouter(rewardType);
 	                        var rewardId = this.getAttribute('data-rewardId');
 
 	                        var data = {};
@@ -5453,19 +5476,67 @@
 	                        // var res1 = {'data':{'customStickers':[],'rewardId':rewardId,'eligible':true}};
 	                        // var res2 = {'data':{'rewardId':rewardId,'customStickers':[{"id":123,"ts":1470916209163,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':false}};
 	                        // var res3 = {'data':{'rewardId':rewardId,'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"completed","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
-	                        
+
 	                        // var stickerRes = {"title":"Early Access Stickers","stitle":"Get the best stickers on hike way before everyone else does. You get these 2 weeks before mere mortals. You're a Ninja!","hicon":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png","packs":[{"catId":"bengalibabu","copyright":"Copyright \u00a92016 Hike Limited","desc":"Check out these funny Bong Babu stickers!","name":"Bong Babu","new":1,"nos":30,"size":864090,"status":"notdownloaded","sticker_list":["030_benbabu_humkiptenahihai.png","029_benbabu_matlab.png","028_benbabu_bahutburahua.png","027_benbabu_sobshottihai.png","026_benbabu_kisikobolnamat.png"]},{"catId":"bengalibabu","copyright":"Copyright \u00a92016 Hike Limited","desc":"Check out these funny Bong Babu stickers!","name":"Bong Babu","new":1,"nos":30,"size":864090,"status":"notdownloaded","sticker_list":["030_benbabu_humkiptenahihai.png","029_benbabu_matlab.png","028_benbabu_bahutburahua.png","027_benbabu_sobshottihai.png","026_benbabu_kisikobolnamat.png"]},{"catId":"bengalibabu","copyright":"Copyright \u00a92016 Hike Limited","desc":"Check out these funny Bong Babu stickers!","name":"Bong Babu","new":1,"nos":30,"size":864090,"status":"notdownloaded","sticker_list":["030_benbabu_humkiptenahihai.png","029_benbabu_matlab.png","028_benbabu_bahutburahua.png","027_benbabu_sobshottihai.png","026_benbabu_kisikobolnamat.png"]}]};
 
-	                        // App.router.navigateTo( rewardRouter, res3.data);
+	                       var test = {
+	                            "hicon": "",
+	                            "title": "Early Access Stickers",
+	                            "stitle": "some details",
+	                            "packs": [{
+	                                "catId": "bengalibabu",
+	                                "copyright": "Copyright \u00a92016 Hike Limited",
+	                                "desc": "Check out these funny Bong Babu stickers!",
+	                                "name": "Bong Babu",
+	                                "new": 1,
+	                                "nos": 30,
+	                                "size": 864090,
+	                                "downloaded":0,
+	                                "act_stickers": [
+	                                    "030_benbabu_humkiptenahihai.png",
+	                                    "029_benbabu_matlab.png",
+	                                    "028_benbabu_bahutburahua.png",
+	                                    "027_benbabu_sobshottihai.png",
+	                                     "030_benbabu_humkiptenahihai.png",
+	                                    "029_benbabu_matlab.png",
+	                                    "028_benbabu_bahutburahua.png",
+	                                    "027_benbabu_sobshottihai.png",
+	                                    "030_benbabu_humkiptenahihai.png",
+	                                    "029_benbabu_matlab.png",
+	                                    "028_benbabu_bahutburahua.png",
+	                                    "027_benbabu_sobshottihai.png",
+	                                    "030_benbabu_humkiptenahihai.png",
+	                                    "029_benbabu_matlab.png",
+	                                    "028_benbabu_bahutburahua.png",
+	                                    "027_benbabu_sobshottihai.png",
+	                                    "030_benbabu_humkiptenahihai.png",
+	                                    "029_benbabu_matlab.png",
+	                                    "028_benbabu_bahutburahua.png",
+	                                    "027_benbabu_sobshottihai.png",
+	                                    "030_benbabu_humkiptenahihai.png",
+	                                    "029_benbabu_matlab.png",
+	                                    "028_benbabu_bahutburahua.png",
+	                                    "027_benbabu_sobshottihai.png",
+	                                    "030_benbabu_humkiptenahihai.png",
+	                                    "029_benbabu_matlab.png",
+	                                    "028_benbabu_bahutburahua.png",
+	                                    "027_benbabu_sobshottihai.png",
+	                                   
+	                                    "026_benbabu_kisikobolnamat.png"
+	                                ]
+	                            }]
+
+	                        };
+
+	                        App.router.navigateTo(rewardRouter,{ "rewardDetails": test , "rewardId" :rewardId} );
 
 	                        // STUB TO REMOVE
 
 	                        // Reward Details API :: Send Reward Id As well
-	                        App.NinjaService.getRewardDetails(data, function(res) {
+	                        /*App.NinjaService.getRewardDetails(data, function(res) {
 	                            console.log(res.data);
-	                            // Routing to the specific Router
-	                            App.router.navigateTo( rewardRouter, res.data);                            
-	                        }, this);
+	                             App.router.navigateTo(rewardRouter,{ "rewardDetails": res.data , "rewardId" :rewardId} );
+	                        }, this)  */
 
 	                    });
 	                }
@@ -5473,31 +5544,30 @@
 	        },
 
 	        // Update Ninja Rewards HTML
-	        updateNinjaRewards: function( rewardsData, App ) {
+	        updateNinjaRewards: function(rewardsData, App) {
 
-	            console.log( 'Updating the Ninja Rewards Old By New Ninja Rewards' );
-	            console.log( rewardsData );
+	            console.log('Updating the Ninja Rewards Old By New Ninja Rewards');
+	            console.log(rewardsData);
 
 	            // update helper data with new rewards
-	            cacheProvider.setInCritical( 'ninjaRewards', rewardsData );
+	            cacheProvider.setInCritical('ninjaRewards', rewardsData);
 
-	            var ninjaRewardsListOld = document.getElementsByClassName( 'rewardsContainer' )[0]; // Gives Existing List of Rewards in the Template
+	            var ninjaRewardsListOld = document.getElementsByClassName('rewardsContainer')[0]; // Gives Existing List of Rewards in the Template
 	            ninjaRewardsListOld.innerHTML = '';
 
 	            // Re Render The Reward Template Only From External HTML
-	            this.template = __webpack_require__( 12 );
-	            ninjaRewardsListOld.innerHTML = Mustache.render( this.template, {
+	            this.template = __webpack_require__(12);
+	            ninjaRewardsListOld.innerHTML = Mustache.render(this.template, {
 	                ninjaRewardsCollection: rewardsData.rewards
 	            });
 
-	            this.updateNinjaRewardsLinks( App );
+	            this.updateNinjaRewardsLinks(App);
 	        }
 
 	    };
 
 	    module.exports = new RewardsModel();
 	})();
-
 
 /***/ },
 /* 12 */
@@ -6275,13 +6345,14 @@
 
 	                var stickerState = this.getAttribute('data-status');
 	                var catId = this.getAttribute('data-catId');
+	                var rewardId = this.getAttribute('data-rewardid');
 	                var stickerDetails = that.getStickerDetails(catId, stickerPacks);
 
-	                if (stickerState == 'downloaded') {
+	                if (stickerState == '1') {
 	                    utils.showToast('You have already downloaded this sticker pack');
 	                } else {
 	                    console.log('Fetching sticker pack');
-	                    App.router.navigateTo('/stickerPackView', stickerDetails);
+	                    App.router.navigateTo('/stickerPackView', {"stickerDetails":stickerDetails ,"rewardId":rewardId});
 	                }
 	            });
 	        }
@@ -6309,7 +6380,6 @@
 	        for (var i = 0; i < rows.length; i++) {
 	            var icon = rows[i].getElementsByClassName('stickerPackIcon')[0];
 	            console.log(icon);
-
 	            icon.style.backgroundImage = 'url(\'' + stickerCatUrl + packs[i].catId + '/preview' + '\')';
 
 	        }
@@ -6325,10 +6395,13 @@
 	        that.el.className = 'stickerRewardContainer ftueController animation_fadein noselect';
 
 	        that.el.innerHTML = Mustache.render(that.template, {
-	            stickerPacks: data.packs,
-	            title: data.title,
-	            stitle: data.stitle
+	            stickerPacks: data.rewardDetails.packs,
+	            title: data.rewardDetails.title,
+	            stitle: data.rewardDetails.stitle ,
+	            rewardId :data.rewardId           
 	        });
+
+	        data= data.rewardDetails;
 
 	        ctr.appendChild(that.el);
 	        events.publish('update.loader', { show: false });
@@ -6343,12 +6416,11 @@
 
 	})(window, platformSdk, platformSdk.events);
 
-
 /***/ },
 /* 26 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n<div class=\"bottomIllustration\"></div>\n<div class=\"stickerRewardsWrapper\">\n    <div class=\"stickerShopPageOne\">\n        <div class=\"stickerRewardHeader\">\n            <div class=\"stickerRewardHeaderImage\"></div>\n            <div class=\"stickerRewardHeadingContainer\">\n                <p class=\"stickerRewardHead\">{{title}}</p>\n                <p class=\"stickerRewardSub\">{{stitle}}</p>\n            </div>\n        </div>\n        <!-- Only If applicable -->\n        <div class=\"stickerRewardLevels\"></div>\n        <div class=\"stickerRewardList\">\n            <div class=\"stickerDownloadList\">\n                <ul>\n                {{#stickerPacks}}\n                    <li class=\"stickerDownloadRow\" data-status=\"{{status}}\" data-catId=\"{{catId}}\">\n                        <div class=\"stickerPackIcon\"></div>\n                        <!-- <div class=\"stickerPackIcon\"></div> -->\n                        <div class=\"stickerPackText\">\n                            <p class=\"stickerPackName\">{{name}}</p>\n                            <p class=\"stickerPackCount\">{{nos}} Stickers</p>\n                        </div>\n                        <div class=\"stickerPackState{{status}}\"></div>\n                    </li>\n                {{/stickerPacks}}\n                </ul>\n            </div>\n        </div>\n        <!-- <div class=\"stickerListEmptyState\">\n        </div>\n        <div class=\"stickerPackBlocked\">\n            <div class=\"stickerBlockedIllustration\"></div>\n            <div class=\"stickerBlockedText\"></div>\n        </div>\n        <div class=\"stickerListEmptyState\">\n            <div class=\"coolDownPeriod\">Time remaing here</div>\n            <div class=\"coolDownText\">Only one sticker can be redeemed within 24 hours. Please try after some time :)</div>\n        </div> -->\n    </div>\n    <!-- <div class=\"stickerDownloadPage\">\n        <div class=\"stickerCategoryIcon\"></div>\n        <div class=\"stickerIconPreview\">\n            <ul class=\"stickerPreviewList\">\n                <li class=\"stickerPreviewIcon\"></li>\n            </ul>\n        </div>\n        <div class=\"stickerDownloadButton\">Download</div>\n    </div> -->\n</div>\n"
+	module.exports = "<div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n<div class=\"bottomIllustration\"></div>\n<div class=\"stickerRewardsWrapper\">\n    <div class=\"stickerShopPageOne\">\n        <div class=\"stickerRewardHeader\">\n            <div class=\"stickerRewardHeaderImage\"></div>\n            <div class=\"stickerRewardHeadingContainer\">\n                <p class=\"stickerRewardHead\">{{title}}</p>\n                <p class=\"stickerRewardSub\">{{stitle}}</p>\n            </div>\n        </div>\n        <!-- Only If applicable -->\n        <div class=\"stickerRewardLevels\"></div>\n        <div class=\"stickerRewardList\">\n            <div class=\"stickerDownloadList\">\n                <ul>\n                    {{#stickerPacks}}\n                    <li class=\"stickerDownloadRow\" data-status=\"{{downloaded}}\" data-catId=\"{{catId}}\" data-rewardid=\"{{rewardId}}\">\n                        <div class=\"stickerPackIcon\"></div>\n                        <!-- <div class=\"stickerPackIcon\"></div> -->\n                        <div class=\"stickerPackText\">\n                            <p class=\"stickerPackName\">{{name}}</p>\n                            <p class=\"stickerPackCount\">{{nos}} Stickers</p>\n                        </div>\n                        <div class=\"stickerPackState{{status}}\"></div>\n                    </li>\n                    {{/stickerPacks}}\n                </ul>\n            </div>\n        </div>\n        <!-- <div class=\"stickerListEmptyState\">\n        </div>\n        <div class=\"stickerPackBlocked\">\n            <div class=\"stickerBlockedIllustration\"></div>\n            <div class=\"stickerBlockedText\"></div>\n        </div>\n        <div class=\"stickerListEmptyState\">\n            <div class=\"coolDownPeriod\">Time remaing here</div>\n            <div class=\"coolDownText\">Only one sticker can be redeemed within 24 hours. Please try after some time :)</div>\n        </div> -->\n    </div>\n    <!-- <div class=\"stickerDownloadPage\">\n        <div class=\"stickerCategoryIcon\"></div>\n        <div class=\"stickerIconPreview\">\n            <ul class=\"stickerPreviewList\">\n                <li class=\"stickerPreviewIcon\"></li>\n            </ul>\n        </div>\n        <div class=\"stickerDownloadButton\">Download</div>\n    </div> -->\n</div>"
 
 /***/ },
 /* 27 */
@@ -6866,6 +6938,7 @@
 
 	    var utils = __webpack_require__(4),
 	        Constants = __webpack_require__(5),
+	        Config = __webpack_require__(6),
 
 	        StickerPackViewController = function(options) {
 	            this.template = __webpack_require__(34);
@@ -6876,26 +6949,43 @@
 	        var that = this;
 
 	        var downloadStickerPackButton = document.getElementsByClassName('downloadStickerPackButton')[0];
-	        var stickerRow= document.getElementsByClassName('stickerRow');
+	        var stickerRow = document.getElementsByClassName('stickerRow');
 	        var selectedSticker = document.getElementsByClassName('selectedSticker')[0];
 
 	        console.log(data);
-	        that.assignStickerPreviewImages(selectedSticker,data.act_stickers,stickerRow,data.catId);
+	        that.assignStickerPreviewImages(selectedSticker, data.act_stickers, stickerRow, data.catId);
 
 	        downloadStickerPackButton.addEventListener('click', function(ev) {
 	            console.log("Getting sticker pack for you");
+
+	            var dataToSend = {};
+
+	            //STUB
+	            //var data = {};
 	            
-	            var catId = this.getAttribute('data-catid');
-	            console.log(catId);
+	            /*data.rid = '57b56ec17e401ddfe70a9e8f';
+	            data.send = { 'catId': catId };*/
+	            //dataToSend.rid = "";
+	            dataToSend.rid  = this.getAttribute('data-rewardId');
+	            dataToSend.send  = { 'catId': data.catId };
 
 
-	            var data ={};
-	            data.rid = '57b56ec17e401ddfe70a9e8f';
-	            data.send = {'catId':catId};
+	            var stickerJSON = {'catId':data.catId,'categoryName':data.name,'totalStickers':data.nos,'categorySize':data.size}
+	            stickerJSON = JSON.stringify(stickerJSON);
 
-	            App.NinjaService.getStickerPack(data, function(res) {
+	            App.NinjaService.getStickerPack(dataToSend, function(res) {
+
+	               console.log("Inside actual function");     
 	                console.log(res);
-	                utils.showToast('You can view your sticker in the sticker palette. Start Sharing');
+
+	                        
+	                if (res.stat == "ok") {
+	                   PlatformBridge.downloadStkPack(stickerJSON);
+	                   utils.showToast('You can view your sticker in the sticker palette. Start Sharing');
+
+	               } else {
+	                   utils.showToast("Can't download at right now!");
+	               }                   
 	                // App.router.navigateTo('/');
 	            }, this);
 
@@ -6904,18 +6994,17 @@
 
 	    };
 
-	    StickerPackViewController.prototype.assignStickerPreviewImages = function(headerSticker,stickerList,rows,catId){
-	        
-	        var stickerPreviewUrl = 'http://54.169.82.65:5016/v1/stickerpack/';
+	    StickerPackViewController.prototype.assignStickerPreviewImages = function(headerSticker, stickerList, rows, catId) {
+
+
+	        var stickerPreviewUrl = appConfig.API_URL + '/stickerpack/';
 
 	        // Header Sticker
-	        headerSticker.style.backgroundImage = 'url(\'' + stickerPreviewUrl+catId+'/'+stickerList[0]+'/preview' + '\')';
-
+	        headerSticker.style.backgroundImage = 'url(\'' + stickerPreviewUrl + catId + '/preview' + '\')';
 
 	        for (var i = 0; i < rows.length; i++) {
 	            var icon = rows[i].getElementsByClassName('stickerIcon')[0];
-	            icon.style.backgroundImage = 'url(\'' + stickerPreviewUrl+catId+'/'+stickerList[i]+'/preview' + '\')';
-
+	            icon.style.backgroundImage = "url('" + appConfig.STICKER_PREFIX + "catId=" + catId + "&stId=" + stickerList[i] + appConfig.STICKER_SUFFIX + "')";
 	        }
 	    };
 
@@ -6927,9 +7016,12 @@
 	        that.el = document.createElement('div');
 	        that.el.className = 'StickerPackViewController animation_fadein noselect';
 	        that.el.innerHTML = Mustache.render(that.template, {
-	            stickers: data.act_stickers,
-	            catId: data.catId
+	            stickers: data.stickerDetails.act_stickers,
+	            rewardId : data.rewardId
 	        });
+
+	        data= data.stickerDetails;
+
 	        ctr.appendChild(that.el);
 	        events.publish('update.loader', { show: false });
 	        that.bind(App, data);
@@ -6943,15 +7035,52 @@
 
 	})(window, platformSdk, platformSdk.events);
 
-
 /***/ },
 /* 34 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"stickerPreviewWrapper\">\n\t<div class=\"selectedSticker\"></div>\n\t<div class=\"allStickerWrapper\">\n\t\t<ul class=\"stickerList\">\n\t\t\t{{#stickers}}\n\t\t\t\t<li class=\"stickerRow\">\n\t\t\t\t\t<div class=\"stickerIcon\"></div>\n\t\t\t\t</li>\n\t\t\t{{/stickers}}\n\t\t</ul>\n\t</div>\n</div>\n\n<div data-catid=\"{{catId}}\" class=\"downloadStickerPackButton\">Get Sticker Pack</div>"
+	module.exports = "<div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n<div class=\"bottomIllustration\"></div>\n<div class=\"stickerPreviewWrapper\">\n\t<div class=\"selectedSticker\"></div>\n\t<div class=\"allStickerWrapper\">\n\t\t<ul class=\"stickerList\">\n\t\t\t{{#stickers}}\n\t\t\t\t<li class=\"stickerRow\">\n\t\t\t\t\t<div class=\"stickerIcon\"></div>\n\t\t\t\t</li>\n\t\t\t{{/stickers}}\n\t\t</ul>\n\t</div>\n</div>\n\n<div data-rewardId = \"{{rewardId}}\" class=\"downloadStickerPackButton\">Get Sticker Pack</div>"
 
 /***/ },
 /* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	(function(W, platformSdk, events) {
+	    'use strict';
+
+	    var utils = __webpack_require__(4),
+	        Constants = __webpack_require__(5),
+
+	        CoolDownController = function(options) {
+	            //this.template = require( 'raw!../../templates/coolDown.html' );
+	        };
+
+	    CoolDownController.prototype.bind = function(App, data) {
+
+	        var ftue = this;
+	    };
+
+	    CoolDownController.prototype.render = function(ctr, App, data) {
+
+	        var that = this;
+	        that.el = document.createElement('div');
+	        that.el.className = 'ftueController animation_fadein noselect';
+	        that.el.innerHTML = Mustache.render(unescape(that.template));
+	        ctr.appendChild(that.el);
+	        events.publish('update.loader', { show: false });
+	        that.bind(App, data);
+	    };
+
+	    CoolDownController.prototype.destroy = function() {
+
+	    };
+
+	    module.exports = CoolDownController;
+
+	})(window, platformSdk, platformSdk.events);
+
+/***/ },
+/* 36 */
 /***/ function(module, exports) {
 
 	(function (W, events) {

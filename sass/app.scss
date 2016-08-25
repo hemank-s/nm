@@ -8,10 +8,9 @@
 @import 'emotions';
 @import 'mysteryBox';
 @import 'stickerReward';
-
-
-.tab-activity{
-    height: 800px !important; 
+@import 'mediaQueries';
+.tab-activity {
+    height: 800px !important;
 }
 
 .swipe {
@@ -81,13 +80,13 @@
     font-size: 12px;
     text-align: center;
     font-weight: 400;
-    color: rgba(61,71,91,0.50);
+    color: rgba(61, 71, 91, 0.50);
     float: left;
 }
 
 .comp__tabs .selected {
     color: #3D475B;
-    font-size: 12px; 
+    font-size: 12px;
     border-bottom: 2px solid #ffff8c;
 }
 
