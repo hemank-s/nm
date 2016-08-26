@@ -93,6 +93,8 @@
     border-radius: 50%;    
     margin: 0px auto;
     display: flex;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .uploadPhoto{
@@ -190,12 +192,12 @@ color: rgba(61,71,91,0.64) !important;
 .successSentAction{
     background: #00AFFF;
     color: #fff;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
-    padding: 12px 40px;
+    padding: 18px 20px;
     margin: 24px auto 24px auto;
     text-transform: uppercase;
-    width: 11%;
+    width: 24%;
     border-radius: 4px;
 }
 
@@ -302,8 +304,20 @@ color: rgba(61,71,91,0.64) !important;
     position: absolute;
 }
 
-.statusIconin_progress{
+.statusIconinprogress{
     background: url(images/stickerPackDownload.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    right: 22px;
+    margin-top: 18px;
+    position: absolute;
+}
+
+.statusIconfail{
+    background: url(images/customStickerFail.png);
     background-size: contain;
     background-repeat: no-repeat;
     width: 24px;

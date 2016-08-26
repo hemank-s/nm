@@ -101,7 +101,7 @@
         this.stickerPackViewController = new StickerPackViewController();
         this.coolDownController = new CoolDownController();
 
-        
+
 
         // Communication Controller
         this.TxService = new TxService();
@@ -252,7 +252,7 @@
             this.router.route('/', function(data) {
                 self.container.innerHTML = '';
                 self.workspaceController.render(self.container, self, data);
-                utils.toggleBackNavigation(true);
+                utils.toggleBackNavigation(false);
             });
 
             // Exclusive Features :: Friend Emojis + GIF Sharing 
@@ -298,7 +298,7 @@
                 utils.toggleBackNavigation(true);
             });
 
-             // FAQ All Rewards Controller 
+            // FAQ All Rewards Controller 
             this.router.route('/coolDown', function(data) {
                 self.container.innerHTML = '';
                 self.coolDownController.render(self.container, self, data);
@@ -306,13 +306,14 @@
             });
 
             // STUB TO REMOVE
-
-            self.router.navigateTo('/');
             // Profile Call Fetches this res and sends to the profile udpater
-            var res = { 'data': { "battery": 6, "rewards_hash": "be96dc8c0a876b08c8076b03acdee0db5", "status": "active", "streak": 1, "name": 'Hemank Sabharwal' } };
-            profileModel.updateNinjaData(res.data, self);
-            activityModel.fetchNinjaActivity('lifetime');
-            mysteryBoxModel.getMysteryBoxDetails(self);
+
+            // self.router.navigateTo('/');
+
+            // var res = { 'data': { "battery": 6, "rewards_hash": "be96dc8c0a876b08c8076b03acdee0db5", "status": "active", "streak": 1, "name": 'Hemank Sabharwal' } };
+            // profileModel.updateNinjaData(res.data, self);
+            // activityModel.fetchNinjaActivity('lifetime');
+            // mysteryBoxModel.getMysteryBoxDetails(self);
 
             // STUB TO REMOVE
 
@@ -321,6 +322,16 @@
             var ftueCompleted = true;
             if (ftueCompleted) {
                 console.log("This is and old user :: Fetching Profile battery and streak for the user");
+
+                // Check If Block True Or False
+                if (platformSdk.appData.block === 'true') {
+
+                    console.log('User has blocked the Application');
+                    events.publish('app/block', {
+                        show: true
+                    });
+                }
+
                 this.NinjaService.getNinjaProfile(function(res) {
                     console.log(res.data);
                     if (profileModel.checkNinjaState(res.data.status) == 'lapsed') {
@@ -331,7 +342,7 @@
                         self.router.navigateTo('/');
                         profileModel.updateNinjaData(res.data, self);
                         activityModel.fetchNinjaActivity('lifetime');
-                        mysteryBoxModel.getMysteryBoxDetails(self);
+                        //mysteryBoxModel.getMysteryBoxDetails(self);
                     }
                 }, this);
             }

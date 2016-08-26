@@ -14,6 +14,45 @@
     z-index: 101;
 }
 
+.exploreContainer {
+    width: 90%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+}
+
+.exploreMatchBtn {
+    background: none;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    color: #fff;
+    width: 120px;
+    padding: 15px;
+    text-transform: uppercase;
+    margin: 0px auto;
+}
+
+.exploreText .heading {
+    color: #FA5643;
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 400;
+}
+
+.exploreText .subheading {
+    color: #808080;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    padding-top: 3px;
+}
+
+.exploreText {
+    margin: 40px 20px;
+}
+
+
 .no-internet-msg .bellIcon {
     background: url(images/nointernet.png);
     background-size: contain;
@@ -87,4 +126,9 @@
     width: 108px;
     height: 108px;
     margin: 0px auto;
+}
+
+#blockScreen.block-msg {
+    display: table-cell;
+    vertical-align: middle;
 }

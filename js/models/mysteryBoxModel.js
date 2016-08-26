@@ -162,8 +162,8 @@
 
         defineCooldown: function(spinTime) {
 
-            function getTimeRemaining(endtime) {
-                var t = Date.parse(endtime) - Date.parse(new Date());
+            function getTimeRemaining(timeRemaining) {
+                var t = timeRemaining;
                 var seconds = Math.floor((t / 1000) % 60);
                 var minutes = Math.floor((t / 1000 / 60) % 60);
                 var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
@@ -177,7 +177,7 @@
                 };
             }
 
-            function initializeClock(id, endtime) {
+            function initializeClock(id, timeRemaining) {
                 var clock = document.getElementById(id);
                 var daysSpan = clock.querySelector('.days');
                 var hoursSpan = clock.querySelector('.hours');
@@ -185,7 +185,7 @@
                 var secondsSpan = clock.querySelector('.seconds');
 
                 function updateClock() {
-                    var t = getTimeRemaining(endtime);
+                    var t = getTimeRemaining(timeRemaining);
 
                     daysSpan.innerHTML = t.days;
                     hoursSpan.innerHTML = ('0' + t.hours).slice(-2);

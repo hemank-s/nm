@@ -9,7 +9,7 @@
             this.template = require('raw!../../templates/stickerPackView.html');
         };
 
-    StickerPackViewController.prototype.bind = function(App, data) {
+    StickerPackViewController.prototype.bind = function(App, data,rId, rRouter) {
 
         var that = this;
 
@@ -27,30 +27,34 @@
 
             //STUB
             //var data = {};
-            
+
             /*data.rid = '57b56ec17e401ddfe70a9e8f';
             data.send = { 'catId': catId };*/
             //dataToSend.rid = "";
-            dataToSend.rid  = this.getAttribute('data-rewardId');
-            dataToSend.send  = { 'catId': data.catId };
+            dataToSend.rid = this.getAttribute('data-rewardId');
+            dataToSend.send = { 'catId': data.catId };
 
-
-            var stickerJSON = {'catId':data.catId,'categoryName':data.name,'totalStickers':data.nos,'categorySize':data.size}
+            var stickerJSON = { 'catId': data.catId, 'categoryName': data.name, 'totalStickers': data.nos, 'categorySize': data.size };
             stickerJSON = JSON.stringify(stickerJSON);
 
             App.NinjaService.getStickerPack(dataToSend, function(res) {
 
-               console.log("Inside actual function");     
+                console.log("Inside actual function");
                 console.log(res);
-
-                        
                 if (res.stat == "ok") {
-                   PlatformBridge.downloadStkPack(stickerJSON);
-                   utils.showToast('You can view your sticker in the sticker palette. Start Sharing');
+                    PlatformBridge.downloadStkPack(stickerJSON);
+                    utils.showToast('You can view your sticker in the sticker palette. Start Sharing');
 
-               } else {
-                   utils.showToast("Can't download at right now!");
-               }                   
+                    var dataToSend = {};
+                    dataToSend.rewardId = rId;
+
+                    App.NinjaService.getRewardDetails(dataToSend, function(res) {
+                        console.log(res.data);
+                        App.router.navigateTo(rRouter, { "rewardDetails": res.data, "rewardId": rId, "rewardRouter": rRouter });
+                    }, this);
+                } else {
+                    utils.showToast("Can't download at right now!");
+                }
                 // App.router.navigateTo('/');
             }, this);
 
@@ -82,14 +86,16 @@
         that.el.className = 'StickerPackViewController animation_fadein noselect';
         that.el.innerHTML = Mustache.render(that.template, {
             stickers: data.stickerDetails.act_stickers,
-            rewardId : data.rewardId
+            rewardId: data.rewardId
         });
 
-        data= data.stickerDetails;
+        var rId = data.rewardId;
+        var rRouter = data.rewardRouter;
+        data = data.stickerDetails;
 
         ctr.appendChild(that.el);
         events.publish('update.loader', { show: false });
-        that.bind(App, data);
+        that.bind(App, data,rId, rRouter);
     };
 
     StickerPackViewController.prototype.destroy = function() {

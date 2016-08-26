@@ -1,6 +1,8 @@
 (function (W, events) {
     'use strict';
 
+   var cacheProvider = require('./cacheProvider');
+   
     var Router = function () {
         this.routes = {};
         this.history = [];
@@ -72,13 +74,20 @@
         var history = this.history,
             historyItem;
 
-
-
         if (history.length !== 1) {
             history.pop();
         }
 
         historyItem = history[history.length - 1];
+
+        if(historyItem.route == '/' && !historyItem.data ){
+            historyItem.data = {
+                ninjaRewardsCollection: cacheProvider.getFromCritical('ninjaRewards'),
+                ninjaActivityData: cacheProvider.getFromCritical('ninjaStats'),
+                ninjaProfileData: cacheProvider.getFromCritical('ninjaProfileData')
+            };
+        }
+
         this.routes[historyItem.route](historyItem.data);
     };
 

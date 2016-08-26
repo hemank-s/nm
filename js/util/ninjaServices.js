@@ -1,4 +1,4 @@
-(function(W, platformSdk) {
+(function(W, platformSdk, events) {
     'use strict';
 
     var utils = require('./utils.js');
@@ -74,6 +74,7 @@
         // Get Speicifc Reward Details For The Reward Router
         getRewardDetails: function(data, fn, x) {
             console.log(data);
+            events.publish('update.loader', { show: true });
             var params = {
                 'url': URL.api_location + '/rewards/'+data.rewardId+'?random='+Math.round(Math.random() * 999999999),
                 'type': 'GET'
@@ -140,4 +141,4 @@
 
     module.exports = ninjaService;
 
-})(window, platformSdk);
+})(window, platformSdk, platformSdk.events);

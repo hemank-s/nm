@@ -9,7 +9,16 @@
 @import 'mysteryBox';
 @import 'stickerReward';
 @import 'mediaQueries';
+
 .tab-activity {
+    height: 600px !important;
+}
+
+.tab-rewards {
+    height: 600px !important;
+}
+
+.tab-mysterybox {
     height: 800px !important;
 }
 

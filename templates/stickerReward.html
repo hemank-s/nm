@@ -11,6 +11,7 @@
         </div>
         <!-- Only If applicable -->
         <div class="stickerRewardLevels"></div>
+        
         <div class="stickerRewardList">
             <div class="stickerDownloadList">
                 <ul>
@@ -22,7 +23,12 @@
                             <p class="stickerPackName">{{name}}</p>
                             <p class="stickerPackCount">{{nos}} Stickers</p>
                         </div>
-                        <div class="stickerPackState{{status}}"></div>
+                        {{#downloaded}}
+                            <div class="stickerPackStatedownloaded"></div>
+                        {{/downloaded}}
+                        {{^downloaded}}
+                            <div class="stickerPackStatenotdownloaded"></div>
+                        {{/downloaded}}
                     </li>
                     {{/stickerPacks}}
                 </ul>
@@ -33,10 +39,6 @@
         <div class="stickerPackBlocked">
             <div class="stickerBlockedIllustration"></div>
             <div class="stickerBlockedText"></div>
-        </div>
-        <div class="stickerListEmptyState">
-            <div class="coolDownPeriod">Time remaing here</div>
-            <div class="coolDownText">Only one sticker can be redeemed within 24 hours. Please try after some time :)</div>
         </div> -->
     </div>
     <!-- <div class="stickerDownloadPage">

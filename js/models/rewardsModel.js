@@ -40,6 +40,20 @@
             }
         },
 
+        updateNinjaRewardsIcons: function(data){
+            var that = this;
+
+            var allRewards = document.getElementsByClassName('rewardRow');
+
+            if (allRewards.length) {
+                console.log(allRewards);
+                for (var i = 0; i < allRewards.length; i++) {
+                    var icon = allRewards[i].getElementsByClassName('rewardIcon')[0];
+                    icon.style.backgroundImage = 'url(\'' + data[i].icon + '\')';
+                }
+            }
+        },
+
         // Update the ninja Click Events For rewards
         updateNinjaRewardsLinks: function(App) {
 
@@ -78,65 +92,13 @@
 
                         // var stickerRes = {"title":"Early Access Stickers","stitle":"Get the best stickers on hike way before everyone else does. You get these 2 weeks before mere mortals. You're a Ninja!","hicon":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png","packs":[{"catId":"bengalibabu","copyright":"Copyright \u00a92016 Hike Limited","desc":"Check out these funny Bong Babu stickers!","name":"Bong Babu","new":1,"nos":30,"size":864090,"status":"notdownloaded","sticker_list":["030_benbabu_humkiptenahihai.png","029_benbabu_matlab.png","028_benbabu_bahutburahua.png","027_benbabu_sobshottihai.png","026_benbabu_kisikobolnamat.png"]},{"catId":"bengalibabu","copyright":"Copyright \u00a92016 Hike Limited","desc":"Check out these funny Bong Babu stickers!","name":"Bong Babu","new":1,"nos":30,"size":864090,"status":"notdownloaded","sticker_list":["030_benbabu_humkiptenahihai.png","029_benbabu_matlab.png","028_benbabu_bahutburahua.png","027_benbabu_sobshottihai.png","026_benbabu_kisikobolnamat.png"]},{"catId":"bengalibabu","copyright":"Copyright \u00a92016 Hike Limited","desc":"Check out these funny Bong Babu stickers!","name":"Bong Babu","new":1,"nos":30,"size":864090,"status":"notdownloaded","sticker_list":["030_benbabu_humkiptenahihai.png","029_benbabu_matlab.png","028_benbabu_bahutburahua.png","027_benbabu_sobshottihai.png","026_benbabu_kisikobolnamat.png"]}]};
 
-                       var test = {
-                            "hicon": "",
-                            "title": "Early Access Stickers",
-                            "stitle": "some details",
-                            "packs": [{
-                                "catId": "bengalibabu",
-                                "copyright": "Copyright \u00a92016 Hike Limited",
-                                "desc": "Check out these funny Bong Babu stickers!",
-                                "name": "Bong Babu",
-                                "new": 1,
-                                "nos": 30,
-                                "size": 864090,
-                                "downloaded":0,
-                                "act_stickers": [
-                                    "030_benbabu_humkiptenahihai.png",
-                                    "029_benbabu_matlab.png",
-                                    "028_benbabu_bahutburahua.png",
-                                    "027_benbabu_sobshottihai.png",
-                                     "030_benbabu_humkiptenahihai.png",
-                                    "029_benbabu_matlab.png",
-                                    "028_benbabu_bahutburahua.png",
-                                    "027_benbabu_sobshottihai.png",
-                                    "030_benbabu_humkiptenahihai.png",
-                                    "029_benbabu_matlab.png",
-                                    "028_benbabu_bahutburahua.png",
-                                    "027_benbabu_sobshottihai.png",
-                                    "030_benbabu_humkiptenahihai.png",
-                                    "029_benbabu_matlab.png",
-                                    "028_benbabu_bahutburahua.png",
-                                    "027_benbabu_sobshottihai.png",
-                                    "030_benbabu_humkiptenahihai.png",
-                                    "029_benbabu_matlab.png",
-                                    "028_benbabu_bahutburahua.png",
-                                    "027_benbabu_sobshottihai.png",
-                                    "030_benbabu_humkiptenahihai.png",
-                                    "029_benbabu_matlab.png",
-                                    "028_benbabu_bahutburahua.png",
-                                    "027_benbabu_sobshottihai.png",
-                                    "030_benbabu_humkiptenahihai.png",
-                                    "029_benbabu_matlab.png",
-                                    "028_benbabu_bahutburahua.png",
-                                    "027_benbabu_sobshottihai.png",
-                                   
-                                    "026_benbabu_kisikobolnamat.png"
-                                ]
-                            }]
-
-                        };
-
-                        App.router.navigateTo(rewardRouter,{ "rewardDetails": test , "rewardId" :rewardId} );
-
                         // STUB TO REMOVE
 
                         // Reward Details API :: Send Reward Id As well
-                        /*App.NinjaService.getRewardDetails(data, function(res) {
+                        App.NinjaService.getRewardDetails(data, function(res) {
                             console.log(res.data);
-                             App.router.navigateTo(rewardRouter,{ "rewardDetails": res.data , "rewardId" :rewardId} );
-                        }, this)  */
-
+                             App.router.navigateTo(rewardRouter,{ "rewardDetails": res.data , "rewardId" :rewardId, "rewardRouter":rewardRouter} );
+                        }, this);
                     });
                 }
             }
@@ -149,7 +111,10 @@
             console.log(rewardsData);
 
             // update helper data with new rewards
+
             cacheProvider.setInCritical('ninjaRewards', rewardsData);
+
+            console.log("helper data is", platformSdk.appData.helperData);
 
             var ninjaRewardsListOld = document.getElementsByClassName('rewardsContainer')[0]; // Gives Existing List of Rewards in the Template
             ninjaRewardsListOld.innerHTML = '';
@@ -161,6 +126,7 @@
             });
 
             this.updateNinjaRewardsLinks(App);
+            this.updateNinjaRewardsIcons(rewardsData.rewards);
         }
 
     };
