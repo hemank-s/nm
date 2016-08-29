@@ -9,6 +9,7 @@
     height: 125px;
     top: 32px;
     position: absolute;
+    z-index: -100;
 }
 
 @keyframes animatedBackground {
@@ -35,6 +36,7 @@
     height: 49px;
     bottom: -6px;
     position: absolute;
+    z-index: 0;
 }
 
 .ninjaPhotoContainer {

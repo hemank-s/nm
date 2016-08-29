@@ -1,7 +1,8 @@
 <div id="animate-area" class="topIllustration animate-area"></div>
 <div class="bottomIllustration"></div>
-<div class="customStickerUploadScreen">
+<div class="customStickerUploadScreen hideClass">
     {{#newStickerEligibility}}
+    <div class="uploadParent">
         <div class="uploadPhotoContainer">
             <div class="uploadPhoto"></div>
         </div>
@@ -18,23 +19,44 @@
         <input id="customStickerTextPhrase" type="text" placeholder="Type your sticker text" id="stickerPhrase" onpaste="return false" required value="">
         <div class="errorMessage hideClass">If any error message on this screen</div>
         <div class="sendButton">Send</div>
-    {{/newStickerEligibility}}
-    <div class="customStickerHistory">
+        {{/newStickerEligibility}} 
+
+        {{#showCustomStickerHistoryButton}}
+        <div class="showHistoryButton">
+            Custom Sticker History
+        </div>
+        {{/showCustomStickerHistoryButton}}
+    
+    </div>
+    <div class="customStickerHistory hideClass">
         <ul>
             {{#customStickersList}}
-                <li class="customStickerRow" data-id="{{id}}" data-status="{{status}}" data-url="{{url}}">
-                    <div class="customStickerIcon"></div>
-                    <div class="customStickerDetails">
-                        <p class="stickerPhrase">{{phrase}}</p>
-                        <p class="stickerOrderDate">Order date - {{ts}}</p>
-                    </div>
-                    <div class="statusIcon{{status}}"></div>
-                </li>
+            <li class="customStickerRow" data-id="{{sid}}" data-status="{{status}}" data-url="{{url}}" data-reason="{{reason}}">
+                <div class="customStickerIcon"></div>
+                <div class="customStickerDetails">
+                    <p class="stickerPhrase">{{phrase}}</p>
+                    <p class="stickerOrderDate">Order date - {{ts}}</p>
+                </div>
+                <div class="statusIcon{{status}}"></div>
+            </li>
             {{/customStickersList}}
         </ul>
     </div>
 </div>
 <div class="customStickerWrapper centerToScreenWrapper align-center">
+    <div class="customStickerFailScreen hideClass">
+        <div class="failUploadParent">
+            <p class="failReason"></p>
+            <div class="uploadPhotoContainer">
+                <div class="uploadPhoto"></div>
+            </div>
+            <div class="customStickerText">
+            </div>
+            <input id="failCustomStickerTextPhrase" type="text" placeholder="Type your sticker text" id="stickerPhrase" onpaste="return false" required value="">
+            <div class="errorMessage hideClass">If any error message on this screen</div>
+            <div class="sendStickerAgainButton">Send</div>
+        </div>
+    </div>
     <div class="customStickerFtueWrapper hideClass">
         <div class="customStickerHeaderImage"></div>
         <div class="customStickerDetail">Get your own sticker made by Hike and share it with your friends.</div>
@@ -48,7 +70,7 @@
     </div>
     <div class="customStickerStatusCheck hideClass">
         <div class="statusHeaderImage"></div>
-        <div class="statusText">We believe in making beautiful sticker. Your sticker will approximately take 3-4 weeks. Keep checking!</div>
+        <div class="statusText">We believe in making beautiful stickers. Your sticker will approximately take 3-4 weeks. Keep checking!</div>
     </div>
     <div class="customStickerReadyState hideClass">
         <div class="customStickerView"></div>

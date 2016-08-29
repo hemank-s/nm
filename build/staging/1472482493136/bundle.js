@@ -91,6 +91,7 @@
 
 	        }
 
+	        platformSdk.bridge.setDebuggableEnabled(true);
 	        //if (platformSdk.bridgeEnabled) platformSdk.bridge.setDebuggableEnabled(environment === Constants.PROD_ENV || environment === Constants.DEV_ENV);
 
 	        if ((platformSdk.appData && platformSdk.appData.platformUid === undefined) || (platformSdk.appData && platformSdk.appData.platformUid === "")) platformSdk.appData.platformUid = 'VhzmGOSwNYkM6JHE';
@@ -4934,7 +4935,50 @@
 	        },
 
 	        backPressTrigger: function() {
+
+	            var stickerCooldownElement = document.getElementsByClassName( 'stickerCooldownContainer' )[0];
+	            var customStickerHistory = document.getElementsByClassName( 'customStickerHistory' )[0];
+	            var showHistoryButton = document.getElementsByClassName('showHistoryButton')[0];
+	            var customStickerReadyState = document.getElementsByClassName('customStickerReadyState')[0];
+	            var customStickerStatusCheck = document.getElementsByClassName('customStickerStatusCheck')[0];
+	            var customStickerUploadScreen = document.getElementsByClassName('customStickerUploadScreen')[0];
+	            var uploadParent = document.getElementsByClassName( 'uploadParent' )[0];
+
+	            if ( stickerCooldownElement ) {
+	                this.goToNinjaProfilePage();
+	                return;
+	            } else if(customStickerHistory && ! customStickerHistory.classList.contains( 'hideClass' )){
+	                customStickerHistory.classList.add( 'hideClass' );
+	                showHistoryButton.classList.remove( 'hideClass' );
+	                if(customStickerUploadScreen && customStickerUploadScreen.classList.contains('hideClass')){
+	                    customStickerUploadScreen.classList.remove('hideClass');
+	                }
+	                if(uploadParent && uploadParent.classList.contains('hideClass')){
+	                    uploadParent.classList.remove('hideClass');
+	                }
+	                return;
+	            } else if (customStickerReadyState && ! customStickerReadyState.classList.contains('hideClass')){
+	                customStickerReadyState.classList.add( 'hideClass' );
+	                customStickerHistory.classList.remove( 'hideClass' );
+	                return;
+	            } else if (customStickerStatusCheck && ! customStickerStatusCheck.classList.contains('hideClass')){
+	                customStickerStatusCheck.classList.add( 'hideClass' );
+	                customStickerHistory.classList.remove( 'hideClass' );
+	                return;
+	            }
+	            
 	            this.router.back();
+	        },
+
+	        goToNinjaProfilePage: function(){
+	            var that = this;
+	            var data = {};
+
+	            data.ninjaRewardsCollection = cacheProvider.getFromCritical('ninjaRewards');
+	            data.ninjaProfileData = cacheProvider.getFromCritical('ninjaProfileData');
+	            data.ninjaActivityData = cacheProvider.getFromCritical('ninjaStats');
+	            
+	            that.router.navigateTo('/',data);
 	        },
 
 	        getRoute: function() {
@@ -5059,8 +5103,8 @@
 	            // STUB TO REMOVE
 
 
-	            //var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
-	            var ftueCompleted = true;
+	            var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
+	            //var ftueCompleted = true;
 	            if (ftueCompleted) {
 	                console.log("This is and old user :: Fetching Profile battery and streak for the user");
 
@@ -5083,13 +5127,40 @@
 	                        self.router.navigateTo('/');
 	                        profileModel.updateNinjaData(res.data, self);
 	                        activityModel.fetchNinjaActivity('lifetime');
-	                        //mysteryBoxModel.getMysteryBoxDetails(self);
+	                        mysteryBoxModel.getMysteryBoxDetails(self);
 	                    }
 	                }, this);
 	            }
 	            // Show FTUE To the User
 	            else {
-	                console.log("Go to the FTUE Controller and complete the FTUE");
+	                // STUB TO REMOVE
+
+	                var data = {};
+
+	                 this.ninjaRewardsData = [];
+	                 this.ninjaProfileData = {"battery":0,"rewards_hash":"","status":"active","streak":0,"name":''};
+	                 this.ninjaActivityData = {"chatThemes":{"rec":0,"sent":0},"files":{"rec":0,"sent":0},"messages":{"rec":0,"sent":0},"statusUpdates":{"count":0},"stickers":{"rec":0,"sent":0}};
+
+	                // STUB TO REMOVE
+
+	                data.ninjaRewardsCollection = this.ninjaRewardsData;
+	                data.ninjaProfileData = this.ninjaProfileData ;
+	                data.ninjaActivityData = this.ninjaActivityData;
+	                cacheProvider.setInCritical('ftueCompleted', true);
+
+	                this.NinjaService.getNinjaProfile(function(res) {
+	                    console.log(res.data);
+	                    if (profileModel.checkNinjaState(res.data.status) == 'lapsed') {
+	                        // To Add Ninja Lapsed State Here
+	                        console.log("Go to lapsed ninja Controller");
+	                    } else {
+	                        // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
+	                        self.router.navigateTo('/',data);
+	                        profileModel.updateNinjaData(res.data, self);
+	                        activityModel.fetchNinjaActivity('lifetime');
+	                        mysteryBoxModel.getMysteryBoxDetails(self);
+	                    }
+	                }, this);
 	            }
 
 	        }
@@ -5183,6 +5254,7 @@
 
 	        if (data && data.ninjaProfileData && data.ninjaProfileData.dp) {
 	            ninjaIcon.style.backgroundImage = "url('file:///" + data.ninjaProfileData.dp + "')";
+	            rewardsModel.updateNinjaRewardsIcons(data.ninjaRewardsCollection.rewards);
 	        } else {
 	            console.log("Set a default dp");
 	        }
@@ -5833,7 +5905,7 @@
 
 	        sendCustomSticker : function(data, fn, x){
 	            var params = {
-	                'url': URL.api_location + '/rewards/'+data.rewardId+'/custom_sticker/'+data.customStickerId+'?random='+Math.round(Math.random() * 999999999),
+	                'url': URL.api_location + '/custom_sticker/tid/'+data.rewardId+'/sid/'+data.customStickerId+'?random='+Math.round(Math.random() * 999999999),
 	                'type': 'GET'
 	            };
 	            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
@@ -5842,17 +5914,7 @@
 
 	        getMysteryBox : function(fn, x){
 	            var params = {
-	                'url': URL.api_location + '/rewards/mysterybox/details'+'?random='+Math.round(Math.random() * 999999999),
-	                'type': 'GET'
-	            };
-	            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
-	            else this.ninjaService.communicate(params);  
-	        },
-
-	        // Mystery Box Spin Result
-	        getMysteryBoxResult: function(fn, x){
-	            var params = {
-	                'url': URL.api_location + '/rewards/mysterybox/redeem'+'?random='+Math.round(Math.random() * 999999999),
+	                'url': URL.api_location + '/mysterybox'+'?random='+Math.round(Math.random() * 999999999),
 	                'type': 'GET'
 	            };
 	            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
@@ -6029,16 +6091,16 @@
 
 	            // STUB TO REMOVE
 
-	            var res1 = { 'data': { 'status': 'active', 'rewards': [{ 'id': 1, 'type': 'mysteryBox_medium', 'title': 'Battery + 1' }, { 'id': 2, 'type': 'mysteryBox_medium', 'title': 'Streak + 1' }, { 'id': 3, 'type': 'mysteryBox_low', 'title': 'Battery + 0' }, { 'id': 4, 'type': 'mysteryBox_low', 'title': 'Streak + 0' }, { 'id': 5, 'type': 'mysteryBox_bumper', 'title': 'Custom sticker' }, { 'id': 6, 'type': 'mysteryBox_low', 'title': 'Battery - 1' }, { 'id': 7, 'type': 'mysteryBox_low', 'title': 'streak - 1' }, { 'id': 8, 'type': 'mysteryBox_low', 'title': 'Better Luck next time' }] } };
-	            var res2 = { 'data': { 'status': 'inactive', 'rewards': [], 'streakToUnlock': 14 } };
-	            var res3 = { 'data': { 'status': 'cooldown', 'rewards': [], 'coolDownTime': 1470916209263 } };
+	            // var res1 = { 'data': { 'status': 'active', 'rewards': [{ 'id': 1, 'type': 'mysteryBox_medium', 'title': 'Battery + 1' }, { 'id': 2, 'type': 'mysteryBox_medium', 'title': 'Streak + 1' }, { 'id': 3, 'type': 'mysteryBox_low', 'title': 'Battery + 0' }, { 'id': 4, 'type': 'mysteryBox_low', 'title': 'Streak + 0' }, { 'id': 5, 'type': 'mysteryBox_bumper', 'title': 'Custom sticker' }, { 'id': 6, 'type': 'mysteryBox_low', 'title': 'Battery - 1' }, { 'id': 7, 'type': 'mysteryBox_low', 'title': 'streak - 1' }, { 'id': 8, 'type': 'mysteryBox_low', 'title': 'Better Luck next time' }] } };
+	            // var res2 = { 'data': { 'status': 'inactive', 'rewards': [], 'streakToUnlock': 14 } };
+	            // var res3 = { 'data': { 'status': 'cooldown', 'rewards': [], 'coolDownTime': 1470916209263 } };
 
-	            this.updateMysteryBoxTab(res1.data, App);
+	            // this.updateMysteryBoxTab(res1.data, App);
 
 	            // STUB TO REMOVE
 
 	            App.NinjaService.getMysteryBox(function(res) {
-	                console.log(res.data);
+	                console.log("MYSTERY BOX DATA IS", res.data);
 	                this.updateMysteryBoxTab(res.data, App);
 	            }, this);
 
@@ -6061,7 +6123,7 @@
 	            var mysteryBoxContainer = document.getElementsByClassName('mysteryBoxContainer')[0]; // Gives Existing List of Rewards in the Template
 	            //mysteryBoxContainer.innerHTML = '';
 
-	            
+
 	            if (rewardData.type == 'mysteryBox_bumper') {
 	                console.log("Bumper Anmation");
 	                this.template = __webpack_require__(18);
@@ -6071,8 +6133,8 @@
 
 	                var mysteryRewardBumperAction = document.getElementsByClassName('mysteryRewardBumperAction')[0];
 	                mysteryRewardBumperAction.addEventListener('click', function() {
-	                    var res = {'data':{'rewardId':112321,'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"completed","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
-	                   	App.router.navigateTo( '/customSticker', res.data);
+	                    var res = { 'data': { 'rewardId': 112321, 'customStickers': [{ "id": 123, "ts": 1470916209781, "status": "inProgress", "phrase": "Not a blocker", "url": "http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png" }, { "id": 124, "ts": 1470916209224, "status": "completed", "phrase": "It is a blocker", "url": "http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png" }], 'eligible': true } };
+	                    App.router.navigateTo('/customSticker', res.data);
 	                });
 
 	            } else if (rewardData.type == 'mysteryBox_low') {
@@ -6082,14 +6144,27 @@
 	            }
 	        },
 
+	        mapRewardsToSlice: function(mysteryBoxData){
+	            console.log(mysteryBoxData);
+
+	            var slices = document.getElementsByClassName('part');
+
+	            for (var i=0; i< slices.length; i++){
+	                console.log(slices);
+	                slices[0].setAttribute('data-reward',mysteryBoxData.rewards[i].id); 
+	            }
+
+	            // Set Icons here as well
+
+	        },
+
 	        defineLuckyBox: function(App, mysteryBoxData) {
 
-	        	var that = this;
-	            // STUB
-
+	            var that = this;
+	            
 	            // Result of Spin
-	            var spinResult = 5;
-	            var rewardData = this.getMysteryBoxRewardDetails(mysteryBoxData.rewards, spinResult);
+	            var spinResult = mysteryBoxData.spin_result.id;
+	            var rewardData = mysteryBoxData.spin_result;
 	            // Define Wheel
 
 	            var spin = document.getElementById('spin');
@@ -6097,16 +6172,15 @@
 	            var result = document.getElementById('result');
 
 	            var setText = function(a, b, c) {
-
 	                a.addEventListener('transitionend', function() {
 	                    b.innerText = rewardData.title;
-	                    that.defineMysteryBoxResultAnimation(App,rewardData);
 	                    a.removeEventListener('transitionend', setText);
 	                });
 	            };
 
 	            var deg = 0;
 	            var rotations = 0;
+
 	            spin.addEventListener('click', function() {
 	                rotations++;
 	                var stop = spinResult;
@@ -6117,45 +6191,6 @@
 	                wheel.style.transform = rot;
 	                setText(wheel, result, rewardData);
 	            });
-
-	            // STUB
-
-
-
-	            App.NinjaService.getMysteryBoxResult(function(res) {
-	                console.log(res);
-
-	                // Result of Spin
-	                var spinResult = res.data.resultId;
-	                var rewardData = this.getMysteryBoxRewardDetails(mysteryBoxData.rewards, spinResult);
-
-	                // Define Wheel
-
-	                var spin = document.getElementById('spin');
-	                var wheel = document.getElementById('wheel');
-	                var result = document.getElementById('result');
-
-	                var setText = function(a, b, c) {
-	                    a.addEventListener('transitionend', function() {
-	                        b.innerText = rewardData.title;
-	                        a.removeEventListener('transitionend', setText);
-	                    });
-	                };
-
-	                var deg = 0;
-	                var rotations = 0;
-	                spin.addEventListener('click', function() {
-	                    rotations++;
-	                    var stop = spinResult;
-	                    console.log('stop is', stop);
-	                    var rotationFix = 360 / 16 + 360 / 8 + rotations * 720;
-	                    deg = 360 / 8 * stop + rotationFix;
-	                    var rot = 'rotate3d(0,0,1,' + deg + 'deg)';
-	                    wheel.style.transform = rot;
-	                    setText(wheel, result, rewardData);
-	                });
-
-	            }, this);
 
 	        },
 
@@ -6213,30 +6248,26 @@
 	            mysteryBoxContainer.innerHTML = '';
 	            console.log(mysteryBoxData);
 
-	            if (mysteryBoxData.status == 'inactive') {
+	            if (mysteryBoxData.mstatus == 'inactive') {
 
 	                // Re Render The Reward Template Only From External HTML
 	                this.template = __webpack_require__(19);
 	                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
-	                    streakToUnlock: mysteryBoxData.streakToUnlock
+	                    streakToUnlock: mysteryBoxData.streak_unlock
 	                });
-	            } else if (mysteryBoxData.status == 'active') {
+	            } else if (mysteryBoxData.mstatus == 'active') {
 
 	                this.template = __webpack_require__(20);
-	                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
-	                    streakToUnlock: mysteryBoxData.streakToUnlock
-	                });
-
+	                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {});
+	                this.mapRewardsToSlice(mysteryBoxData);
 	                this.defineLuckyBox(App, mysteryBoxData);
 
-	            } else if (mysteryBoxData.status == 'cooldown') {
+	            } else if (mysteryBoxData.mstatus == 'cooldown') {
 
 	                console.log(mysteryBoxData);
 
 	                this.template = __webpack_require__(21);
-	                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
-	                    streakToUnlock: mysteryBoxData.streakToUnlock
-	                });
+	                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {});
 
 	                this.defineCooldown(mysteryBoxData.coolDownTime);
 
@@ -6268,7 +6299,7 @@
 /* 20 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id=\"spin\" class=\"spin\">SPIN</div>\n<div id=\"result\" class=\"result\"></div>\n<div class=\"mysteryBoxMessageSpin\">Spin the wheel to unlock the surprise. Only one Ninja per day wins the grand prize.</div>\n<div class=\"wheel-wrapper\">\n  <div class=\"needle\"></div>\n  <div id=\"wheel\" class=\"wheel\">\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>8</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>7</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>6</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>5</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>4</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>3</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>2</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\"><div>1</div></div>\n      </div>\n    </div>\n  </div>\n</div>"
+	module.exports = "<div id=\"spin\" class=\"spin\">SPIN</div>\n<div id=\"result\" class=\"result\"></div>\n<div class=\"mysteryBoxMessageSpin\">Spin the wheel to unlock the surprise. Only one Ninja per day wins the grand prize.</div>\n<div class=\"wheel-wrapper\">\n  <div class=\"needle\"></div>\n  <div id=\"wheel\" class=\"wheel\">\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\" data-slice=\"8\" data-reward=\"\"><div>8</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\" data-slice=\"7\" data-reward=\"\"><div>7</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\" data-slice=\"6\" data-reward=\"\"><div>6</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\" data-slice=\"5\" data-reward=\"\"><div>5</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\" data-slice=\"4\" data-reward=\"\"><div>4</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\" data-slice=\"3\" data-reward=\"\"><div>3</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\" data-slice=\"2\" data-reward=\"\"><div>2</div></div>\n      </div>\n    </div>\n    <div class=\"cutter\">\n      <div class=\"slicer\">\n        <div class=\"part\" data-slice=\"1\" data-reward=\"\"><div>1</div></div>\n      </div>\n    </div>\n  </div>\n</div>"
 
 /***/ },
 /* 21 */
@@ -6520,26 +6551,26 @@
 /* 27 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"stickerRewardCooldown\">\n    <div id=\"clockdiv\">\n        <div>\n            <span class=\"days\"></span>\n            <div class=\"smalltext\">Days</div>\n        </div>\n        <div>\n            <span class=\"hours\"></span>\n            <div class=\"smalltext\">Hrs</div>\n        </div>\n        <div>\n            <span class=\"minutes\"></span>\n            <div class=\"smalltext\">Mins</div>\n        </div>\n        <div>\n            <span class=\"seconds\"></span>\n            <div class=\"smalltext\">Secs</div>\n        </div>\n    </div>\n</div>\n<div class=\"stickerCooldownMessage\">Only one sticker pack can be redeemed within X hours, Please try again later.</div>"
+	module.exports = "<div class=\"stickerCooldownContainer\">\n    <div class=\"stickerRewardCooldown\">\n        <div id=\"clockdiv\">\n            <div>\n                <span class=\"days\"></span>\n                <div class=\"smalltext\">Days</div>\n            </div>\n            <div>\n                <span class=\"hours\"></span>\n                <div class=\"smalltext\">Hrs</div>\n            </div>\n            <div>\n                <span class=\"minutes\"></span>\n                <div class=\"smalltext\">Mins</div>\n            </div>\n            <div>\n                <span class=\"seconds\"></span>\n                <div class=\"smalltext\">Secs</div>\n            </div>\n        </div>\n    </div>\n    <div class=\"stickerCooldownMessage\">Only one sticker pack can be redeemed within X hours, Please try again later.</div>\n</div>\n"
 
 /***/ },
 /* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
-	(function(W, platformSdk, events) {
+	(function( W, platformSdk, events ) {
 	    'use strict';
 
-	    var utils = __webpack_require__(4),
-	        Constants = __webpack_require__(5),
+	    var utils = __webpack_require__( 4 ),
+	        Constants = __webpack_require__( 5 ),
 	        customImageUploaded = false,
 	        uploadCustomStickerData = {},
 	        sessionId = null,
 
-	        CustomStickerController = function(options) {
-	            this.template = __webpack_require__(29);
+	        CustomStickerController = function( options ) {
+	            this.template = __webpack_require__( 29 );
 	        };
 
-	    CustomStickerController.prototype.bind = function(App, data) {
+	    CustomStickerController.prototype.bind = function( App, data ) {
 
 	        var that = this;
 	        var rewardId = data.rewardId;
@@ -6547,152 +6578,194 @@
 	        // All Custom Sticker Views Defined
 
 	        // Main views
-	        var customStickerUploadScreen = document.getElementsByClassName('customStickerUploadScreen')[0];
-	        var customStickerFtueWrapper = document.getElementsByClassName('customStickerFtueWrapper')[0];
+	        var customStickerUploadScreen = document.getElementsByClassName( 'customStickerUploadScreen' )[0];
+	        var customStickerFtueWrapper = document.getElementsByClassName( 'customStickerFtueWrapper' )[0];
 
 	        // Subsequent Views
-	        var customStickerSent = document.getElementsByClassName('customStickerSent')[0];
-	        var customStickerStatusCheck = document.getElementsByClassName('customStickerStatusCheck')[0];
-	        var customStickerReadyState = document.getElementsByClassName('customStickerReadyState')[0];
-	        var customStickerRow = document.getElementsByClassName('customStickerRow');
+	        var customStickerSent = document.getElementsByClassName( 'customStickerSent' )[0];
+	        var customStickerStatusCheck = document.getElementsByClassName( 'customStickerStatusCheck' )[0];
+	        var customStickerReadyState = document.getElementsByClassName( 'customStickerReadyState' )[0];
+	        var customStickerRow = document.getElementsByClassName( 'customStickerRow' );
 
-	        var customStickerImage = document.getElementsByClassName('uploadPhotoContainer')[0];
+	        var customStickerImage = document.getElementsByClassName( 'uploadPhotoContainer' )[0];
 
 	        //var profilePicLoader = document.getElementById('profilePicLoader');
-	        var errorMessage = document.getElementsByClassName('errorMessage')[0];
-	        var customStickerTextPhrase = document.getElementById('customStickerTextPhrase');
+	        var errorMessage = document.getElementsByClassName( 'errorMessage' )[0];
+	        var customStickerTextPhrase = document.getElementById( 'customStickerTextPhrase' );
+	        var failCustomStickerTextPhrase = document.getElementById( 'failCustomStickerTextPhrase' );
+
 	        //var textLanguage = document.getElementById('textLanguage');
-	        var sendButton = document.getElementsByClassName('sendButton')[0];
+	        var sendButton = document.getElementsByClassName( 'sendButton' )[0];
+	        var sendStickerAgainButton = document.getElementsByClassName( 'sendStickerAgainButton' )[0];
 
 	        // All Custom Sticker Actions
 
-	        var uploadPhoto = document.getElementsByClassName('uploadPhotoContainer')[0];
-	        var customStickerButton = document.getElementsByClassName('customStickerButton')[0];
-	        var customStickerFaq = document.getElementsByClassName('customStickerFaq')[0];
-	        var customStickerShareAction = document.getElementsByClassName('customStickerShareAction')[0];
+	        var uploadPhoto = document.getElementsByClassName( 'uploadPhotoContainer' )[0];
+	        var customStickerButton = document.getElementsByClassName( 'customStickerButton' )[0];
+	        var customStickerFaq = document.getElementsByClassName( 'customStickerFaq' )[0];
+	        var customStickerShareAction = document.getElementsByClassName( 'customStickerShareAction' )[0];
+	        var customStickerHistory = document.getElementsByClassName( 'customStickerHistory' )[0];
 
-	        if (data.rewardDetails.custom_stickers) {
-	            that.defineCustomStickerHistory(data.rewardDetails.custom_stickers);
-	            if (data.rewardDetails.custom_stickers.length > 0) {
-	                console.log('The user is not new to custom Sticker');
-	                utils.removeClass(customStickerUploadScreen, 'hideClass');
+	        var showHistoryButton = document.getElementsByClassName( 'showHistoryButton' )[0];
+	        var uploadParent = document.getElementsByClassName( 'uploadParent' )[0];
+
+	        if ( data.rewardDetails.custom_stickers ) {
+
+	            that.defineCustomStickerHistory( data.rewardDetails.custom_stickers );
+	            if ( data.rewardDetails.custom_stickers.length > 0 ) {
+	                console.log( 'The user is not new to custom Sticker' );
+	                utils.removeClass( customStickerUploadScreen, 'hideClass' );
 	            } else {
-	                console.log('First Time user');
-	                utils.removeClass(customStickerFtueWrapper, 'hideClass');
+	                console.log( 'First Time user' );
+	                utils.removeClass( customStickerFtueWrapper, 'hideClass' );
 	            }
 	        }
-
 
 	        // Event Definations
 
 	        // FAQ URL CLICK EVENT
-	        customStickerFaq.addEventListener('click', function(ev) {
-	            utils.openWebView(data.rewardDetails.faqUrl);
+	        customStickerFaq.addEventListener( 'click', function( ev ) {
+	            utils.openWebView( data.rewardDetails.faqUrl );
 	        });
 
+	        if ( showHistoryButton ) {
+	            showHistoryButton.addEventListener( 'click', function( ev ) {
+
+	                // Hide Upload and Show The History
+	                utils.removeClass( customStickerHistory, 'hideClass' );
+	                if ( uploadParent ) {
+	                    utils.addClass( uploadParent, 'hideClass' );
+	                } else {
+	                    utils.addClass( showHistoryButton, 'hideClass' );
+	                }
+	            });
+	        }
+
 	        // Show Upload Screen After the First Time
-	        customStickerButton.addEventListener('click', function(ev) {
-	            utils.addClass(customStickerFtueWrapper, 'hideClass');
-	            utils.removeClass(customStickerUploadScreen, 'hideClass');
+	        customStickerButton.addEventListener( 'click', function( ev ) {
+	            utils.addClass( customStickerFtueWrapper, 'hideClass' );
+	            utils.removeClass( customStickerUploadScreen, 'hideClass' );
 	        });
 
 	        // Choose Sticker Image From gallery
-	        if (customStickerImage) {
-	            customStickerImage.addEventListener('click', function(ev) {
+	        if ( customStickerImage ) {
+	            customStickerImage.addEventListener( 'click', function( ev ) {
+
 	                // utils.removeClass(errorMessage, 'hideClass');
-	                that.chooseStickerImageFromGallery(data);
+	                that.chooseStickerImageFromGallery( data );
 	            });
 	        }
 
 	        // Send the Data to Server
-	        if (sendButton) {
-	            sendButton.addEventListener('click', function(ev) {
-	                that.sendCustomStickerDataToServer(rewardId);
+	        if ( sendButton ) {
+	            sendButton.addEventListener( 'click', function( ev ) {
+	                that.sendCustomStickerDataToServer( rewardId );
 	            });
-
 	        }
 
-	        customStickerShareAction.addEventListener('click', function(ev) {
-	            var customStickerId = this.getAttribute('data-id');
-	            that.sendCustomStickerToUser(App, rewardId, customStickerId);
+	        if ( sendStickerAgainButton ) {
+	            sendStickerAgainButton.addEventListener( 'click', function( ev ) {
+	                that.resendCustomStickerDataToServer( rewardId );
+	            });
+	        }
+
+	        customStickerShareAction.addEventListener( 'click', function( ev ) {
+	            var customStickerId = this.getAttribute( 'data-sid' );
+	            that.sendCustomStickerToUser( App, rewardId, customStickerId );
 	        });
 
-	        if (data.rewardDetails.custom_stickers) {
-	            that.defineCustomStickerClick(customStickerRow, data.rewardDetails.custom_stickers);
+	        if ( data.rewardDetails.custom_stickers ) {
+	            that.defineCustomStickerClick( customStickerRow, data.rewardDetails.custom_stickers );
 
 	        }
 
 	    };
 
+	    CustomStickerController.prototype.sendCustomStickerToUser = function( App, rewardId, customStickerId ) {
 
-	    CustomStickerController.prototype.sendCustomStickerToUser = function(App, rewardId, customStickerId) {
+	        console.log( 'Sending the custom sticker to the user via packet' );
 
-	        console.log("Sending the custom sticker to the user via packet");
-
-	        console.log(rewardId);
-	        console.log(customStickerId);
+	        console.log( rewardId );
+	        console.log( customStickerId );
 
 	        var data = {};
 	        data.rewardId = rewardId;
 	        data.customStickerId = customStickerId;
 
 	        // Reward Details API :: Send Reward Id As well
-	        App.NinjaService.sendCustomSticker(data, function(res) {
+	        App.NinjaService.sendCustomSticker( data, function( res ) {
+
 	            // Show Toast if Success
-	            console.log(res);
-	            utils.showToast('You will receive your sticker via the team hike bot shortly, start sharing.');
+	            console.log( res );
+	            utils.showToast( 'You will receive your sticker via the team hike bot shortly, start sharing.' );
+
 	            // Routing to the specific Router
 	            //App.router.navigateTo(rewardRouter, res.data);
-	        }, this);
+	        }, this );
 
 	    };
 
-	    CustomStickerController.prototype.defineCustomStickerClick = function(customStickerRow, data) {
+	    CustomStickerController.prototype.defineCustomStickerClick = function( customStickerRow, data ) {
 
-	        var customStickerUploadScreen = document.getElementsByClassName('customStickerUploadScreen')[0];
-	        var customStickerFtueWrapper = document.getElementsByClassName('customStickerFtueWrapper')[0];
+	        var customStickerUploadScreen = document.getElementsByClassName( 'customStickerUploadScreen' )[0];
+	        var customStickerFtueWrapper = document.getElementsByClassName( 'customStickerFtueWrapper' )[0];
+	        var customStickerFailScreen = document.getElementsByClassName( 'customStickerFailScreen' )[0];
 
 	        // Subsequent Views
-	        var customStickerSent = document.getElementsByClassName('customStickerSent')[0];
-	        var customStickerStatusCheck = document.getElementsByClassName('customStickerStatusCheck')[0];
-	        var customStickerReadyState = document.getElementsByClassName('customStickerReadyState')[0];
-	        var customStickerView = document.getElementsByClassName('customStickerView')[0];
+	        var customStickerSent = document.getElementsByClassName( 'customStickerSent' )[0];
+	        var customStickerStatusCheck = document.getElementsByClassName( 'customStickerStatusCheck' )[0];
+	        var customStickerReadyState = document.getElementsByClassName( 'customStickerReadyState' )[0];
+	        var customStickerView = document.getElementsByClassName( 'customStickerView' )[0];
+	        var customStickerHistory = document.getElementsByClassName( 'customStickerHistory' )[0];
 
-	        for (var i = 0; i < customStickerRow.length; i++) {
-	            customStickerRow[i].addEventListener('click', function(event) {
+	        var failReason = document.getElementsByClassName( 'failReason' )[0];
 
-	                var state = this.getAttribute('data-status');
-	                var id = this.getAttribute('data-id');
-	                var url = this.getAttribute('data-url');
+	        for ( var i = 0; i < customStickerRow.length; i++ ) {
+	            customStickerRow[i].addEventListener( 'click', function( event ) {
 
-	                if (state == 'completed') {
-	                    console.log("Take To Success Page :: Send Image and ID There Reference");
-	                    utils.removeClass(customStickerReadyState, 'hideClass');
-	                    utils.addClass(customStickerUploadScreen, 'hideClass');
-	                    utils.addClass(customStickerSent, 'hideClass');
-	                    utils.addClass(customStickerFtueWrapper, 'hideClass');
+	                var state = this.getAttribute( 'data-status' );
+	                var sid = this.getAttribute( 'data-id' );
+	                var url = this.getAttribute( 'data-url' );
+
+	                if ( state == 'redeemed' ) {
+	                    console.log( 'Take To Success Page :: Send Image and ID There Reference' );
+	                    utils.removeClass( customStickerReadyState, 'hideClass' );
+	                    utils.addClass( customStickerUploadScreen, 'hideClass' );
+	                    utils.addClass( customStickerSent, 'hideClass' );
+	                    utils.addClass( customStickerFtueWrapper, 'hideClass' );
+	                    utils.addClass( customStickerHistory, 'hideClass' );
 
 	                    // Set Id Attribute For Reference Later
-	                    var customStickerShareAction = document.getElementsByClassName("customStickerShareAction")[0];
-	                    var att = document.createAttribute("data-id");
-	                    att.value = id;
-	                    customStickerShareAction.setAttributeNode(att);
+	                    var customStickerShareAction = document.getElementsByClassName( 'customStickerShareAction' )[0];
+	                    var att = document.createAttribute( 'data-sid' );
+	                    att.value = sid;
+	                    customStickerShareAction.setAttributeNode( att );
 
 	                    // Set Background Image Of Sticker Being Set
 	                    customStickerView.style.backgroundImage = 'url(\'' + url + '\')';
 
+	                } else if ( state == 'inprogress' ) {
+	                    console.log( 'Take to status Check Page :: Send ID' );
+	                    utils.removeClass( customStickerStatusCheck, 'hideClass' );
+	                    utils.addClass( customStickerUploadScreen, 'hideClass' );
+	                    utils.addClass( customStickerSent, 'hideClass' );
+	                    utils.addClass( customStickerFtueWrapper, 'hideClass' );
+	                    utils.addClass( customStickerHistory, 'hideClass' );
+	                } else if ( state == 'failed' ) {
 
-	                } else if (state == 'inprogress') {
-	                    console.log("Take to status Check Page :: Send ID");
-	                    utils.removeClass(customStickerStatusCheck, 'hideClass');
-	                    utils.addClass(customStickerUploadScreen, 'hideClass');
-	                    utils.addClass(customStickerSent, 'hideClass');
-	                    utils.addClass(customStickerFtueWrapper, 'hideClass');
-	                } else if (state == 'fail'){
-	                    console.log("Some error has occured due to some reason at backed");
-	                }
-	                else {
-	                    utils.showToast('some error occured please try again later');
+	                    if ( sessionId ) {
+	                        sessionId = null;
+	                    }
+
+	                    utils.addClass( customStickerHistory, 'hideClass' );
+	                    var sId = this.getAttribute( 'data-id' );
+	                    var reasonFail = this.getAttribute( 'data-reason' );
+	                    sessionId = sId;
+	                    failReason.innerHTML = reasonFail;
+	                    console.log( 'Session Id is ', sessionId );
+	                    utils.removeClass( customStickerFailScreen, 'hideClass' );
+	                } else {
+	                    utils.showToast( 'some error occured please try again later' );
 	                }
 	            });
 	        }
@@ -6702,30 +6775,31 @@
 	    // Reset To Default Sticker Image If Some Error Occurs While Selecting the Image :: Or uploading It
 	    CustomStickerController.prototype.setDefaultCustomStickerImage = function() {
 
-	        console.log('Setting the default custom sticker image');
+	        var customStickerImage = document.getElementsByClassName( 'customStickerImage' )[0];
+
+	        console.log( 'Setting the default custom sticker image' );
 	        customStickerImage.style.backgroundImage = 'none';
 
 	    };
 
 	    // Show Error State
-	    CustomStickerController.prototype.showErrorState = function(text) {
-	        var errorMessage = document.getElementsByClassName('errorMessage')[0];
+	    CustomStickerController.prototype.showErrorState = function( text ) {
+	        var errorMessage = document.getElementsByClassName( 'errorMessage' )[0];
 
 	        errorMessage.innerHTML = text;
-	        utils.removeClass(errorMessage, 'hideClass');
+	        utils.removeClass( errorMessage, 'hideClass' );
 	    };
 
 	    // Check Full Form Before Sending Custom Sticker Data
 	    CustomStickerController.prototype.customStickerFormCheck = function() {
 
-	        console.log(customStickerTextPhrase.value);
-	        //console.log(textLanguage.value);
-	        console.log(customImageUploaded);
+	        console.log( customStickerTextPhrase.value );
+	        console.log( customImageUploaded );
 
 	        var sendForm = true;
 
-	        if (!customImageUploaded || !customStickerTextPhrase) {
-	            this.showErrorState('Please fill all the details');
+	        if ( ! customImageUploaded || ! customStickerTextPhrase ) {
+	            this.showErrorState( 'Please fill all the details' );
 	            sendForm = false;
 	        }
 
@@ -6733,84 +6807,100 @@
 
 	    };
 
-	    CustomStickerController.prototype.chooseStickerImageFromGallery = function(data) {
+	    CustomStickerController.prototype.customStickerReFormCheck = function() {
+
+	        console.log( failCustomStickerTextPhrase.value );
+	        console.log( customImageUploaded );
+
+	        var sendForm = true;
+
+	        if ( ! customImageUploaded || ! failCustomStickerTextPhrase ) {
+	            this.showErrorState( 'Please fill all the details' );
+	            sendForm = false;
+	        }
+
+	        return sendForm;
+
+	    };
+
+	    CustomStickerController.prototype.chooseStickerImageFromGallery = function( data ) {
 
 	        var that = this;
+
 	        // Image Container
-	        var customStickerImage = document.getElementsByClassName('uploadPhotoContainer')[0];
+	        var customStickerImage = document.getElementsByClassName( 'uploadPhotoContainer' )[0];
 
 	        try {
 	            platformSdk.nativeReq({
 	                ctx: self,
 	                fn: 'chooseFile',
-	                success: function(fileUrl) {
+	                success: function( fileUrl ) {
 
-	                    fileUrl = decodeURIComponent(fileUrl);
-	                    fileUrl = JSON.parse(fileUrl);
+	                    fileUrl = decodeURIComponent( fileUrl );
+	                    fileUrl = JSON.parse( fileUrl );
 
-	                    if (!fileUrl.filesize || fileUrl.filesize === 0) {
+	                    if ( ! fileUrl.filesize || fileUrl.filesize === 0 ) {
 
-	                        utils.showToast('Bummer. Your image could not be uploaded. Could you try again, please?');
+	                        utils.showToast( 'Bummer. Your image could not be uploaded. Could you try again, please?' );
 	                        customImageUploaded = false;
 	                        that.setDefaultCustomStickerImage();
 	                        return;
 	                    }
+
 	                    // Check Max Upload Size :: To Be Decided
-	                    if (fileUrl.filesize > 10000000) {
-	                        utils.showToast('Max file upload size is 10 Mb');
+	                    if ( fileUrl.filesize > 10000000 ) {
+	                        utils.showToast( 'Max file upload size is 10 Mb' );
 	                        customImageUploaded = false;
 	                        that.setDefaultCustomStickerImage();
 	                        return;
 	                    }
 
 	                    uploadCustomStickerData.filePath = fileUrl.filePath;
-	                    
+
 	                    // Show Profile Picture In the Round Tab
 	                    // Hide the camera Icon
-	                    var cameraIcon = document.getElementsByClassName('uploadPhoto')[0];
+	                    var cameraIcon = document.getElementsByClassName( 'uploadPhoto' )[0];
 	                    cameraIcon.style.display = 'none';
+
 	                    // Set the image from gallery as the container image
 	                    customStickerImage.style.backgroundImage = 'url(\'file://' + fileUrl.filePath + '\')';
 	                    customImageUploaded = true;
 	                }
 	            });
 
-	        } catch (err) {
-	            platformSdk.ui.showToast('Bummer. Your profile pic couldn’t be updated. Could you try again, please?');
+	        } catch ( err ) {
+	            platformSdk.ui.showToast( 'Bummer. Your profile pic couldn’t be updated. Could you try again, please?' );
 	            that.setDefaultCustomStickerImage();
 	            customImageUploaded = false;
 	        }
 	    };
 
-
 	    // Send Custom sticker Data To Server
-	    CustomStickerController.prototype.sendCustomStickerDataToServer = function(rid) {
+	    CustomStickerController.prototype.resendCustomStickerDataToServer = function( rid ) {
 
 	        var that = this;
 	        var serverPath;
 
-	        var customStickerUploadScreen = document.getElementsByClassName('customStickerUploadScreen')[0];
-	        var customStickerSent = document.getElementsByClassName('customStickerSent')[0];
+	        var customStickerUploadScreen = document.getElementsByClassName( 'customStickerUploadScreen' )[0];
+	        var customStickerSent = document.getElementsByClassName( 'customStickerSent' )[0];
+	        var customStickerFailScreen = document.getElementsByClassName( 'customStickerFailScreen' )[0];
 
-	        var formSend = that.customStickerFormCheck();
+	        var formSend = that.customStickerReFormCheck();
 
-	        if (formSend) {
+	        if ( formSend ) {
 
-	            events.publish('update.loader', { show: true });
-	            
-	            console.log('All data is correct and can be sent to the user');
+	            events.publish( 'update.loader', { show: true });
+
+	            console.log( 'All data is correct and can be sent to the user' );
+
 	            // Remove any error message class if any
 	            //utils.removeClass(errorMessage, 'hideClass');
 
 	            var data = {};
 	            data.rid = rid;
-	            data.text_phrase = customStickerTextPhrase.value;
+	            data.text_phrase = failCustomStickerTextPhrase.value;
+	            serverPath = 'http://54.169.82.65:5016/v1/rewards/' + data.rid + '?sid=' + sessionId + '&t=' + data.text_phrase;
 
-	            if (sessionId) {
-	                serverPath = 'http://54.169.82.65:5016/v1/rewards/' + data.rid +'?sid=' + sessionId + '&t='+ data.text_phrase;
-	            } else {
-	                serverPath = 'http://54.169.82.65:5016/v1/rewards/' + data.rid + '?t='+ data.text_phrase;
-	            }
 	            // Add the server path here
 	            uploadCustomStickerData.uploadUrl = serverPath;
 	            uploadCustomStickerData.doCompress = true;
@@ -6819,26 +6909,29 @@
 	                platformSdk.nativeReq({
 	                    ctx: self,
 	                    fn: 'uploadFile',
-	                    data: platformSdk.utils.validateStringifyJson(uploadCustomStickerData),
-	                    success: function(res) {
+	                    data: platformSdk.utils.validateStringifyJson( uploadCustomStickerData ),
+	                    success: function( res ) {
 	                        try {
-	                            res = JSON.parse(decodeURIComponent(res));
-	                            console.log(res);
+	                            res = JSON.parse( decodeURIComponent( res ) );
+	                            console.log( res );
 
-	                            if (res.stat == 'ok') {
+	                            if ( res.stat == 'ok' ) {
+
 	                                //utils.showToast('Your Image has been updated.');
 	                                sessionId = res.data.sid;
+
 	                                // Show Sent Screen Here As below
-	                                utils.addClass(customStickerUploadScreen, 'hideClass');
-	                                utils.removeClass(customStickerSent, 'hideClass');
-	                                events.publish('update.loader', { show: false });
-	            
+	                                utils.addClass( customStickerUploadScreen, 'hideClass' );
+	                                utils.addClass( customStickerFailScreen, 'hideClass' );
+	                                utils.removeClass( customStickerSent, 'hideClass' );
+	                                events.publish( 'update.loader', { show: false });
+
 	                            } else {
-	                                utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
+	                                utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
 	                                that.setDefaultCustomStickerImage();
 	                            }
-	                        } catch (err) {
-	                            utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
+	                        } catch ( err ) {
+	                            utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
 	                            that.setDefaultCustomStickerImage();
 	                        }
 
@@ -6847,34 +6940,106 @@
 	                    }
 	                });
 
-	            } catch (err) {
-	                utils.showToast('Bummer. Your image couldn’t be updated. Could you try again, please?');
+	            } catch ( err ) {
+	                utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
 
 	                //profilePicLoader.classList.remove('picLoader');
 	                that.setDefaultCustomStickerImage();
 	            }
-	        }else{
-	            utils.showToast('Some information seems to be incorrect. Please check!');
+	        } else {
+	            utils.showToast( 'Some information seems to be incorrect. Please check!' );
 
 	        }
 	    };
 
-	    CustomStickerController.prototype.defineCustomStickerHistory = function(stickers) {
+	    // Send Custom sticker Data To Server
+	    CustomStickerController.prototype.sendCustomStickerDataToServer = function( rid ) {
+
+	        var that = this;
+	        var serverPath;
+
+	        var customStickerUploadScreen = document.getElementsByClassName( 'customStickerUploadScreen' )[0];
+	        var customStickerSent = document.getElementsByClassName( 'customStickerSent' )[0];
+	        var customStickerFailScreen = document.getElementsByClassName( 'customStickerFailScreen' )[0];
+
+	        var formSend = that.customStickerFormCheck();
+
+	        if ( formSend ) {
+
+	            events.publish( 'update.loader', { show: true });
+
+	            var data = {};
+	            data.rid = rid;
+	            data.text_phrase = customStickerTextPhrase.value;
+	            serverPath = 'http://54.169.82.65:5016/v1/rewards/' + data.rid + '?t=' + data.text_phrase;
+
+	            // Add the server path here
+	            uploadCustomStickerData.uploadUrl = serverPath;
+	            uploadCustomStickerData.doCompress = true;
+
+	            try {
+	                platformSdk.nativeReq({
+	                    ctx: self,
+	                    fn: 'uploadFile',
+	                    data: platformSdk.utils.validateStringifyJson( uploadCustomStickerData ),
+	                    success: function( res ) {
+	                        try {
+	                            res = JSON.parse( decodeURIComponent( res ) );
+	                            console.log( res );
+
+	                            if ( res.stat == 'ok' ) {
+
+	                                //utils.showToast('Your Image has been updated.');
+	                                sessionId = res.data.sid;
+
+	                                // Show Sent Screen Here As below
+	                                utils.addClass( customStickerUploadScreen, 'hideClass' );
+	                                utils.addClass( customStickerFailScreen, 'hideClass' );
+	                                utils.removeClass( customStickerSent, 'hideClass' );
+	                                events.publish( 'update.loader', { show: false });
+
+	                            } else {
+	                                utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
+	                                that.setDefaultCustomStickerImage();
+	                            }
+	                        } catch ( err ) {
+	                            utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
+	                            that.setDefaultCustomStickerImage();
+	                        }
+
+	                        //Hide loader
+	                        //profilePicLoader.classList.remove('picLoader');
+	                    }
+	                });
+
+	            } catch ( err ) {
+	                utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
+
+	                //profilePicLoader.classList.remove('picLoader');
+	                that.setDefaultCustomStickerImage();
+	            }
+	        } else {
+	            utils.showToast( 'Some information seems to be incorrect. Please check!' );
+
+	        }
+	    };
+
+	    CustomStickerController.prototype.defineCustomStickerHistory = function( stickers ) {
 
 	        // All Custom Sticker History
-	        var allCustomStickers = document.getElementsByClassName('customStickerIcon');
+	        var allCustomStickers = document.getElementsByClassName( 'customStickerIcon' );
 
-	        console.log(stickers);
+	        console.log( stickers );
 
-	        for (var i = 0; i < stickers.length; i++) {
-	            if (stickers[i].url) {
+	        for ( var i = 0; i < stickers.length; i++ ) {
+	            if ( stickers[i].url ) {
 	                allCustomStickers[i].style.backgroundImage = 'url(\'' + stickers[i].url + '\')';
 	            } else {
-	                console.log('Sticker Icon is not present, please try a default icon');
+	                console.log( 'Sticker Icon is not present, please try a default icon' );
 	            }
-	            if (stickers[i].ts) {
-	                var timestamp = new Date(stickers[i].ts*1000);
-	                stickers[i].ts = timestamp.getDate() + '/' + (timestamp.getMonth()+1) + '/' + (timestamp.getYear()+1900);
+	            if ( stickers[i].ts ) {
+	                var timestamp = new Date( stickers[i].ts * 1000 );
+	                stickers[i].ts = timestamp.getDate() + '/' + ( timestamp.getMonth() + 1 ) + '/' + ( timestamp.getYear() + 1900 );
 	            } else {
 	                sticker[i].ts = 'Order date is unavailable';
 	            }
@@ -6883,41 +7048,47 @@
 
 	    };
 
-	    CustomStickerController.prototype.convertTimeStamp = function(stickers) {
+	    CustomStickerController.prototype.convertTimeStamp = function( stickers ) {
 
-	        for (var i = 0; i < stickers.length; i++) {
-	            if (stickers[i].ts) {
-	                var timestamp = new Date(stickers[i].ts);
-	                stickers[i].ts = timestamp.getDate() + '/' + (timestamp.getMonth()+1) + '/' + (timestamp.getYear()+1900);
+	        for ( var i = 0; i < stickers.length; i++ ) {
+	            if ( stickers[i].ts ) {
+	                var timestamp = new Date( stickers[i].ts );
+	                stickers[i].ts = timestamp.getDate() + '/' + ( timestamp.getMonth() + 1 ) + '/' + ( timestamp.getYear() + 1900 );
 	            } else {
 	                sticker[i].ts = 'Order date is unavailable';
 	            }
 	        }
 	    };
 
-	    CustomStickerController.prototype.render = function(ctr, App, data) {
+	    CustomStickerController.prototype.render = function( ctr, App, data ) {
 
-	        console.log(data);
+	        console.log( data );
 
 	        var that = this;
 	        that.customStickersList = [];
+	        that.showCustomStickerHistoryButton = false;
 
-	        if (data.rewardDetails.custom_stickers) {
+	        if ( data.rewardDetails.custom_stickers ) {
 	            that.customStickersList = data.rewardDetails.custom_stickers;
-	            that.convertTimeStamp(data.rewardDetails.custom_stickers);
+	            that.convertTimeStamp( data.rewardDetails.custom_stickers );
 	        }
 
-	        console.log(that.customStickersList);
+	        if ( data.rewardDetails.custom_stickers.length > 0 ) {
+	            that.showCustomStickerHistoryButton = true;
+	        }
 
-	        that.el = document.createElement('div');
+	        console.log( that.customStickersList );
+
+	        that.el = document.createElement( 'div' );
 	        that.el.className = 'customStickerContainer centerToScreenContainer animation_fadein noselect';
-	        that.el.innerHTML = Mustache.render(that.template, {
+	        that.el.innerHTML = Mustache.render( that.template, {
 	            customStickersList: that.customStickersList,
-	            newStickerEligibility: data.rewardDetails.eligible
+	            newStickerEligibility: data.rewardDetails.eligible,
+	            showCustomStickerHistoryButton: that.showCustomStickerHistoryButton
 	        });
-	        ctr.appendChild(that.el);
-	        events.publish('update.loader', { show: false });
-	        that.bind(App, data);
+	        ctr.appendChild( that.el );
+	        events.publish( 'update.loader', { show: false });
+	        that.bind( App, data );
 	    };
 
 	    CustomStickerController.prototype.destroy = function() {
@@ -6926,14 +7097,14 @@
 
 	    module.exports = CustomStickerController;
 
-	})(window, platformSdk, platformSdk.events);
+	})( window, platformSdk, platformSdk.events );
 
 
 /***/ },
 /* 29 */
 /***/ function(module, exports) {
 
-	module.exports = "<div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n<div class=\"bottomIllustration\"></div>\n<div class=\"customStickerUploadScreen\">\n    {{#newStickerEligibility}}\n        <div class=\"uploadPhotoContainer\">\n            <div class=\"uploadPhoto\"></div>\n        </div>\n        <!-- <div id=\"profilePicLoader\"> -->\n        <div class=\"customStickerText\">\n            <!-- <select id=\"textLanguage\">\n                <option value=\"\">Select your sticker language</option>\n                <option value=\"english\">English</option>\n                <option value=\"hindi\">Hindi</option>\n                <option value=\"marathi\">Marathi</option>\n                <option value=\"malyalam\">Malyalam</option>\n            </select> -->\n        </div>\n        <input id=\"customStickerTextPhrase\" type=\"text\" placeholder=\"Type your sticker text\" id=\"stickerPhrase\" onpaste=\"return false\" required value=\"\">\n        <div class=\"errorMessage hideClass\">If any error message on this screen</div>\n        <div class=\"sendButton\">Send</div>\n    {{/newStickerEligibility}}\n    <div class=\"customStickerHistory\">\n        <ul>\n            {{#customStickersList}}\n                <li class=\"customStickerRow\" data-id=\"{{id}}\" data-status=\"{{status}}\" data-url=\"{{url}}\">\n                    <div class=\"customStickerIcon\"></div>\n                    <div class=\"customStickerDetails\">\n                        <p class=\"stickerPhrase\">{{phrase}}</p>\n                        <p class=\"stickerOrderDate\">Order date - {{ts}}</p>\n                    </div>\n                    <div class=\"statusIcon{{status}}\"></div>\n                </li>\n            {{/customStickersList}}\n        </ul>\n    </div>\n</div>\n<div class=\"customStickerWrapper centerToScreenWrapper align-center\">\n    <div class=\"customStickerFtueWrapper hideClass\">\n        <div class=\"customStickerHeaderImage\"></div>\n        <div class=\"customStickerDetail\">Get your own sticker made by Hike and share it with your friends.</div>\n        <div class=\"customStickerButton\">Start</div>\n        <div class=\"customStickerFaq\">FAQs</div>\n    </div>\n    <div class=\"customStickerSent hideClass\">\n        <div class=\"successSentImage\"></div>\n        <div class=\"successSentText\">Successfully sent, you will receive this sticker within 3-4 weeks. You can come back here to check your sticker status.</div>\n        <!-- <div class=\"successSentAction\">Check Status</div> -->\n    </div>\n    <div class=\"customStickerStatusCheck hideClass\">\n        <div class=\"statusHeaderImage\"></div>\n        <div class=\"statusText\">We believe in making beautiful sticker. Your sticker will approximately take 3-4 weeks. Keep checking!</div>\n    </div>\n    <div class=\"customStickerReadyState hideClass\">\n        <div class=\"customStickerView\"></div>\n        <div class=\"customStickerShareText\">Hey Your sticker is ready and good to go, let's surprise your friends by sending it to them!</div>\n        <div class=\"customStickerShareAction\">Send</div>\n    </div>\n</div>\n</div>\n"
+	module.exports = "<div id=\"animate-area\" class=\"topIllustration animate-area\"></div>\n<div class=\"bottomIllustration\"></div>\n<div class=\"customStickerUploadScreen hideClass\">\n    {{#newStickerEligibility}}\n    <div class=\"uploadParent\">\n        <div class=\"uploadPhotoContainer\">\n            <div class=\"uploadPhoto\"></div>\n        </div>\n        <!-- <div id=\"profilePicLoader\"> -->\n        <div class=\"customStickerText\">\n            <!-- <select id=\"textLanguage\">\n                <option value=\"\">Select your sticker language</option>\n                <option value=\"english\">English</option>\n                <option value=\"hindi\">Hindi</option>\n                <option value=\"marathi\">Marathi</option>\n                <option value=\"malyalam\">Malyalam</option>\n            </select> -->\n        </div>\n        <input id=\"customStickerTextPhrase\" type=\"text\" placeholder=\"Type your sticker text\" id=\"stickerPhrase\" onpaste=\"return false\" required value=\"\">\n        <div class=\"errorMessage hideClass\">If any error message on this screen</div>\n        <div class=\"sendButton\">Send</div>\n        {{/newStickerEligibility}} \n\n        {{#showCustomStickerHistoryButton}}\n        <div class=\"showHistoryButton\">\n            Custom Sticker History\n        </div>\n        {{/showCustomStickerHistoryButton}}\n    \n    </div>\n    <div class=\"customStickerHistory hideClass\">\n        <ul>\n            {{#customStickersList}}\n            <li class=\"customStickerRow\" data-id=\"{{sid}}\" data-status=\"{{status}}\" data-url=\"{{url}}\" data-reason=\"{{reason}}\">\n                <div class=\"customStickerIcon\"></div>\n                <div class=\"customStickerDetails\">\n                    <p class=\"stickerPhrase\">{{phrase}}</p>\n                    <p class=\"stickerOrderDate\">Order date - {{ts}}</p>\n                </div>\n                <div class=\"statusIcon{{status}}\"></div>\n            </li>\n            {{/customStickersList}}\n        </ul>\n    </div>\n</div>\n<div class=\"customStickerWrapper centerToScreenWrapper align-center\">\n    <div class=\"customStickerFailScreen hideClass\">\n        <div class=\"failUploadParent\">\n            <p class=\"failReason\"></p>\n            <div class=\"uploadPhotoContainer\">\n                <div class=\"uploadPhoto\"></div>\n            </div>\n            <div class=\"customStickerText\">\n            </div>\n            <input id=\"failCustomStickerTextPhrase\" type=\"text\" placeholder=\"Type your sticker text\" id=\"stickerPhrase\" onpaste=\"return false\" required value=\"\">\n            <div class=\"errorMessage hideClass\">If any error message on this screen</div>\n            <div class=\"sendStickerAgainButton\">Send</div>\n        </div>\n    </div>\n    <div class=\"customStickerFtueWrapper hideClass\">\n        <div class=\"customStickerHeaderImage\"></div>\n        <div class=\"customStickerDetail\">Get your own sticker made by Hike and share it with your friends.</div>\n        <div class=\"customStickerButton\">Start</div>\n        <div class=\"customStickerFaq\">FAQs</div>\n    </div>\n    <div class=\"customStickerSent hideClass\">\n        <div class=\"successSentImage\"></div>\n        <div class=\"successSentText\">Successfully sent, you will receive this sticker within 3-4 weeks. You can come back here to check your sticker status.</div>\n        <!-- <div class=\"successSentAction\">Check Status</div> -->\n    </div>\n    <div class=\"customStickerStatusCheck hideClass\">\n        <div class=\"statusHeaderImage\"></div>\n        <div class=\"statusText\">We believe in making beautiful stickers. Your sticker will approximately take 3-4 weeks. Keep checking!</div>\n    </div>\n    <div class=\"customStickerReadyState hideClass\">\n        <div class=\"customStickerView\"></div>\n        <div class=\"customStickerShareText\">Hey Your sticker is ready and good to go, let's surprise your friends by sending it to them!</div>\n        <div class=\"customStickerShareAction\">Send</div>\n    </div>\n</div>\n</div>\n"
 
 /***/ },
 /* 30 */

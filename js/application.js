@@ -193,7 +193,50 @@
         },
 
         backPressTrigger: function() {
+
+            var stickerCooldownElement = document.getElementsByClassName( 'stickerCooldownContainer' )[0];
+            var customStickerHistory = document.getElementsByClassName( 'customStickerHistory' )[0];
+            var showHistoryButton = document.getElementsByClassName('showHistoryButton')[0];
+            var customStickerReadyState = document.getElementsByClassName('customStickerReadyState')[0];
+            var customStickerStatusCheck = document.getElementsByClassName('customStickerStatusCheck')[0];
+            var customStickerUploadScreen = document.getElementsByClassName('customStickerUploadScreen')[0];
+            var uploadParent = document.getElementsByClassName( 'uploadParent' )[0];
+
+            if ( stickerCooldownElement ) {
+                this.goToNinjaProfilePage();
+                return;
+            } else if(customStickerHistory && ! customStickerHistory.classList.contains( 'hideClass' )){
+                customStickerHistory.classList.add( 'hideClass' );
+                showHistoryButton.classList.remove( 'hideClass' );
+                if(customStickerUploadScreen && customStickerUploadScreen.classList.contains('hideClass')){
+                    customStickerUploadScreen.classList.remove('hideClass');
+                }
+                if(uploadParent && uploadParent.classList.contains('hideClass')){
+                    uploadParent.classList.remove('hideClass');
+                }
+                return;
+            } else if (customStickerReadyState && ! customStickerReadyState.classList.contains('hideClass')){
+                customStickerReadyState.classList.add( 'hideClass' );
+                customStickerHistory.classList.remove( 'hideClass' );
+                return;
+            } else if (customStickerStatusCheck && ! customStickerStatusCheck.classList.contains('hideClass')){
+                customStickerStatusCheck.classList.add( 'hideClass' );
+                customStickerHistory.classList.remove( 'hideClass' );
+                return;
+            }
+            
             this.router.back();
+        },
+
+        goToNinjaProfilePage: function(){
+            var that = this;
+            var data = {};
+
+            data.ninjaRewardsCollection = cacheProvider.getFromCritical('ninjaRewards');
+            data.ninjaProfileData = cacheProvider.getFromCritical('ninjaProfileData');
+            data.ninjaActivityData = cacheProvider.getFromCritical('ninjaStats');
+            
+            that.router.navigateTo('/',data);
         },
 
         getRoute: function() {
@@ -318,8 +361,8 @@
             // STUB TO REMOVE
 
 
-            //var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
-            var ftueCompleted = true;
+            var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
+            //var ftueCompleted = true;
             if (ftueCompleted) {
                 console.log("This is and old user :: Fetching Profile battery and streak for the user");
 
@@ -342,13 +385,40 @@
                         self.router.navigateTo('/');
                         profileModel.updateNinjaData(res.data, self);
                         activityModel.fetchNinjaActivity('lifetime');
-                        //mysteryBoxModel.getMysteryBoxDetails(self);
+                        mysteryBoxModel.getMysteryBoxDetails(self);
                     }
                 }, this);
             }
             // Show FTUE To the User
             else {
-                console.log("Go to the FTUE Controller and complete the FTUE");
+                // STUB TO REMOVE
+
+                var data = {};
+
+                 this.ninjaRewardsData = [];
+                 this.ninjaProfileData = {"battery":0,"rewards_hash":"","status":"active","streak":0,"name":''};
+                 this.ninjaActivityData = {"chatThemes":{"rec":0,"sent":0},"files":{"rec":0,"sent":0},"messages":{"rec":0,"sent":0},"statusUpdates":{"count":0},"stickers":{"rec":0,"sent":0}};
+
+                // STUB TO REMOVE
+
+                data.ninjaRewardsCollection = this.ninjaRewardsData;
+                data.ninjaProfileData = this.ninjaProfileData ;
+                data.ninjaActivityData = this.ninjaActivityData;
+                cacheProvider.setInCritical('ftueCompleted', true);
+
+                this.NinjaService.getNinjaProfile(function(res) {
+                    console.log(res.data);
+                    if (profileModel.checkNinjaState(res.data.status) == 'lapsed') {
+                        // To Add Ninja Lapsed State Here
+                        console.log("Go to lapsed ninja Controller");
+                    } else {
+                        // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
+                        self.router.navigateTo('/',data);
+                        profileModel.updateNinjaData(res.data, self);
+                        activityModel.fetchNinjaActivity('lifetime');
+                        mysteryBoxModel.getMysteryBoxDetails(self);
+                    }
+                }, this);
             }
 
         }

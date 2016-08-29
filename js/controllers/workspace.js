@@ -77,6 +77,7 @@
 
         if (data && data.ninjaProfileData && data.ninjaProfileData.dp) {
             ninjaIcon.style.backgroundImage = "url('file:///" + data.ninjaProfileData.dp + "')";
+            rewardsModel.updateNinjaRewardsIcons(data.ninjaRewardsCollection.rewards);
         } else {
             console.log("Set a default dp");
         }

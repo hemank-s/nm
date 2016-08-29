@@ -699,7 +699,8 @@ a:visited {
   width: 100%;
   height: 125px;
   top: 32px;
-  position: absolute; }
+  position: absolute;
+  z-index: -100; }
 
 @keyframes animatedBackground {
   from {
@@ -717,7 +718,8 @@ a:visited {
   width: 100%;
   height: 49px;
   bottom: -6px;
-  position: absolute; }
+  position: absolute;
+  z-index: 0; }
 
 .ninjaPhotoContainer {
   display: inline-flex;
@@ -984,7 +986,8 @@ a:visited {
   width: 100%;
   height: 125px;
   top: 32px;
-  position: absolute; }
+  position: absolute;
+  z-index: -100; }
 
 @keyframes animatedBackground {
   from {
@@ -1002,7 +1005,8 @@ a:visited {
   width: 100%;
   height: 49px;
   bottom: 0px;
-  position: absolute; }
+  position: absolute;
+  z-index: 0; }
 
 .customStickerHeaderImage {
   background: url(images/customStickerHeader.gif);
@@ -1043,7 +1047,18 @@ a:visited {
   font-weight: 500; }
 
 .customStickerUploadScreen {
-  margin-top: 80px; }
+  margin-top: 24px; }
+
+.showHistoryButton {
+  text-align: center;
+  border: 1px solid #EAC6A4;
+  width: 40%;
+  margin: 0px auto;
+  padding: 12px 20px;
+  font-size: 14px;
+  color: #000;
+  margin-top: 50px;
+  border-radius: 4px; }
 
 .uploadPhotoContainer {
   border: 1px dotted #CFCFCF;
@@ -1090,7 +1105,7 @@ input::-moz-placeholder {
 input:-ms-input-placeholder {
   color: rgba(61, 71, 91, 0.64) !important; }
 
-.customStickerUploadScreen input {
+.customStickerUploadScreen input, .customStickerFailScreen input {
   margin-left: 27px;
   margin-top: 27px;
   background: none;
@@ -1107,7 +1122,7 @@ input:-ms-input-placeholder {
   color: #FF667A;
   margin-top: 12px; }
 
-.sendButton {
+.sendButton, .sendStickerAgainButton {
   background: #00AFFF;
   color: #fff;
   font-size: 14px;
@@ -1163,9 +1178,9 @@ input:-ms-input-placeholder {
 
 .customStickerView {
   background: url(images/customStickerSendSuccess.png);
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
-  width: 175px;
+  width: 138px;
   height: 175px;
   margin: auto; }
 
@@ -1193,7 +1208,7 @@ input:-ms-input-placeholder {
 .customStickerIcon {
   display: inline-block;
   vertical-align: middle;
-  background-size: contain;
+  background-size: cover;
   width: 50px;
   height: 50px;
   background-repeat: no-repeat;
@@ -1206,18 +1221,27 @@ input:-ms-input-placeholder {
 
 .customStickerDetails {
   display: inline-block;
-  vertical-align: middle; }
+  vertical-align: middle;
+  margin-left: 8px; }
 
 .stickerPhrase {
   font-size: 16px;
   color: #3D475B;
   margin-bottom: 7px; }
 
+.failReason {
+  color: red;
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 10px;
+  text-align: center; }
+
 .stickerOrderDate {
   font-size: 12px;
   color: rgba(61, 71, 91, 0.64); }
 
-.statusIconcompleted {
+.statusIconredeemed {
   background: url(images/stickerPackDownloaded.png);
   background-size: contain;
   background-repeat: no-repeat;
@@ -1239,7 +1263,7 @@ input:-ms-input-placeholder {
   margin-top: 18px;
   position: absolute; }
 
-.statusIconfail {
+.statusIconfailed {
   background: url(images/customStickerFail.png);
   background-size: contain;
   background-repeat: no-repeat;

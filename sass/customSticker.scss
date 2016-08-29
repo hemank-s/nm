@@ -8,7 +8,8 @@
     width: 100%;
     height: 125px;
     top: 32px;
-    position: absolute;   
+    position: absolute; 
+    z-index: -100;  
 }
 
 @keyframes animatedBackground {
@@ -31,7 +32,8 @@
     width: 100%;
     height: 49px;
     bottom: 0px;
-    position: absolute;   
+    position: absolute;
+    z-index: 0;    
 }
 
 .customStickerFtueWrapper{
@@ -82,7 +84,19 @@
 }
 
 .customStickerUploadScreen{
-    margin-top: 80px; 
+    margin-top: 24px; 
+}
+
+.showHistoryButton{
+    text-align: center;
+    border: 1px solid #EAC6A4;
+    width: 40%;
+    margin: 0px auto;
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #000;
+    margin-top: 50px;
+    border-radius: 4px;
 }
 
 .uploadPhotoContainer{
@@ -136,7 +150,7 @@ input:-ms-input-placeholder {
 color: rgba(61,71,91,0.64) !important;  
 }
 
-.customStickerUploadScreen input{
+.customStickerUploadScreen input, .customStickerFailScreen input{
     margin-left: 27px;
     margin-top: 27px;
     background: none;
@@ -155,7 +169,7 @@ color: rgba(61,71,91,0.64) !important;
     margin-top: 12px;
 }
 
-.sendButton{
+.sendButton, .sendStickerAgainButton{
     background: #00AFFF;
     color: #fff;
     font-size: 14px;
@@ -229,9 +243,9 @@ color: rgba(61,71,91,0.64) !important;
 
 .customStickerView{
     background: url(images/customStickerSendSuccess.png);
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
-    width: 175px;
+    width: 138px;
     height: 175px;
     margin: auto;
 }
@@ -263,7 +277,7 @@ color: rgba(61,71,91,0.64) !important;
 .customStickerIcon{
     display: inline-block;
     vertical-align: middle;
-    background-size: contain;
+    background-size: cover;
     width: 50px;
     height: 50px;
     background-repeat: no-repeat;
@@ -279,6 +293,7 @@ color: rgba(61,71,91,0.64) !important;
 .customStickerDetails{
     display: inline-block;
     vertical-align: middle; 
+    margin-left: 8px; 
 }
 
 .stickerPhrase{
@@ -287,12 +302,21 @@ color: rgba(61,71,91,0.64) !important;
     margin-bottom: 7px;
 }
 
+.failReason{
+    color: red;
+    font-style: italic ;
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
 .stickerOrderDate{
     font-size: 12px;
     color: rgba(61, 71, 91, 0.64);
 }
 
-.statusIconcompleted{
+.statusIconredeemed{
     background: url(images/stickerPackDownloaded.png);
     background-size: contain;
     background-repeat: no-repeat;
@@ -316,7 +340,7 @@ color: rgba(61,71,91,0.64) !important;
     position: absolute;
 }
 
-.statusIconfail{
+.statusIconfailed{
     background: url(images/customStickerFail.png);
     background-size: contain;
     background-repeat: no-repeat;

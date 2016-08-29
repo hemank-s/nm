@@ -96,7 +96,7 @@
 
         sendCustomSticker : function(data, fn, x){
             var params = {
-                'url': URL.api_location + '/rewards/'+data.rewardId+'/custom_sticker/'+data.customStickerId+'?random='+Math.round(Math.random() * 999999999),
+                'url': URL.api_location + '/custom_sticker/tid/'+data.rewardId+'/sid/'+data.customStickerId+'?random='+Math.round(Math.random() * 999999999),
                 'type': 'GET'
             };
             if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
@@ -105,17 +105,7 @@
 
         getMysteryBox : function(fn, x){
             var params = {
-                'url': URL.api_location + '/rewards/mysterybox/details'+'?random='+Math.round(Math.random() * 999999999),
-                'type': 'GET'
-            };
-            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
-            else this.ninjaService.communicate(params);  
-        },
-
-        // Mystery Box Spin Result
-        getMysteryBoxResult: function(fn, x){
-            var params = {
-                'url': URL.api_location + '/rewards/mysterybox/redeem'+'?random='+Math.round(Math.random() * 999999999),
+                'url': URL.api_location + '/mysterybox'+'?random='+Math.round(Math.random() * 999999999),
                 'type': 'GET'
             };
             if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);

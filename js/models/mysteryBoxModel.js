@@ -30,16 +30,16 @@
 
             // STUB TO REMOVE
 
-            var res1 = { 'data': { 'status': 'active', 'rewards': [{ 'id': 1, 'type': 'mysteryBox_medium', 'title': 'Battery + 1' }, { 'id': 2, 'type': 'mysteryBox_medium', 'title': 'Streak + 1' }, { 'id': 3, 'type': 'mysteryBox_low', 'title': 'Battery + 0' }, { 'id': 4, 'type': 'mysteryBox_low', 'title': 'Streak + 0' }, { 'id': 5, 'type': 'mysteryBox_bumper', 'title': 'Custom sticker' }, { 'id': 6, 'type': 'mysteryBox_low', 'title': 'Battery - 1' }, { 'id': 7, 'type': 'mysteryBox_low', 'title': 'streak - 1' }, { 'id': 8, 'type': 'mysteryBox_low', 'title': 'Better Luck next time' }] } };
-            var res2 = { 'data': { 'status': 'inactive', 'rewards': [], 'streakToUnlock': 14 } };
-            var res3 = { 'data': { 'status': 'cooldown', 'rewards': [], 'coolDownTime': 1470916209263 } };
+            // var res1 = { 'data': { 'status': 'active', 'rewards': [{ 'id': 1, 'type': 'mysteryBox_medium', 'title': 'Battery + 1' }, { 'id': 2, 'type': 'mysteryBox_medium', 'title': 'Streak + 1' }, { 'id': 3, 'type': 'mysteryBox_low', 'title': 'Battery + 0' }, { 'id': 4, 'type': 'mysteryBox_low', 'title': 'Streak + 0' }, { 'id': 5, 'type': 'mysteryBox_bumper', 'title': 'Custom sticker' }, { 'id': 6, 'type': 'mysteryBox_low', 'title': 'Battery - 1' }, { 'id': 7, 'type': 'mysteryBox_low', 'title': 'streak - 1' }, { 'id': 8, 'type': 'mysteryBox_low', 'title': 'Better Luck next time' }] } };
+            // var res2 = { 'data': { 'status': 'inactive', 'rewards': [], 'streakToUnlock': 14 } };
+            // var res3 = { 'data': { 'status': 'cooldown', 'rewards': [], 'coolDownTime': 1470916209263 } };
 
-            this.updateMysteryBoxTab(res1.data, App);
+            // this.updateMysteryBoxTab(res1.data, App);
 
             // STUB TO REMOVE
 
             App.NinjaService.getMysteryBox(function(res) {
-                console.log(res.data);
+                console.log("MYSTERY BOX DATA IS", res.data);
                 this.updateMysteryBoxTab(res.data, App);
             }, this);
 
@@ -62,8 +62,7 @@
             var mysteryBoxContainer = document.getElementsByClassName('mysteryBoxContainer')[0]; // Gives Existing List of Rewards in the Template
             //mysteryBoxContainer.innerHTML = '';
 
-            
-            if (rewardData.type == 'mysteryBox_bumper') {
+            if (rewardData.value == 'HIGH') {
                 console.log("Bumper Anmation");
                 this.template = require('raw!../../templates/mysteryBoxResultAnimation.html');
                 mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
@@ -72,25 +71,52 @@
 
                 var mysteryRewardBumperAction = document.getElementsByClassName('mysteryRewardBumperAction')[0];
                 mysteryRewardBumperAction.addEventListener('click', function() {
-                    var res = {'data':{'rewardId':112321,'customStickers':[{"id":123,"ts":1470916209781,"status":"inProgress","phrase":"Not a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"},{"id":124,"ts":1470916209224,"status":"completed","phrase":"It is a blocker", "url":"http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png"}],'eligible':true}};
-                   	App.router.navigateTo( '/customSticker', res.data);
+                    var res = { 'data': { 'rewardId': 112321, 'customStickers': [{ "id": 123, "ts": 1470916209781, "status": "inProgress", "phrase": "Not a blocker", "url": "http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png" }, { "id": 124, "ts": 1470916209224, "status": "completed", "phrase": "It is a blocker", "url": "http://ih1.redbubble.net/image.79406311.0384/sticker,375x360.u1.png" }], 'eligible': true } };
+                    App.router.navigateTo('/customSticker', res.data);
                 });
 
-            } else if (rewardData.type == 'mysteryBox_low') {
+            } else if (rewardData.type == 'LOW') {
                 console.log("Low animation :: Figure Out design");
-            } else if (rewardData.type == 'mysteryBox_medium') {
+            } else if (rewardData.type == 'MED') {
                 console.log("Low animation :: Figure Out Design");
+            }
+        },
+
+        mapRewardsToSlice: function(mysteryBoxData){
+            console.log(mysteryBoxData);
+
+            var slices = document.getElementsByClassName('part');
+
+            for (var i=0; i< slices.length; i++){
+                console.log(slices);
+                slices[i].setAttribute('data-reward',mysteryBoxData.rewards[i].id); 
+            }
+            // Set Icons here as well
+        },
+
+        getRewardMapping: function(resultId, mysteryBoxData){
+
+            var slices = document.getElementsByClassName('part');
+
+            for (var i=0; i< slices.length; i++){
+                var result = slices[i].getAttribute('data-reward');
+
+                if(result == resultId){
+                    var winner = slices[i].getAttribute('data-slice');
+                    return winner;
+                }else {
+                    console.log("No reward Found");
+                }
             }
         },
 
         defineLuckyBox: function(App, mysteryBoxData) {
 
-        	var that = this;
-            // STUB
-
+            var that = this;
+            
             // Result of Spin
-            var spinResult = 5;
-            var rewardData = this.getMysteryBoxRewardDetails(mysteryBoxData.rewards, spinResult);
+            var spinResult = that.getRewardMapping(mysteryBoxData.spin_result.id, mysteryBoxData);
+            var rewardData = mysteryBoxData.spin_result;
             // Define Wheel
 
             var spin = document.getElementById('spin');
@@ -98,16 +124,16 @@
             var result = document.getElementById('result');
 
             var setText = function(a, b, c) {
-
                 a.addEventListener('transitionend', function() {
                     b.innerText = rewardData.title;
-                    that.defineMysteryBoxResultAnimation(App,rewardData);
+                    that.defineMysteryBoxResultAnimation(App, rewardData);
                     a.removeEventListener('transitionend', setText);
                 });
             };
 
             var deg = 0;
             var rotations = 0;
+
             spin.addEventListener('click', function() {
                 rotations++;
                 var stop = spinResult;
@@ -118,45 +144,6 @@
                 wheel.style.transform = rot;
                 setText(wheel, result, rewardData);
             });
-
-            // STUB
-
-
-
-            App.NinjaService.getMysteryBoxResult(function(res) {
-                console.log(res);
-
-                // Result of Spin
-                var spinResult = res.data.resultId;
-                var rewardData = this.getMysteryBoxRewardDetails(mysteryBoxData.rewards, spinResult);
-
-                // Define Wheel
-
-                var spin = document.getElementById('spin');
-                var wheel = document.getElementById('wheel');
-                var result = document.getElementById('result');
-
-                var setText = function(a, b, c) {
-                    a.addEventListener('transitionend', function() {
-                        b.innerText = rewardData.title;
-                        a.removeEventListener('transitionend', setText);
-                    });
-                };
-
-                var deg = 0;
-                var rotations = 0;
-                spin.addEventListener('click', function() {
-                    rotations++;
-                    var stop = spinResult;
-                    console.log('stop is', stop);
-                    var rotationFix = 360 / 16 + 360 / 8 + rotations * 720;
-                    deg = 360 / 8 * stop + rotationFix;
-                    var rot = 'rotate3d(0,0,1,' + deg + 'deg)';
-                    wheel.style.transform = rot;
-                    setText(wheel, result, rewardData);
-                });
-
-            }, this);
 
         },
 
@@ -214,30 +201,26 @@
             mysteryBoxContainer.innerHTML = '';
             console.log(mysteryBoxData);
 
-            if (mysteryBoxData.status == 'inactive') {
+            if (mysteryBoxData.mstatus == 'inactive') {
 
                 // Re Render The Reward Template Only From External HTML
                 this.template = require('raw!../../templates/mysteryBoxInactiveTemplate.html');
                 mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
-                    streakToUnlock: mysteryBoxData.streakToUnlock
+                    streakToUnlock: mysteryBoxData.streak_unlock
                 });
-            } else if (mysteryBoxData.status == 'active') {
+            } else if (mysteryBoxData.mstatus == 'active') {
 
                 this.template = require('raw!../../templates/mysteryBoxActiveTemplate.html');
-                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
-                    streakToUnlock: mysteryBoxData.streakToUnlock
-                });
-
+                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {});
+                this.mapRewardsToSlice(mysteryBoxData);
                 this.defineLuckyBox(App, mysteryBoxData);
 
-            } else if (mysteryBoxData.status == 'cooldown') {
+            } else if (mysteryBoxData.mstatus == 'cooldown') {
 
                 console.log(mysteryBoxData);
 
                 this.template = require('raw!../../templates/mysteryBoxCooldownTemplate.html');
-                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {
-                    streakToUnlock: mysteryBoxData.streakToUnlock
-                });
+                mysteryBoxContainer.innerHTML = Mustache.render(this.template, {});
 
                 this.defineCooldown(mysteryBoxData.coolDownTime);
 
