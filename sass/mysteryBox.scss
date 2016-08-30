@@ -1,6 +1,6 @@
 .wheel-wrapper {
     position: absolute;
-    top: 35%;
+    top: 45%;
     left: 50%;
     height: 200px;
     width: 200px;
@@ -258,7 +258,7 @@
 
 
 .mysteryBoxMessageSpin{
-  color: rgba(61, 71, 91, 0.64);
+    color: rgba(61, 71, 91, 0.64);
     font-size: 14px;
     font-weight: 400;
     padding: 20px 24px 0px 24px;
@@ -277,3 +277,102 @@
     padding: 12px 32px;
     text-transform: uppercase;
 }
+
+.previousWinnerRow{
+    margin-top: 265px; 
+}
+
+.previousWinnerHeading
+{
+    font-size: 12px;
+    color: #1da8e8;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.winnerIcon{
+    background: url(images/illustration_lower.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+.winnerName{
+    color: rgba(0, 0, 0, 0.64);
+    font-size: 14px;
+    display: inline-block;
+    font-weight: 400;
+    vertical-align: middle;
+    margin-left: 8px;   
+}
+
+.mysteryRewardAction{
+    margin-top: 24px;
+    font-size: 15px;
+    border: 1px solid #EAC6A4;
+    color: #E49F5C;
+    font-weight: 500;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 12px 32px;
+    text-transform: uppercase;
+}
+
+.mysteryBoxHistory{
+    color: #1da8e8;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 4px 12px;
+    border-radius: 4px;
+    text-align: center;
+    line-height: 21px;
+    display: inline-block;
+    margin: 16px auto 0px auto;
+    text-transform: uppercase; 
+}
+
+.mysteryBoxHistoryContainer{
+    padding: 30px 0px 20px 30px;
+}
+
+.bumperRow {
+    list-style: none;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+}
+
+.bumperRowIcon {
+    background: url(images/giftSample.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 26px;
+    height: 26px;
+    display: inline-block;
+    background-position: center;
+    vertical-align: middle; 
+}
+
+.bumperRowDetails {
+    display: inline-block;
+    margin-left: 18px;
+    vertical-align: middle; 
+}
+
+.bumperRowHeading {
+    font-size: 16px;
+    color: #3D475B;
+    margin-bottom: 7px;
+    font-weight: 500; 
+}
+
+.bumperRowSubHeading {
+    font-size: 12px;
+    color: rgba(61, 71, 91, 0.64);
+    width: 120%; 
+}
+

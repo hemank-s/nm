@@ -46,3 +46,17 @@
     </div>
   </div>
 </div>
+
+{{#previousWinner}}
+  <div class="previousWinnerRow align-center">
+    <p class="previousWinnerHeading">Yesterday's Grand Prize Winner</p>
+    <div class="winnerWrapper">
+      <div class="winnerIcon"></div>
+      <div class="winnerName">{{previousWinner.name}}</div>  
+    </div>
+  </div>
+{{/previousWinner}}
+
+{{#showMysteryBoxHistoryButton}}
+<div class="mysteryBoxHistory  align-center">My History</div>
+{{/showMysteryBoxHistoryButton}}

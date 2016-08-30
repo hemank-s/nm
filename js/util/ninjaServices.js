@@ -112,6 +112,15 @@
             else this.ninjaService.communicate(params);  
         },
 
+        getMysteryBoxResult: function(fn, x){
+            var params = {
+                'url': URL.api_location + '/mysterybox'+'?random='+Math.round(Math.random() * 999999999),
+                'type': 'POST'
+            };
+            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
+            else this.ninjaService.communicate(params);
+        },
+
         getStickerPack: function(data, fn, x){
             console.log("Getting Sticker Pack For the User");
             var params = {
