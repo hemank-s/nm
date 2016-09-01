@@ -85,6 +85,7 @@
         // Run everything Here
         defineNinjaHomeScreenTabs();
         rewardsModel.updateNinjaRewardsLinks(App);
+        mysteryBoxModel.getMysteryBoxDetails(App);
 
     };
 

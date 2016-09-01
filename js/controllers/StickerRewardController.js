@@ -45,13 +45,15 @@
                 var rewardId = this.getAttribute('data-rewardid');
                 var stickerDetails = that.getStickerDetails(catId, stickerPacks);
 
-                if (stickerState == '1') {
-                    utils.showToast('You have already downloaded this sticker pack');
-                } else {
-                    console.log('Fetching sticker pack');
-                    // Going to Sticker Pack View
-                    App.router.navigateTo('/stickerPackView', { "stickerDetails": stickerDetails, "rewardId": rewardId, "rewardRouter": data.rewardRouter });
-                }
+                App.router.navigateTo('/stickerPackView', { "stickerDetails": stickerDetails, "rewardId": rewardId, "rewardRouter": data.rewardRouter });                
+
+                // if (stickerState == '1') {
+                //     utils.showToast('You have already downloaded this sticker pack');
+                // } else {
+                //     console.log('Fetching sticker pack');
+                //     // Going to Sticker Pack View
+                //     App.router.navigateTo('/stickerPackView', { "stickerDetails": stickerDetails, "rewardId": rewardId, "rewardRouter": data.rewardRouter });
+                // }
             });
         }
 

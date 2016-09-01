@@ -9,7 +9,7 @@
     height: 125px;
     top: 32px;
     position: absolute;
-    z-index: -100;
+    z-index: 0;
 }
 
 @keyframes animatedBackground {
@@ -345,4 +345,31 @@
     color: rgba(61, 71, 91, 0.64);
     font-weight: 500;
     display: inline-block;
+}
+
+.tabIconLuckyBox{
+    background: url(images/tabLuckyBoxIcon.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 22px;
+    height: 20px;
+    margin: 0px auto 8px auto; 
+}
+
+.tabIconRewards{
+    background: url(images/tabRewardIcon.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 22px;
+    height: 20px;
+    margin: 0px auto 8px auto;
+}
+
+.tabIconStats{
+    background: url(images/tabStatIcon.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 22px;
+    height: 20px;
+    margin: 0px auto 8px auto;
 }

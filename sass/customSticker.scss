@@ -4,13 +4,6 @@
     background: linear-gradient(to bottom, #7cd0d5,#FFF9EB,#FFF9EB,#FFF9EB,#FFD6B8);
 }
 
-.topIllustration{
-    width: 100%;
-    height: 125px;
-    top: 32px;
-    position: absolute; 
-    z-index: -100;  
-}
 
 @keyframes animatedBackground {
     from { background-position: 0 0; }
@@ -22,22 +15,6 @@
     // background-position: 0px 0px;
     // background-repeat: repeat-x;
     // animation: animatedBackground 20s linear infinite;
-}
-
-
-.bottomIllustration{
-    background: url(images/illustration_lower.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: 100%;
-    height: 49px;
-    bottom: 0px;
-    position: absolute;
-    z-index: 0;    
-}
-
-.customStickerFtueWrapper{
-    
 }
 
 .customStickerHeaderImage{

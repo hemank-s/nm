@@ -222,6 +222,9 @@
             } else if (customStickerStatusCheck && ! customStickerStatusCheck.classList.contains('hideClass')){
                 customStickerStatusCheck.classList.add( 'hideClass' );
                 customStickerHistory.classList.remove( 'hideClass' );
+                if(customStickerUploadScreen){
+                    customStickerUploadScreen.classList.remove('hideClass');
+                }
                 return;
             }
             
@@ -385,7 +388,7 @@
                         self.router.navigateTo('/');
                         profileModel.updateNinjaData(res.data, self);
                         activityModel.fetchNinjaActivity('lifetime');
-                        mysteryBoxModel.getMysteryBoxDetails(self);
+                        //mysteryBoxModel.getMysteryBoxDetails(self);
                     }
                 }, this);
             }
@@ -416,7 +419,7 @@
                         self.router.navigateTo('/',data);
                         profileModel.updateNinjaData(res.data, self);
                         activityModel.fetchNinjaActivity('lifetime');
-                        mysteryBoxModel.getMysteryBoxDetails(self);
+                        //mysteryBoxModel.getMysteryBoxDetails(self);
                     }
                 }, this);
             }

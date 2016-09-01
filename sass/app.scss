@@ -96,7 +96,19 @@
 .comp__tabs .selected {
     color: #3D475B;
     font-size: 12px;
-    border-bottom: 2px solid #ffff8c;
+    border-bottom: 2px solid #FFA615;
+}
+
+.statsTabSelected{
+    border-bottom: 2px solid #1DCECE;
+}
+
+.rewardsTabSelected{
+    border-bottom: 2px solid #FFA615;
+}
+
+.luckyBoxTabSelected{
+    border-bottom: 2px solid #D83D5E;
 }
 
 .prize {

@@ -53,7 +53,7 @@
                         App.router.navigateTo(rRouter, { "rewardDetails": res.data, "rewardId": rId, "rewardRouter": rRouter });
                     }, this);
                 } else {
-                    utils.showToast("Can't download at right now!");
+                    utils.showToast("Sticker pack cannot be downloaded right now, please try again after some time!");
                 }
                 // App.router.navigateTo('/');
             }, this);

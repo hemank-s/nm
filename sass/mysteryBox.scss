@@ -253,7 +253,6 @@
     text-align: center;
     margin-top: 20px;
     color: #1da8e8;
-    cursor: pointer;
 }
 
 
@@ -331,7 +330,6 @@
     border-radius: 4px;
     text-align: center;
     line-height: 21px;
-    display: inline-block;
     margin: 16px auto 0px auto;
     text-transform: uppercase; 
 }
@@ -376,3 +374,14 @@
     width: 120%; 
 }
 
+.mBoxRewardIcon{
+    background: url(images/reward_spec.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    background-position: center;
+    vertical-align: middle;
+    margin: 1px 1px 1px 15px;
+}
