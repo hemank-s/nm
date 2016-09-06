@@ -74,6 +74,7 @@
     color: #000;
     margin-top: 50px;
     border-radius: 4px;
+    z-index: 100; 
 }
 
 .uploadPhotoContainer{
@@ -86,6 +87,7 @@
     display: flex;
     background-size: cover;
     background-repeat: no-repeat;
+    z-index: 100;
 }
 
 .uploadPhoto{
@@ -95,6 +97,7 @@
     width: 72px;
     height: 48px;
     margin: auto; 
+    z-index: 100;
 }
 
 .customStickerText select{
@@ -137,6 +140,7 @@ color: rgba(61,71,91,0.64) !important;
     color: rgba(61,71,91,0.64);
     width: 85%;
     border-bottom: 1px dotted #eee;
+    z-index: 100;
 }
 
 .errorMessage{
@@ -155,7 +159,8 @@ color: rgba(61,71,91,0.64) !important;
     margin: 24px auto 24px auto;
     text-transform: uppercase;
     width: 11%;
-    border-radius: 4px;     
+    border-radius: 4px;  
+    z-index: 100;   
 }
 
 .customStickerSent{

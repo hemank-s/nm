@@ -239,9 +239,14 @@
 
         var sendForm = true;
 
-        if ( ! customImageUploaded || ! customStickerTextPhrase ) {
+        if ( ! customImageUploaded ) {
             this.showErrorState( 'Please fill all the details' );
             sendForm = false;
+        }
+
+        if( customStickerTextPhrase.value === ""){
+            this.showErrorState( 'Please fill all the details' );
+            sendForm = false;   
         }
 
         return sendForm;

@@ -50,12 +50,16 @@
                     } catch (e) {
                         return false;
                     }
+
                     if (res) {
                         if(res.stat == "ok"){
                             console.log(fn);
                             fn.call(x, res);    
                         }else{
-                            console.log("Call the Error Logging and Tracker here");
+                            console.log(res);
+                            if(res.stat == 'fail'){
+                                platformSdk.ui.showToast("Hmm. Something went wrong. Not to worry, try again in a little bit :)");
+                            }
                         }
                     } else {
                         if (platformSdk.bridgeEnabled) {

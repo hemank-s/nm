@@ -246,6 +246,7 @@
                     deg = 360 / 8 * stop + rotationFix;
                     var rot = 'rotate3d(0,0,1,' + deg + 'deg)';
                     wheel.style.transform = rot;
+                    wheel.style.webkitTransform = rot;
                     setText( wheel, result, rewardData );
                 }, that );
             });

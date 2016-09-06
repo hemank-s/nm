@@ -700,7 +700,7 @@ a:visited {
   height: 125px;
   top: 32px;
   position: absolute;
-  z-index: 0; }
+  z-index: -100; }
 
 @keyframes animatedBackground {
   from {
@@ -1065,7 +1065,8 @@ a:visited {
   font-size: 14px;
   color: #000;
   margin-top: 50px;
-  border-radius: 4px; }
+  border-radius: 4px;
+  z-index: 100; }
 
 .uploadPhotoContainer {
   border: 1px dotted #CFCFCF;
@@ -1076,7 +1077,8 @@ a:visited {
   margin: 0px auto;
   display: flex;
   background-size: cover;
-  background-repeat: no-repeat; }
+  background-repeat: no-repeat;
+  z-index: 100; }
 
 .uploadPhoto {
   background: url(images/takeSnap.png);
@@ -1084,7 +1086,8 @@ a:visited {
   background-repeat: no-repeat;
   width: 72px;
   height: 48px;
-  margin: auto; }
+  margin: auto;
+  z-index: 100; }
 
 .customStickerText select {
   font-size: 14px;
@@ -1121,7 +1124,8 @@ input:-ms-input-placeholder {
   padding-bottom: 10px;
   color: rgba(61, 71, 91, 0.64);
   width: 85%;
-  border-bottom: 1px dotted #eee; }
+  border-bottom: 1px dotted #eee;
+  z-index: 100; }
 
 .errorMessage {
   text-align: center;
@@ -1138,7 +1142,8 @@ input:-ms-input-placeholder {
   margin: 24px auto 24px auto;
   text-transform: uppercase;
   width: 11%;
-  border-radius: 4px; }
+  border-radius: 4px;
+  z-index: 100; }
 
 .successSentImage {
   background: url(images/customStickerSendSuccess.png);

@@ -109,9 +109,18 @@
                     var ninjaName = document.getElementsByClassName('ninjaName')[0];
                     var ninjaIcon = document.getElementsByClassName('ninjaProfileIcon')[0];
 
-                    // UI Modify
-                    streakValue.innerHTML = ninjaProfileData.streak;
-                    batteryValue.innerHTML = ninjaProfileData.battery;
+                    if(ninjaProfileData.streak){
+                        streakValue.innerHTML = ninjaProfileData.streak;    
+                    }else{
+                        streakValue.innerHTML = 0;
+                    }
+
+                    if(ninjaProfileData.battery){
+                        batteryValue.innerHTML = ninjaProfileData.battery;    
+                    }else{
+                        batteryValue.innerHTML = 0;
+                    }
+                    
                     ninjaName.innerHTML = ninjaProfileData.name;
 
                     // For Dp Refer the Android Client DP Path

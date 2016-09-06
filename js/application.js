@@ -195,6 +195,7 @@
         backPressTrigger: function() {
 
             var stickerCooldownElement = document.getElementsByClassName( 'stickerCooldownContainer' )[0];
+            var stickerShopElement = document.getElementsByClassName('stickerShopPageOne')[0];
             var customStickerHistory = document.getElementsByClassName( 'customStickerHistory' )[0];
             var showHistoryButton = document.getElementsByClassName('showHistoryButton')[0];
             var customStickerReadyState = document.getElementsByClassName('customStickerReadyState')[0];
@@ -202,7 +203,7 @@
             var customStickerUploadScreen = document.getElementsByClassName('customStickerUploadScreen')[0];
             var uploadParent = document.getElementsByClassName( 'uploadParent' )[0];
 
-            if ( stickerCooldownElement ) {
+            if ( stickerCooldownElement || stickerShopElement) {
                 this.goToNinjaProfilePage();
                 return;
             } else if(customStickerHistory && ! customStickerHistory.classList.contains( 'hideClass' )){
@@ -398,7 +399,7 @@
 
                 var data = {};
 
-                 this.ninjaRewardsData = [];
+                 this.ninjaRewardsData = {'rewards':[],'rewards_hash':''};
                  this.ninjaProfileData = {"battery":0,"rewards_hash":"","status":"active","streak":0,"name":''};
                  this.ninjaActivityData = {"chatThemes":{"rec":0,"sent":0},"files":{"rec":0,"sent":0},"messages":{"rec":0,"sent":0},"statusUpdates":{"count":0},"stickers":{"rec":0,"sent":0}};
 
@@ -407,10 +408,10 @@
                 data.ninjaRewardsCollection = this.ninjaRewardsData;
                 data.ninjaProfileData = this.ninjaProfileData ;
                 data.ninjaActivityData = this.ninjaActivityData;
-                cacheProvider.setInCritical('ftueCompleted', true);
-
+                
                 this.NinjaService.getNinjaProfile(function(res) {
                     console.log(res.data);
+                    cacheProvider.setInCritical('ftueCompleted', true);
                     if (profileModel.checkNinjaState(res.data.status) == 'lapsed') {
                         // To Add Ninja Lapsed State Here
                         console.log("Go to lapsed ninja Controller");

@@ -4937,6 +4937,7 @@
 	        backPressTrigger: function() {
 
 	            var stickerCooldownElement = document.getElementsByClassName( 'stickerCooldownContainer' )[0];
+	            var stickerShopElement = document.getElementsByClassName('stickerShopPageOne')[0];
 	            var customStickerHistory = document.getElementsByClassName( 'customStickerHistory' )[0];
 	            var showHistoryButton = document.getElementsByClassName('showHistoryButton')[0];
 	            var customStickerReadyState = document.getElementsByClassName('customStickerReadyState')[0];
@@ -4944,7 +4945,7 @@
 	            var customStickerUploadScreen = document.getElementsByClassName('customStickerUploadScreen')[0];
 	            var uploadParent = document.getElementsByClassName( 'uploadParent' )[0];
 
-	            if ( stickerCooldownElement ) {
+	            if ( stickerCooldownElement || stickerShopElement) {
 	                this.goToNinjaProfilePage();
 	                return;
 	            } else if(customStickerHistory && ! customStickerHistory.classList.contains( 'hideClass' )){
@@ -5140,7 +5141,7 @@
 
 	                var data = {};
 
-	                 this.ninjaRewardsData = [];
+	                 this.ninjaRewardsData = {'rewards':[],'rewards_hash':''};
 	                 this.ninjaProfileData = {"battery":0,"rewards_hash":"","status":"active","streak":0,"name":''};
 	                 this.ninjaActivityData = {"chatThemes":{"rec":0,"sent":0},"files":{"rec":0,"sent":0},"messages":{"rec":0,"sent":0},"statusUpdates":{"count":0},"stickers":{"rec":0,"sent":0}};
 
@@ -5149,10 +5150,10 @@
 	                data.ninjaRewardsCollection = this.ninjaRewardsData;
 	                data.ninjaProfileData = this.ninjaProfileData ;
 	                data.ninjaActivityData = this.ninjaActivityData;
-	                cacheProvider.setInCritical('ftueCompleted', true);
-
+	                
 	                this.NinjaService.getNinjaProfile(function(res) {
 	                    console.log(res.data);
+	                    cacheProvider.setInCritical('ftueCompleted', true);
 	                    if (profileModel.checkNinjaState(res.data.status) == 'lapsed') {
 	                        // To Add Ninja Lapsed State Here
 	                        console.log("Go to lapsed ninja Controller");
@@ -5256,6 +5257,9 @@
 	        var ninjaIcon = document.getElementsByClassName('ninjaProfileIcon')[0];
 
 	        if (data && data.ninjaProfileData && data.ninjaProfileData.dp) {
+	            ninjaIcon.style.backgroundImage = "url('file:///" + data.ninjaProfileData.dp + "')";
+	            rewardsModel.updateNinjaRewardsIcons(data.ninjaRewardsCollection.rewards);
+	        } else if(data && data.ninjaProfileData && (data.ninjaProfileData.dp == "")) {
 	            ninjaIcon.style.backgroundImage = "url('file:///" + data.ninjaProfileData.dp + "')";
 	            rewardsModel.updateNinjaRewardsIcons(data.ninjaRewardsCollection.rewards);
 	        } else {
@@ -5437,9 +5441,18 @@
 	                    var ninjaName = document.getElementsByClassName('ninjaName')[0];
 	                    var ninjaIcon = document.getElementsByClassName('ninjaProfileIcon')[0];
 
-	                    // UI Modify
-	                    streakValue.innerHTML = ninjaProfileData.streak;
-	                    batteryValue.innerHTML = ninjaProfileData.battery;
+	                    if(ninjaProfileData.streak){
+	                        streakValue.innerHTML = ninjaProfileData.streak;    
+	                    }else{
+	                        streakValue.innerHTML = 0;
+	                    }
+
+	                    if(ninjaProfileData.battery){
+	                        batteryValue.innerHTML = ninjaProfileData.battery;    
+	                    }else{
+	                        batteryValue.innerHTML = 0;
+	                    }
+	                    
 	                    ninjaName.innerHTML = ninjaProfileData.name;
 
 	                    // For Dp Refer the Android Client DP Path
@@ -5719,12 +5732,16 @@
 	                    } catch (e) {
 	                        return false;
 	                    }
+
 	                    if (res) {
 	                        if(res.stat == "ok"){
 	                            console.log(fn);
 	                            fn.call(x, res);    
 	                        }else{
-	                            console.log("Call the Error Logging and Tracker here");
+	                            console.log(res);
+	                            if(res.stat == 'fail'){
+	                                platformSdk.ui.showToast("Hmm. Something went wrong. Not to worry, try again in a little bit :)");
+	                            }
 	                        }
 	                    } else {
 	                        if (platformSdk.bridgeEnabled) {
@@ -6320,6 +6337,7 @@
 	                    deg = 360 / 8 * stop + rotationFix;
 	                    var rot = 'rotate3d(0,0,1,' + deg + 'deg)';
 	                    wheel.style.transform = rot;
+	                    wheel.style.webkitTransform = rot;
 	                    setText( wheel, result, rewardData );
 	                }, that );
 	            });
@@ -6459,7 +6477,7 @@
 /* 18 */
 /***/ function(module, exports) {
 
-	module.exports = "{{#mysterBoxReward}}\n\t<div class=\"mysteryBoxIcon\"></div>\n\t<div class=\"mysteryBoxMessageSpin\">Congrats! You’ve unlocked the grand prize - {{title}}. Get your gift now.</div>\n\t<div data-rid=\"{{tid}}\" data-rewardtype=\"{{type}}\" class=\"mysteryRewardBumperAction\">Claim</div>\n{{/mysterBoxReward}}\n"
+	module.exports = "{{#mysterBoxReward}}\n\t<div class=\"mysteryBoxIcon\"></div>\n\t<div class=\"mysteryBoxMessageSpin\">Congrats! You’ve unlocked the grand prize - {{title}}. Get your gift now.</div>\n\t<div class=\"actionContainer align-center\">\n\t\t<div data-rid=\"{{tid}}\" data-rewardtype=\"{{type}}\" class=\"mysteryRewardBumperAction align-center\">Claim</div>\n\t</div>\n{{/mysterBoxReward}}\n"
 
 /***/ },
 /* 19 */
@@ -6984,9 +7002,14 @@
 
 	        var sendForm = true;
 
-	        if ( ! customImageUploaded || ! customStickerTextPhrase ) {
+	        if ( ! customImageUploaded ) {
 	            this.showErrorState( 'Please fill all the details' );
 	            sendForm = false;
+	        }
+
+	        if( customStickerTextPhrase.value === ""){
+	            this.showErrorState( 'Please fill all the details' );
+	            sendForm = false;   
 	        }
 
 	        return sendForm;
