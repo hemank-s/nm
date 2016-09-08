@@ -7,7 +7,8 @@
 
     var platformSdk = require('../../libs/js/platformSdk_v2.0'),
         utils = require('../util/utils'),
-        cacheProvider = require('../util/cacheProvider'),
+        cacheProvider = require('../util/cacheProvider'), 
+        Constants = require('../../constants.js'),
 
         RewardsModel = function() {},
 
@@ -29,13 +30,13 @@
         },
 
         showRewardStateToast: function(state) {
-            if (state == 'unlocked') {
+            if (state == Constants.REWARD_STATE.UNLOCKED) {
                 console.log("The state is currently unlocked :: Can open the reward");
-            } else if (state == 'locked') {
+            } else if (state == Constants.REWARD_STATE.LOCKED) {
                 utils.showToast('The reward is currently under locked state. Try again once you unlock it at a higher streak');
-            } else if (state == 'redeemed') {
+            } else if (state == Constants.REWARD_STATE.REDEEMED) {
                 console.log("Reward already redeemed once or more.");
-            } else if (state == 'disabled') {
+            } else if (state == Constants.REWARD_STATE.DISABLED) {
                 utils.showToast('The reward is in disabled state, sorry for the inconvienience');
             }
         },
@@ -69,11 +70,11 @@
                         // Get Reward related information
                         var rewardState = this.getAttribute('data-state');
 
-                        if (rewardState == 'locked') {
+                        if (rewardState == Constants.REWARD_STATE.LOCKED) {
                             that.showRewardStateToast(rewardState);
                             return;
-                        } else if (rewardState == 'disabled') {
-                            that.schowRewardStateToast(rewardState);
+                        } else if (rewardState == Constants.REWARD_STATE.DISABLED) {
+                            that.showRewardStateToast(rewardState);
                             return;
                         }
 
@@ -113,7 +114,6 @@
             // update helper data with new rewards
 
             cacheProvider.setInCritical('ninjaRewards', rewardsData);
-
             console.log("helper data is", platformSdk.appData.helperData);
 
             var ninjaRewardsListOld = document.getElementsByClassName('rewardsContainer')[0]; // Gives Existing List of Rewards in the Template
@@ -122,7 +122,8 @@
             // Re Render The Reward Template Only From External HTML
             this.template = require('raw!../../templates/newRewardTemplate.html');
             ninjaRewardsListOld.innerHTML = Mustache.render(this.template, {
-                ninjaRewardsCollection: rewardsData.rewards
+                ninjaRewardsCollection: rewardsData.rewards,
+                lockedGreyout : cacheProvider.getFromCritical('lockedGreyout')
             });
 
             this.updateNinjaRewardsLinks(App);

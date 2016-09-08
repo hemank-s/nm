@@ -38,8 +38,8 @@
                                         <li class="rewardRow" data-rewardId="{{id}}" data-state="{{state}}" data-rewardtype="{{type}}">
                                             <div class="rewardIcon"></div>
                                             <div class="rewardDetails">
-                                                <p class="rewardHeading">{{title}}</p>
-                                                <p class="rewardSubheading">{{stitle}}</p>
+                                                    <p class="rewardHeading    {{^state}}{{#lockedGreyout}}rewardHeadingLocked{{/lockedGreyout}}{{/state}}">{{title}}</p>
+                                                    <p class="rewardSubheading {{^state}}{{#lockedGreyout}}rewardSubheading{{/lockedGreyout}}{{/state}}">{{stitle}}</p> 
                                             </div>
                                             {{#streak}}
                                             <div class="rewardStreakWrapper">

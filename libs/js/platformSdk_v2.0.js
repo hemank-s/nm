@@ -1,4 +1,4 @@
-(function (window) {
+(function(window) {
     'use strict';
 
     var messageId,
@@ -9,11 +9,11 @@
          * @param {Object[]} methodList - List of methods for which wrappers need to be created
          * @private
          */
-        _createWrappers = function (bridgeObj, methodList) {
-            var wrapper = function () {
-                var args = Array.prototype.slice.call(arguments);
-                _invokeMethod.apply(null, args);
-            },
+        _createWrappers = function(bridgeObj, methodList) {
+            var wrapper = function() {
+                    var args = Array.prototype.slice.call(arguments);
+                    _invokeMethod.apply(null, args);
+                },
                 methodKey;
 
             for (var i = 0; i < methodList.length; i++) {
@@ -26,7 +26,7 @@
          * Fallback for method not being available on Android Bridge.
          * @private
          */
-        _handleMethodNotAvailable = function () {
+        _handleMethodNotAvailable = function() {
             if (console) {
                 console.log("function not available");
             }
@@ -37,7 +37,7 @@
          * @param {string} methodName The name of the method to be invoked
          * @private
          */
-        _invokeMethod = function (methodName) {
+        _invokeMethod = function(methodName) {
             if (typeof PlatformBridge[methodName] === 'function') {
                 PlatformBridge[methodName].apply(PlatformBridge, Array.prototype.slice.call(arguments, 1));
             } else {
@@ -527,7 +527,7 @@
      * @param appMessageId
      * @returns {Object}
      */
-    window.initiateBridge = function (platformVersion, appType, appMessageId) {
+    window.initiateBridge = function(platformVersion, appType, appMessageId) {
         var _bridge, bridgeMethods, counter;
 
         /**
@@ -560,15 +560,15 @@
  * @namespace platformSdk
  */
 
-window.platformSdk = function (window, undefined) {
+window.platformSdk = function(window, undefined) {
     "use strict";
 
     //classlist hack for android 2.3 and below
     if (!("classList" in document.documentElement) && Object.defineProperty && typeof HTMLElement !== "undefined") {
         Object.defineProperty(HTMLElement.prototype, "classList", {
-            get: function () {
-                function t (t) {
-                    return function (n) {
+            get: function() {
+                function t(t) {
+                    return function(n) {
                         var r = e.className.split(/\s+/),
                             i = r.indexOf(n);
                         t(r, i, n);
@@ -578,24 +578,24 @@ window.platformSdk = function (window, undefined) {
 
                 var e = this;
                 var n = {
-                    add: t(function (e, t, n) {
+                    add: t(function(e, t, n) {
                         ~t || e.push(n);
                     }),
-                    remove: t(function (e, t) {
+                    remove: t(function(e, t) {
                         ~t && e.splice(t, 1);
                     }),
-                    toggle: t(function (e, t, n) {
+                    toggle: t(function(e, t, n) {
                         ~t ? e.splice(t, 1) : e.push(n);
                     }),
-                    contains: function (t) {
+                    contains: function(t) {
                         return !!~e.className.split(/\s+/).indexOf(t);
                     },
-                    item: function (t) {
+                    item: function(t) {
                         return e.className.split(/\s+/)[t] || null;
                     }
                 };
                 Object.defineProperty(n, "length", {
-                    get: function () {
+                    get: function() {
                         return e.className.split(/\s+/).length;
                     }
                 });
@@ -610,12 +610,12 @@ window.platformSdk = function (window, undefined) {
 
     var platformBridge = window.initiateBridge(platformVersion, appType);
 
-    var fireAppInit = function () {
+    var fireAppInit = function() {
         var cardHeight = document.body.offsetHeight;
         if (platformBridge) platformSdk.ui.onLoadFinished(cardHeight + "");
 
         if ('M' === appType) {
-            setTimeout(function () {
+            setTimeout(function() {
                 cardHeight = document.body.offsetHeight;
 
                 if (Math.abs(window.innerHeight - cardHeight) > 5 && platformBridge) {
@@ -638,7 +638,7 @@ window.platformSdk = function (window, undefined) {
      * @param {String} uid - uid
      * @param {String} appVersion - app version
      */
-    var setData = function (msisdn, helperData, isSent, uid, appVersion) {
+    var setData = function(msisdn, helperData, isSent, uid, appVersion) {
 
         var appData = {
             msisdn: msisdn,
@@ -660,7 +660,7 @@ window.platformSdk = function (window, undefined) {
      * @global
      * @param {Object} appData - application data passed to the micro app on startup
      */
-    var setAppData = function (appData) {
+    var setAppData = function(appData) {
 
         if (appInitialized) return;
         else appInitialized = true;
@@ -706,7 +706,7 @@ window.platformSdk = function (window, undefined) {
      * @function
      * @global
      */
-    window.onResume = function () {
+    window.onResume = function() {
         platformSdk.events.publish('app/onresume');
     };
 
@@ -716,12 +716,12 @@ window.platformSdk = function (window, undefined) {
      * @global
      * @fire 'app/onbeforeunload'
      */
-    window.onPause = function () {
+    window.onPause = function() {
         platformSdk.events.publish('app/onbeforeunload');
     };
 
     if (typeof PlatformBridge === "undefined") window.onload = setAppData;
-    
+
     window.init = setAppData;
 
     return {
@@ -789,9 +789,9 @@ window.platformSdk = function (window, undefined) {
          * @inner
          * @param {function} fn - function to be called once the 'webview/data/loaded' event has been fired
          */
-        ready: function (fn) {
+        ready: function(fn) {
             var that = this;
-            var start = platformSdk.events.subscribe('webview/data/loaded', function () {
+            var start = platformSdk.events.subscribe('webview/data/loaded', function() {
                 that.bridgeEnabled = that.checkBridge();
                 if (typeof fn === "function") fn();
                 start.remove();
@@ -806,7 +806,7 @@ window.platformSdk = function (window, undefined) {
          * @param {function} fn - function to be called once the 'webview/data/loaded' event has been fired
          * @return {Boolean} 'true' if bridge available, 'false' otherwise
          */
-        checkBridge: function () {
+        checkBridge: function() {
             return typeof PlatformBridge === "undefined" ? false : true;
         },
 
@@ -816,7 +816,7 @@ window.platformSdk = function (window, undefined) {
          * @memberOf platformSdk
          * @inner
          */
-        blockChatThread: function () {
+        blockChatThread: function() {
             platformBridge.blockChatThread("true");
         },
 
@@ -826,7 +826,7 @@ window.platformSdk = function (window, undefined) {
          * @memberOf platformSdk
          * @inner
          */
-        unblockChatThread: function () {
+        unblockChatThread: function() {
             platformBridge.blockChatThread("false");
         },
 
@@ -836,7 +836,7 @@ window.platformSdk = function (window, undefined) {
          * @memberOf platformSdk
          * @inner
          */
-        deleteMessage: function () {
+        deleteMessage: function() {
             platformBridge.deleteMessage();
         },
 
@@ -849,7 +849,7 @@ window.platformSdk = function (window, undefined) {
          * @param {Object} data - new metaData object
          * @param {boolean} notifyScreen - if true, the adapter will be notified of the change, else there will be only db update.
          */
-        updateMetadata: function (data, notifyScreen) {
+        updateMetadata: function(data, notifyScreen) {
             platformBridge.updateMetadata(platformSdk.utils.validateStringifyJson(data), notifyScreen);
         },
 
@@ -862,7 +862,7 @@ window.platformSdk = function (window, undefined) {
          * @param {String} title - title of the new page.
          * @param {String} href - url of the web page to be opened in full screen.
          */
-        openFullPage: function (title, href) {
+        openFullPage: function(title, href) {
             platformBridge.openFullPage(title, href);
         },
 
@@ -873,7 +873,7 @@ window.platformSdk = function (window, undefined) {
          * @memberOf platformSdk
          * @inner
          */
-        muteChatThread: function () {
+        muteChatThread: function() {
             platformBridge.muteChatThread();
         },
 
@@ -883,7 +883,7 @@ window.platformSdk = function (window, undefined) {
          * @memberOf platformSdk
          * @inner
          */
-        deleteAlarm: function () {
+        deleteAlarm: function() {
             platformBridge.deleteAlarm();
         },
 
@@ -894,7 +894,7 @@ window.platformSdk = function (window, undefined) {
          * @inner
          * @param {Object} data - new helper data object
          */
-        updateHelperData: function (data) {
+        updateHelperData: function(data) {
             if (typeof platformBridge.updateHelperData === "function") platformBridge.updateHelperData(platformSdk.utils.validateStringifyJson(data));
             else platformSdk.events.publish('app.noHelperData', data);
         },
@@ -906,7 +906,7 @@ window.platformSdk = function (window, undefined) {
          * @inner
          * @param {Object} data - data object to be put into cache
          */
-        setBlob: function (data) {
+        setBlob: function(data) {
             var str = platformSdk.utils.validateStringifyJson(data);
             platformBridge.putLargeDataInCache(str);
         },
@@ -919,7 +919,7 @@ window.platformSdk = function (window, undefined) {
          * @param {Object} alarmData - data to pass for setting alarm
          * @param {Object} nextPollIt - time in milli seconds.
          */
-        setAlarm: function (alarmData, nextPollIt) {
+        setAlarm: function(alarmData, nextPollIt) {
             if (typeof alarmData !== 'string')
                 alarmData = platformSdk.utils.validateStringifyJson(alarmData);
 
@@ -933,7 +933,7 @@ window.platformSdk = function (window, undefined) {
          * @inner
          * @return {Object} latest notification data object
          */
-        getLatestNotifData: function () {
+        getLatestNotifData: function() {
             var notifData = platformSdk.appData.notifData;
 
             var arr = [];
@@ -941,7 +941,7 @@ window.platformSdk = function (window, undefined) {
                 arr.push(key);
             }
 
-            arr.sort(function (a, b) {
+            arr.sort(function(a, b) {
                 return b - a;
             });
             return notifData[arr[0]];
@@ -958,13 +958,13 @@ if (typeof module !== 'undefined') {
  * @namespace platformSdk.utils
  * @memberOf platformSdk
  */
-platformSdk.utils = function (window, platformSdk) {
+platformSdk.utils = function(window, platformSdk) {
 
     var platformBridge = platformSdk.bridge;
 
-    (function () {
+    (function() {
         var cache = {};
-        this.tmpl = function tmpl (str, data) {
+        this.tmpl = function tmpl(str, data) {
             var fn = !/\W/.test(str) ? cache[str] = cache[str] || tmpl(document.getElementById(str).innerHTML) : new Function("obj", "var p=[],print=function(){p.push.apply(p,arguments);};" + "with(obj){p.push('" + str.replace(/[\r\t\n]/g, " ").split("<%").join("\t").replace(/((^|%>)[^\t]*)'/g, "$1\r").replace(/\t=(.*?)%>/g, "',$1,'").split("\t").join("');").split("%>").join("p.push('").split("\r").join("\\'") + "');}return p.join('');");
             return data ? fn(data) : fn;
         };
@@ -979,7 +979,7 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {String} msg - message string to be logged
          * @param {String} caption - caption for the log
          */
-        log: function (msg, caption) {
+        log: function(msg, caption) {
             if (platformSdk.bridgeEnabled) platformBridge.logFromJS("platform-js-sdk", msg);
             if (console) {
                 if (caption)
@@ -988,7 +988,7 @@ platformSdk.utils = function (window, platformSdk) {
             }
         },
 
-        debug: function (object) {
+        debug: function(object) {
             if (platformSdk.bridgeEnabled) platformBridge.logFromJS("platform-js-sdk", this.validateStringifyJson(object));
         },
 
@@ -1001,7 +1001,7 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {String} type - the subtype of the event to be logged, eg. send "click", to determine whether it is a click event.
          * @param {Object} analyticEvents  - the analytics event object
          */
-        logAnalytics: function (isUI, type, analyticEvents) {
+        logAnalytics: function(isUI, type, analyticEvents) {
             analyticEvents = this.validateStringifyJson(analyticEvents);
             this.log("analytic with isui = " + isUI + " type = " + type + " analyticEvents = " + analyticEvents);
             if (platformSdk.bridgeEnabled) PlatformBridge.logAnalytics(isUI, type, analyticEvents);
@@ -1015,7 +1015,7 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {Object} josn - json object to be validated and strigified
          * @return {String} stringified json
          */
-        validateStringifyJson: function (json) {
+        validateStringifyJson: function(json) {
             //HACK to handle the helperdata bug. we cannot have \" or ' in the str.
             var jsonString = JSON.stringify(json);
             jsonString = jsonString.replace(/\\"/g, "&quot;");
@@ -1033,7 +1033,7 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {Array} array2 - second array to be merged
          * @return {Array} merged array
          */
-        merge: function (array1, array2) {
+        merge: function(array1, array2) {
             var array = array1.concat(array2);
             for (var i = 0; i < array.length; i++) {
                 for (var j = i + 1; j < array.length; j++) {
@@ -1053,9 +1053,9 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {String} key - key to sort the array with
          * @param {String} type - type of sorting, 'asc' for ascending and 'desc' for descending
          */
-        sort: function (array, key, type) {
+        sort: function(array, key, type) {
             type = type || 'asc';
-            return array.sort(function (a, b) {
+            return array.sort(function(a, b) {
                 var x = a[key];
                 var y = b[key];
                 if (type === "asc") return ((x < y) ? -1 : ((x > y) ? 1 : 0));
@@ -1071,7 +1071,7 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {Object} obj - Object to be checked for emptiness
          * @return {Boolean} true if object is empty, false otherwise.
          */
-        isEmpty: function (obj) {
+        isEmpty: function(obj) {
             for (var prop in obj) {
                 if (obj.hasOwnProperty(prop))
                     return false;
@@ -1089,7 +1089,7 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {String} event - event name
          * @param {Function} fn - listener function
          */
-        addEventListenerList: function (list, event, fn) {
+        addEventListenerList: function(list, event, fn) {
             for (var i = 0, len = list.length; i < len; i++) {
                 list[i].addEventListener(event, fn, false);
             }
@@ -1104,7 +1104,7 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {String} event - event name
          * @param {Function} fn - listener function to be removed
          */
-        removeEventListenerList: function (list, event, fn) {
+        removeEventListenerList: function(list, event, fn) {
             for (var i = 0, len = list.length; i < len; i++) {
                 list[i].removeEventListener(event, fn, false);
             }
@@ -1115,8 +1115,8 @@ platformSdk.utils = function (window, platformSdk) {
          * @param  {nodeElement} ele - element whose siblings are required
          * @return {Array} list of siblings
          */
-        siblings: function (ele) {
-            function getChildren (ele, skipMe) {
+        siblings: function(ele) {
+            function getChildren(ele, skipMe) {
                 var r = [];
                 var elem = null;
                 for (; ele; ele = ele.nextSibling)
@@ -1139,7 +1139,7 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {Function} easingFunction - easing function to scroll with
          * @param {Function} callback - callback once the scroll is complete
          */
-        scrollTo: function (elem, Y, duration, easingFunction, callback) {
+        scrollTo: function(elem, Y, duration, easingFunction, callback) {
 
             if (typeof elem == "undefined")
                 elem = document.documentElement.scrollTop ? document.documentElement : document.body;
@@ -1152,11 +1152,11 @@ platformSdk.utils = function (window, platformSdk) {
                 /* Prevent scrolling to the Y point if already there */
             }
 
-            function min (a, b) {
+            function min(a, b) {
                 return a < b ? a : b;
             }
 
-            function scroll () {
+            function scroll() {
 
                 var currentTime = Date.now(),
                     time = min(1, ((currentTime - start) / duration)),
@@ -1192,67 +1192,67 @@ platformSdk.utils = function (window, platformSdk) {
          */
         easing: {
             // no easing, no acceleration
-            linear: function (t) {
+            linear: function(t) {
                 return t;
             },
 
             // accelerating from zero velocity
-            easeInQuad: function (t) {
+            easeInQuad: function(t) {
                 return t * t;
             },
 
             // decelerating to zero velocity
-            easeOutQuad: function (t) {
+            easeOutQuad: function(t) {
                 return t * (2 - t);
             },
 
             // acceleration until halfway, then deceleration
-            easeInOutQuad: function (t) {
+            easeInOutQuad: function(t) {
                 return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
             },
 
             // accelerating from zero velocity
-            easeInCubic: function (t) {
+            easeInCubic: function(t) {
                 return t * t * t;
             },
 
             // decelerating to zero velocity
-            easeOutCubic: function (t) {
+            easeOutCubic: function(t) {
                 return (--t) * t * t + 1;
             },
 
             // acceleration until halfway, then deceleration
-            easeInOutCubic: function (t) {
+            easeInOutCubic: function(t) {
                 return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
             },
 
             // accelerating from zero velocity
-            easeInQuart: function (t) {
+            easeInQuart: function(t) {
                 return t * t * t * t;
             },
 
             // decelerating to zero velocity
-            easeOutQuart: function (t) {
+            easeOutQuart: function(t) {
                 return 1 - (--t) * t * t * t;
             },
 
             // acceleration until halfway, then deceleration
-            easeInOutQuart: function (t) {
+            easeInOutQuart: function(t) {
                 return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t;
             },
 
             // accelerating from zero velocity
-            easeInQuint: function (t) {
+            easeInQuint: function(t) {
                 return t * t * t * t * t;
             },
 
             // decelerating to zero velocity
-            easeOutQuint: function (t) {
+            easeOutQuint: function(t) {
                 return 1 + (--t) * t * t * t * t;
             },
 
             // acceleration until halfway, then deceleration
-            easeInOutQuint: function (t) {
+            easeInOutQuint: function(t) {
                 return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t;
             }
         },
@@ -1265,7 +1265,7 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {NodeElement} el - dom element
          * @return {Number} height of the given element
          */
-        getHeight: function (el) {
+        getHeight: function(el) {
             var children = el.children;
             var len = children.length;
             var height = 0;
@@ -1285,7 +1285,7 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {String} tag - elemnt to search for closest to el
          * @return {NodeElement} closest element
          */
-        closest: function (el, tag) {
+        closest: function(el, tag) {
             tag = tag.toUpperCase();
             do {
                 if (el.nodeName === tag) return el;
@@ -1304,12 +1304,12 @@ platformSdk.utils = function (window, platformSdk) {
          * @param {Boolean} immediate - if true callback will be executed on the leading edge instead of trailing edge
          * @return {Function} Returns a function, that, as long as it continues to be invoked, will not be triggered. The function will be called after it stops being called for 'wait' milliseconds. If `immediate` is passed, the callback function will be triggered on the leading edge, instead of the trailing.
          */
-        debounce: function (func, wait, immediate) {
+        debounce: function(func, wait, immediate) {
             var timeout;
-            return function () {
+            return function() {
                 var context = this,
                     args = arguments;
-                var later = function () {
+                var later = function() {
                     timeout = null;
                     if (!immediate) func.apply(context, args);
                 };
@@ -1328,7 +1328,7 @@ platformSdk.utils = function (window, platformSdk) {
  * @namespace platformSdk.events
  * @memberOf platformSdk
  */
-platformSdk.events = function (window, platformSdk) {
+platformSdk.events = function(window, platformSdk) {
     var events = {};
     var hOP = events.hasOwnProperty;
     var platformBridge = platformSdk.bridge;
@@ -1342,11 +1342,11 @@ platformSdk.events = function (window, platformSdk) {
          * @param {Function} listener - function to be executed each time the event is published
          * @return {Object} an object with a remove function to remove the event subscription
          */
-        subscribe: function (eventName, listener) {
+        subscribe: function(eventName, listener) {
             if (!hOP.call(events, eventName)) events[eventName] = [];
             var index = events[eventName].push(listener) - 1;
             return {
-                remove: function () {
+                remove: function() {
                     delete events[eventName][index];
                 }
             };
@@ -1360,10 +1360,10 @@ platformSdk.events = function (window, platformSdk) {
          * @param {String} eventName - name of the event you wish to publish
          * @param {Object} data - data to be passed to the listener function
          */
-        publish: function (eventName, data) {
+        publish: function(eventName, data) {
             if (!hOP.call(events, eventName))
                 return;
-            events[eventName].forEach(function (item) {
+            events[eventName].forEach(function(item) {
                 item(data != undefined ? data : {});
             });
         }
@@ -1371,11 +1371,11 @@ platformSdk.events = function (window, platformSdk) {
 
 }(window, window.platformSdk);
 
-(function (window, platformSdk) {
+(function(window, platformSdk) {
     var callbacks = {};
     var eventsObject = {};
 
-    function getNewId () {
+    function getNewId() {
         var cbId = Math.round(Math.random() * 999999999);
         while (cbId in callbacks) {
             cbId = Math.round(Math.random() * 999999999);
@@ -1390,7 +1390,7 @@ platformSdk.events = function (window, platformSdk) {
      * @param {String} id - unique id to map the response to the action.
      * @param {Object} data - data in response from the android.
      */
-    window.callbackFromNative = function (id, data) {
+    window.callbackFromNative = function(id, data) {
 
         var args, cbItem = callbacks[id];
         if (cbItem && typeof(cbItem.callback) === 'function') {
@@ -1407,7 +1407,7 @@ platformSdk.events = function (window, platformSdk) {
      * @inner
      * @param {Object} param - object containing the configuration for communication with android
      */
-    platformSdk.nativeReq = function (param) {
+    platformSdk.nativeReq = function(param) {
 
         var callBackId = "" + getNewId();
 
@@ -1422,6 +1422,31 @@ platformSdk.events = function (window, platformSdk) {
         }
     };
 
+
+    /**  New Function for AB exp functions
+     * calling an action from android and accepting a success callback to be called with data from android in response
+     * @function
+     * @memberOf platformSdk
+     * @inner
+     * @param {Object} param - object containing the configuration for communication with android
+     */
+    platformSdk.nativeReqAB = function(param) {
+
+        var callBackId = "" + getNewId();
+
+        callbacks[callBackId] = {
+            context: param.ctx,
+            callback: param.success
+        };
+
+        if (platformSdk.bridgeEnabled) {
+            if (param.data === "" || param.data === undefined || param.data === null) PlatformBridge[param.fn](callBackId);
+            else PlatformBridge[param.fn](callBackId, param.data[0], param.data[1]);
+        }
+    };
+
+
+
     /**
      * Setting up 3-dot menu options and setting up callbacks for each of them
      * @function
@@ -1429,7 +1454,7 @@ platformSdk.events = function (window, platformSdk) {
      * @inner
      * @param {Object} omList - object containing the 3-dot menu options.
      */
-    platformSdk.setOverflowMenu = function (omList) {
+    platformSdk.setOverflowMenu = function(omList) {
         for (var i = 0; i < omList.length; i++) {
             var omItem = omList[i];
             var eventId = getNewId();
@@ -1450,7 +1475,7 @@ platformSdk.events = function (window, platformSdk) {
      * @inner
      * @param {String} id - id of the clicked menu item
      */
-    platformSdk.onMenuItemClicked = function (id) {
+    platformSdk.onMenuItemClicked = function(id) {
         platformSdk.events.publish(callbacks[id].eventName, id);
     };
 
@@ -1461,7 +1486,7 @@ platformSdk.events = function (window, platformSdk) {
      * @inner
      * @param {Object} omList - object containing the 3-dot menu options.
      */
-    platformSdk.updateOverflowMenu = function (id, c) {
+    platformSdk.updateOverflowMenu = function(id, c) {
         var obj = callbacks[id];
         for (var key in c) {
             obj[key] = c[key];
@@ -1479,7 +1504,7 @@ platformSdk.events = function (window, platformSdk) {
      * @param {String} eventName - event name of the required 3-dot menu item
      * @return {String} id of the required 3-dot menu item
      */
-    platformSdk.retrieveId = function (eventName) {
+    platformSdk.retrieveId = function(eventName) {
         for (var i = 0; i < omListObject.length; i++) {
             var omItem = omListObject[i];
             if (omItem.eventName === eventName) return omItem.id;
@@ -1488,7 +1513,7 @@ platformSdk.events = function (window, platformSdk) {
 
 })(window, window.platformSdk);
 
-platformSdk.device = function (window, platformSdk) {
+platformSdk.device = function(window, platformSdk) {
 
     "use strict";
 
@@ -1498,7 +1523,7 @@ platformSdk.device = function (window, platformSdk) {
 
 }(window, window.platformSdk);
 
-platformSdk.network = function (window, platformSdk) {
+platformSdk.network = function(window, platformSdk) {
 
     "use strict";
 
@@ -1508,7 +1533,7 @@ platformSdk.network = function (window, platformSdk) {
 
 }(window, window.platformSdk);
 
-platformSdk.user = function (window, platformSdk) {
+platformSdk.user = function(window, platformSdk) {
 
     "use strict";
     var platformBridge = platformSdk.bridge;
@@ -1522,18 +1547,18 @@ platformSdk.user = function (window, platformSdk) {
  * @namespace platformSdk.ui
  * @memberOf platformSdk
  */
-platformSdk.ui = function (window, platformSdk) {
+platformSdk.ui = function(window, platformSdk) {
 
     var platformBridge = platformSdk.bridge;
 
     var shareMessage;
     var captionText;
 
-    platformSdk.events.subscribe('refresh/startAnimation/', function (ele) {
+    platformSdk.events.subscribe('refresh/startAnimation/', function(ele) {
         ele.classList.add('play');
     });
 
-    platformSdk.events.subscribe('refresh/stopAnimation/', function (ele) {
+    platformSdk.events.subscribe('refresh/stopAnimation/', function(ele) {
         ele.classList.remove('play');
     });
 
@@ -1547,7 +1572,7 @@ platformSdk.ui = function (window, platformSdk) {
          * @inner
          * @param {String} height - offsetHeight of the document.body
          */
-        onLoadFinished: function (height) {
+        onLoadFinished: function(height) {
             platformBridge.onLoadFinished(height + "");
         },
 
@@ -1558,7 +1583,7 @@ platformSdk.ui = function (window, platformSdk) {
          * @inner
          * @param {String} height - height to be resized to
          */
-        resize: function (height) {
+        resize: function(height) {
             height = height || document.body.offsetHeight;
             platformBridge.onResize(height + "");
         },
@@ -1570,7 +1595,7 @@ platformSdk.ui = function (window, platformSdk) {
          * @inner
          * @param {String} msg - message to be shown in toast
          */
-        showToast: function (msg) {
+        showToast: function(msg) {
             platformBridge.showToast(msg);
         },
 
@@ -1582,7 +1607,7 @@ platformSdk.ui = function (window, platformSdk) {
          * @inner
          * @param {Object} e - click event of the share button/link
          */
-        shareCard: function (e) {
+        shareCard: function(e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -1613,7 +1638,7 @@ platformSdk.ui = function (window, platformSdk) {
          * @inner
          * @param {Object} e - click event of the share button/link
          */
-        forwardCard: function (e) {
+        forwardCard: function(e) {
             e.preventDefault();
             e.stopPropagation();
             //addRippleEffect(e);
@@ -1635,7 +1660,7 @@ platformSdk.ui = function (window, platformSdk) {
  * @inner
  * @param {Object} options - an object with properties required to make an ajax call.
  */
-platformSdk.ajax = function (window, platformSdk) {
+platformSdk.ajax = function(window, platformSdk) {
 
     var platformBridge = platformSdk.bridge;
 
@@ -1644,7 +1669,7 @@ platformSdk.ajax = function (window, platformSdk) {
      * @param  {Object} xhr - XMLHttpRequest Object
      * @param  {Function} callback - callback function to be called on success
      */
-    var ajaxSuccess = function (xhr, callback) {
+    var ajaxSuccess = function(xhr, callback) {
         if (callback && typeof callback === 'function')
             callback(xhr.responseText, xhr.status);
     };
@@ -1656,7 +1681,7 @@ platformSdk.ajax = function (window, platformSdk) {
      * @param  {Function} callback - callback function to be called on error
      * @return {String} errorMsg - error message to be shown as toast in case of ajax error
      */
-    var ajaxError = function (xhr, callback, errorMsg) {
+    var ajaxError = function(xhr, callback, errorMsg) {
         if (callback && typeof callback === 'function')
             callback(xhr.responseText, xhr.status, xhr);
         if (errorMsg)
@@ -1667,12 +1692,12 @@ platformSdk.ajax = function (window, platformSdk) {
      * function to check internet connection
      * @param  {Function} fn - function to be called if user is connected to internet
      */
-    var checkConnection = function (fn) {
+    var checkConnection = function(fn) {
         platformSdk.nativeReq({
             fn: 'checkConnection',
             ctx: this,
             data: "",
-            success: function (response) {
+            success: function(response) {
                 if (response != "-1" && response != "0") {
                     if (typeof fn === "function")
                         fn();
@@ -1686,7 +1711,7 @@ platformSdk.ajax = function (window, platformSdk) {
      * takes the options object for the ajax call, creates XMLHttpRequest object and set up the event listeners
      * @param  {Object} options - an object with properties required to make an ajax call
      */
-    var fire = function (options) {
+    var fire = function(options) {
         var url = options.url,
             headers = options.headers,
             data = options.data,
@@ -1703,7 +1728,7 @@ platformSdk.ajax = function (window, platformSdk) {
             /**
              * ready state change listener for the xhr object
              */
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function() {
                 if (4 == xhr.readyState && 200 == xhr.status) {
                     if (platformSdk.debugMode)
                         platformSdk.logger.endMarker('xhrCall');
@@ -1734,7 +1759,7 @@ platformSdk.ajax = function (window, platformSdk) {
         }
     }
 
-    return function (options) {
+    return function(options) {
         fire(options);
     };
 
@@ -1744,7 +1769,7 @@ platformSdk.ajax = function (window, platformSdk) {
  * @namespace platformSdk.logger
  * @memberOf platformSdk
  */
-platformSdk.logger = function (window, platformSdk) {
+platformSdk.logger = function(window, platformSdk) {
 
     "use strict";
 
@@ -1756,14 +1781,14 @@ platformSdk.logger = function (window, platformSdk) {
         html: {}
     };
 
-    var drawDebugInfoOverlay = function (name, dataObj) {
+    var drawDebugInfoOverlay = function(name, dataObj) {
         var debugInfoOverlay = document.getElementById("debug-info-overlay");
 
         if (debugInfoOverlay) {
             debugInfoOverlay.remove();
         }
 
-        setTimeout(function () {
+        setTimeout(function() {
             var htmlStr = name;
             var body = document.body;
             var listStr = '<ul>';
@@ -1789,7 +1814,7 @@ platformSdk.logger = function (window, platformSdk) {
             body.appendChild(debugInfoOverlayDiv);
 
             var closeIcon = debugInfoOverlayDiv.getElementsByClassName('icon-close')[0];
-            closeIcon.addEventListener('click', function () {
+            closeIcon.addEventListener('click', function() {
                 debugInfoOverlayDiv.remove();
             });
 
@@ -1804,8 +1829,8 @@ platformSdk.logger = function (window, platformSdk) {
          * @memberOf platformSdk.logger
          * @inner
          */
-        logLoadTimeInfo: function () {
-            setTimeout(function () {
+        logLoadTimeInfo: function() {
+            setTimeout(function() {
                 var timingAPI;
                 if (!platformSdk.debugMode)
                     return;
@@ -1838,7 +1863,7 @@ platformSdk.logger = function (window, platformSdk) {
          * @inner
          * @param {String} name - name of the marker
          */
-        setMarker: function (name) {
+        setMarker: function(name) {
             if (window.performance)
                 window.performance.mark(name + "_marker_start");
         },
@@ -1852,7 +1877,7 @@ platformSdk.logger = function (window, platformSdk) {
          * @param {String} name - name of the marker you wish to end
          * @param {Boolean} clearFlag - if true marker will be cleared
          */
-        endMarker: function (name, clearFlag) {
+        endMarker: function(name, clearFlag) {
             if (window.performance) {
                 window.performance.mark(name + "_marker_end");
                 this.measureMarker(name, clearFlag);
@@ -1867,7 +1892,7 @@ platformSdk.logger = function (window, platformSdk) {
          * @param {String} name - name of the marker you wish to measure
          * @param {Boolean} clearFlag - if true marker and its measurements will be cleared
          */
-        measureMarker: function (name, clearFlag) {
+        measureMarker: function(name, clearFlag) {
             var measureName = name + '_measure';
             if (!window.performance) return;
 
@@ -1892,7 +1917,7 @@ platformSdk.logger = function (window, platformSdk) {
          * @inner
          * @param {String} name - name of the marker you wish to clear
          */
-        clearMarker: function (name) {
+        clearMarker: function(name) {
             if (window.performance) {
                 window.performance.clearMarks(name + "_marker_start");
                 window.performance.clearMarks(name + "_marker_end");
@@ -1906,7 +1931,7 @@ platformSdk.logger = function (window, platformSdk) {
          * @inner
          * @param {String} name - name of the marker you wish to clear
          */
-        clearMeasure: function (name) {
+        clearMeasure: function(name) {
             if (window.performance) {
                 window.performance.clearMeasures(name + "_measure");
             }
@@ -1919,7 +1944,7 @@ platformSdk.logger = function (window, platformSdk) {
          * @memberOf platformSdk.logger
          * @inner
          */
-        clearAllMarker: function () {
+        clearAllMarker: function() {
             if (window.performance) {
                 window.performance.clearMarks();
             }

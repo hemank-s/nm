@@ -18,6 +18,7 @@
         activityModel = require('./models/activityModel'),
         mysteryBoxModel = require('./models/mysteryBoxModel'),
         cacheProvider = require('./util/cacheProvider'),
+        expHandlerAB = require('./util/expHandlerAB'),
         TxService = require('./util/txServices'),
         NinjaService = require('./util/ninjaServices');
 
@@ -194,53 +195,53 @@
 
         backPressTrigger: function() {
 
-            var stickerCooldownElement = document.getElementsByClassName( 'stickerCooldownContainer' )[0];
+            var stickerCooldownElement = document.getElementsByClassName('stickerCooldownContainer')[0];
             var stickerShopElement = document.getElementsByClassName('stickerShopPageOne')[0];
-            var customStickerHistory = document.getElementsByClassName( 'customStickerHistory' )[0];
+            var customStickerHistory = document.getElementsByClassName('customStickerHistory')[0];
             var showHistoryButton = document.getElementsByClassName('showHistoryButton')[0];
             var customStickerReadyState = document.getElementsByClassName('customStickerReadyState')[0];
             var customStickerStatusCheck = document.getElementsByClassName('customStickerStatusCheck')[0];
             var customStickerUploadScreen = document.getElementsByClassName('customStickerUploadScreen')[0];
-            var uploadParent = document.getElementsByClassName( 'uploadParent' )[0];
+            var uploadParent = document.getElementsByClassName('uploadParent')[0];
 
-            if ( stickerCooldownElement || stickerShopElement) {
+            if (stickerCooldownElement || stickerShopElement) {
                 this.goToNinjaProfilePage();
                 return;
-            } else if(customStickerHistory && ! customStickerHistory.classList.contains( 'hideClass' )){
-                customStickerHistory.classList.add( 'hideClass' );
-                showHistoryButton.classList.remove( 'hideClass' );
-                if(customStickerUploadScreen && customStickerUploadScreen.classList.contains('hideClass')){
+            } else if (customStickerHistory && !customStickerHistory.classList.contains('hideClass')) {
+                customStickerHistory.classList.add('hideClass');
+                showHistoryButton.classList.remove('hideClass');
+                if (customStickerUploadScreen && customStickerUploadScreen.classList.contains('hideClass')) {
                     customStickerUploadScreen.classList.remove('hideClass');
                 }
-                if(uploadParent && uploadParent.classList.contains('hideClass')){
+                if (uploadParent && uploadParent.classList.contains('hideClass')) {
                     uploadParent.classList.remove('hideClass');
                 }
                 return;
-            } else if (customStickerReadyState && ! customStickerReadyState.classList.contains('hideClass')){
-                customStickerReadyState.classList.add( 'hideClass' );
-                customStickerHistory.classList.remove( 'hideClass' );
+            } else if (customStickerReadyState && !customStickerReadyState.classList.contains('hideClass')) {
+                customStickerReadyState.classList.add('hideClass');
+                customStickerHistory.classList.remove('hideClass');
                 return;
-            } else if (customStickerStatusCheck && ! customStickerStatusCheck.classList.contains('hideClass')){
-                customStickerStatusCheck.classList.add( 'hideClass' );
-                customStickerHistory.classList.remove( 'hideClass' );
-                if(customStickerUploadScreen){
+            } else if (customStickerStatusCheck && !customStickerStatusCheck.classList.contains('hideClass')) {
+                customStickerStatusCheck.classList.add('hideClass');
+                customStickerHistory.classList.remove('hideClass');
+                if (customStickerUploadScreen) {
                     customStickerUploadScreen.classList.remove('hideClass');
                 }
                 return;
             }
-            
+
             this.router.back();
         },
 
-        goToNinjaProfilePage: function(){
+        goToNinjaProfilePage: function() {
             var that = this;
             var data = {};
 
             data.ninjaRewardsCollection = cacheProvider.getFromCritical('ninjaRewards');
             data.ninjaProfileData = cacheProvider.getFromCritical('ninjaProfileData');
             data.ninjaActivityData = cacheProvider.getFromCritical('ninjaStats');
-            
-            that.router.navigateTo('/',data);
+
+            that.router.navigateTo('/', data);
         },
 
         getRoute: function() {
@@ -274,6 +275,12 @@
             self.$el = $(this.container);
 
             self.initOverflowMenu();
+
+
+            if(typeof cacheProvider.getFromCritical('lockedGreyout') === "undefined")
+                expHandlerAB.getVal("LOCKED_GREYOUT", true , function(response){
+                    cacheProvider.setInCritical('lockedGreyout', JSON.parse(response));
+                })
 
             utils.toggleBackNavigation(false);
             document.querySelector('.unblockButton').addEventListener('click', function() {
@@ -399,16 +406,16 @@
 
                 var data = {};
 
-                 this.ninjaRewardsData = {'rewards':[],'rewards_hash':''};
-                 this.ninjaProfileData = {"battery":0,"rewards_hash":"","status":"active","streak":0,"name":''};
-                 this.ninjaActivityData = {"chatThemes":{"rec":0,"sent":0},"files":{"rec":0,"sent":0},"messages":{"rec":0,"sent":0},"statusUpdates":{"count":0},"stickers":{"rec":0,"sent":0}};
+                this.ninjaRewardsData = { 'rewards': [], 'rewards_hash': '' };
+                this.ninjaProfileData = { "battery": 0, "rewards_hash": "", "status": "active", "streak": 0, "name": '' };
+                this.ninjaActivityData = { "chatThemes": { "rec": 0, "sent": 0 }, "files": { "rec": 0, "sent": 0 }, "messages": { "rec": 0, "sent": 0 }, "statusUpdates": { "count": 0 }, "stickers": { "rec": 0, "sent": 0 } };
 
                 // STUB TO REMOVE
 
                 data.ninjaRewardsCollection = this.ninjaRewardsData;
-                data.ninjaProfileData = this.ninjaProfileData ;
+                data.ninjaProfileData = this.ninjaProfileData;
                 data.ninjaActivityData = this.ninjaActivityData;
-                
+
                 this.NinjaService.getNinjaProfile(function(res) {
                     console.log(res.data);
                     cacheProvider.setInCritical('ftueCompleted', true);
@@ -417,7 +424,7 @@
                         console.log("Go to lapsed ninja Controller");
                     } else {
                         // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
-                        self.router.navigateTo('/',data);
+                        self.router.navigateTo('/', data);
                         profileModel.updateNinjaData(res.data, self);
                         activityModel.fetchNinjaActivity('lifetime');
                         //mysteryBoxModel.getMysteryBoxDetails(self);

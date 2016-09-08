@@ -125,8 +125,11 @@
         this.el.innerHTML = Mustache.render(this.template, {
             ninjaRewardsCollection: this.ninjaRewardsData.rewards,
             ninjaActivityData: this.ninjaActivityData,
-            ninjaProfileData: this.ninjaProfileData
+            ninjaProfileData: this.ninjaProfileData,
+            lockedGreyout : cacheProvider.getFromCritical('lockedGreyout')
         });
+
+
         ctr.appendChild(this.el);
         events.publish('update.loader', { show: false });
         this.bind(App, data);
