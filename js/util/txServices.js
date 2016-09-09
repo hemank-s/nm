@@ -58,7 +58,9 @@
                         }else{
                             console.log(res);
                             if(res.stat == 'fail'){
-                                platformSdk.ui.showToast("Hmm. Something went wrong. Not to worry, try again in a little bit :)");
+                                events.publish('update.loader', { show: false });
+                                console.log(res.data.reason);
+                                platformSdk.ui.showToast(res.data.reason);
                             }
                         }
                     } else {

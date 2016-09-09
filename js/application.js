@@ -380,22 +380,6 @@
             // STUB TO REMOVE
 
 
-            /* STUB for user state */
-
-            /*var stateData = {
-                'url': 'https://s16.postimg.org/re8de8j11/Bitmap.png',
-                'title': 'Ninja Life',
-                'subtitle': 'Oops! You lose all the ninja life…but don’t worry just use hike for few more days to get your life back',
-                'per': '20',
-                'cta': {
-                    'text': 'Learn More',
-                    'link': 'https://s16.postimg.org/re8de8j11/Bitmap.png',
-                    'title': 'Learn More'
-                }
-            }*/
-
-            /****************************/
-
             var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
             //var ftueCompleted = true;
             if (ftueCompleted) {
@@ -412,6 +396,7 @@
 
                 this.NinjaService.getNinjaProfile(function(res) {
                     console.log(res.data);
+
                     if (res.data.status == 'inactive' || res.data.status == 'locked') {
 
                         self.router.navigateTo('/userState', res.data);
