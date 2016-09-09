@@ -379,10 +379,6 @@
 
             // STUB TO REMOVE
 
-
-
-
-
             var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
             //var ftueCompleted = true;
             if (ftueCompleted) {
@@ -408,7 +404,7 @@
                             'subtitle': 'Oops! You lose all the ninja life…but don’t worry just use hike for few more days to get your life back',
                             'per': '20',
                             'cta': 'Learn More'
-                        }
+                        };
 
                         self.router.navigateTo('/userState', stateData);
                         console.log("Go to lapsed ninja Controller");

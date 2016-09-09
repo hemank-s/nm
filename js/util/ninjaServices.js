@@ -133,6 +133,18 @@
 
         },
 
+        getExclusiveFeature: function(data, fn, x){
+            console.log("Getting Exclusive feature for you");
+            var params = {
+                'url': URL.api_location + '/rewards/'+data.rid+'?random='+Math.round(Math.random() * 999999999),
+                'type': 'POST',
+                'data':{'enable':data.enable}
+            };
+            if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
+            else this.ninjaService.communicate(params);
+
+        }
+
         // Rewards Service For Ninja 
 
         // Activity Service For Ninja
