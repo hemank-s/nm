@@ -23,14 +23,15 @@
 
         // Levels 0- Bronze; 1-Silver; Gold-2
 
-       REWARD_STATE:{
+        REWARD_STATE: {
 
-        LOCKED    : "0",
-        UNLOCKED  : "1",
-        REDEEMED  : "2",
-        EXPIREDL  : "3"
-       }
-
+            LOCKED: "0",
+            UNLOCKED: "1",
+            INPROGRESS: "2",
+            REDEEMED: "3",
+            FAILED: "4",
+            EXPIRED: "5"
+        }
     };
 
 })();

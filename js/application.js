@@ -380,8 +380,21 @@
             // STUB TO REMOVE
 
 
+            /* STUB for user state */
 
+            /*var stateData = {
+                'url': 'https://s16.postimg.org/re8de8j11/Bitmap.png',
+                'title': 'Ninja Life',
+                'subtitle': 'Oops! You lose all the ninja life…but don’t worry just use hike for few more days to get your life back',
+                'per': '20',
+                'cta': {
+                    'text': 'Learn More',
+                    'link': 'https://s16.postimg.org/re8de8j11/Bitmap.png',
+                    'title': 'Learn More'
+                }
+            }*/
 
+            /****************************/
 
             var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
             //var ftueCompleted = true;
@@ -399,21 +412,13 @@
 
                 this.NinjaService.getNinjaProfile(function(res) {
                     console.log(res.data);
-                    if (profileModel.checkNinjaState(res.data.status) == 'lapsed') {
-                        // To Add Ninja Lapsed State Here
+                    if (res.data.status == 'inactive' || res.data.status == 'locked') {
 
-                        var stateData = {
-                            'url': 'https://s16.postimg.org/re8de8j11/Bitmap.png',
-                            'title': 'Ninja Life',
-                            'subtitle': 'Oops! You lose all the ninja life…but don’t worry just use hike for few more days to get your life back',
-                            'per': '20',
-                            'cta': 'Learn More'
-                        }
-
-                        self.router.navigateTo('/userState', stateData);
-                        console.log("Go to lapsed ninja Controller");
+                        self.router.navigateTo('/userState', res.data);
+                        console.log("User state  is " + res.data.status);
 
                     } else {
+
                         // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
                         self.router.navigateTo('/');
                         profileModel.updateNinjaData(res.data, self);
@@ -441,9 +446,13 @@
                 this.NinjaService.getNinjaProfile(function(res) {
                     console.log(res.data);
                     cacheProvider.setInCritical('ftueCompleted', true);
-                    if (profileModel.checkNinjaState(res.data.status) == 'lapsed') {
-                        // To Add Ninja Lapsed State Here
-                        console.log("Go to lapsed ninja Controller");
+
+
+                    if (res.data.status == 'inactive' || res.data.status == 'locked') {
+
+                        self.router.navigateTo('/userState', res.data);
+                        console.log("User state  is " + res.data.status);
+
                     } else {
                         // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
                         self.router.navigateTo('/', data);

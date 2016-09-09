@@ -10,6 +10,12 @@
 
     StateController.prototype.bind = function(App, data) {
 
+        var cta = document.getElementsByClassName('stateCta')[0];
+
+        cta.addEventListener('click', function(event) {
+            platformSdk.bridge.openFullPage(cta.getAttribute('data-title'), cta.getAttribute('data-link'));
+        });
+
 
     };
 
