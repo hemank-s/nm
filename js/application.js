@@ -9,6 +9,7 @@
         FaqDetailsController = require('./controllers/FaqDetailsController'),
         StickerPackViewController = require('./controllers/StickerPackViewController'),
         CoolDownController = require('./controllers/CoolDownController'),
+        StateController = require('./controllers/StateController'),
 
 
         Router = require('./util/router'),
@@ -101,6 +102,7 @@
         this.faqDetailsController = new FaqDetailsController();
         this.stickerPackViewController = new StickerPackViewController();
         this.coolDownController = new CoolDownController();
+        this.stateController = new StateController();
 
 
 
@@ -276,11 +278,9 @@
 
             self.initOverflowMenu();
 
-
-            if(typeof cacheProvider.getFromCritical('lockedGreyout') === "undefined")
-                expHandlerAB.getVal("LOCKED_GREYOUT", true , function(response){
-                    cacheProvider.setInCritical('lockedGreyout', JSON.parse(response));
-                })
+            expHandlerAB.getVal(cacheProvider.getFromCritical('lockedRewardAB_key'), JSON.parse(cacheProvider.getFromCritical('lockedRewardAB_defaultVal')), function(response) {
+                cacheProvider.setInCritical('lockedGreyout', JSON.parse(response));
+            })
 
             utils.toggleBackNavigation(false);
             document.querySelector('.unblockButton').addEventListener('click', function() {
@@ -359,6 +359,14 @@
                 utils.toggleBackNavigation(true);
             });
 
+
+            // FAQ All Rewards Controller 
+            this.router.route('/userState', function(data) {
+                self.container.innerHTML = '';
+                self.stateController.render(self.container, self, data);
+                utils.toggleBackNavigation(false);
+            });
+
             // STUB TO REMOVE
             // Profile Call Fetches this res and sends to the profile udpater
 
@@ -370,6 +378,9 @@
             // mysteryBoxModel.getMysteryBoxDetails(self);
 
             // STUB TO REMOVE
+
+
+
 
 
             var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
@@ -390,7 +401,18 @@
                     console.log(res.data);
                     if (profileModel.checkNinjaState(res.data.status) == 'lapsed') {
                         // To Add Ninja Lapsed State Here
+
+                        var stateData = {
+                            'url': 'https://s16.postimg.org/re8de8j11/Bitmap.png',
+                            'title': 'Ninja Life',
+                            'subtitle': 'Oops! You lose all the ninja life…but don’t worry just use hike for few more days to get your life back',
+                            'per': '20',
+                            'cta': 'Learn More'
+                        }
+
+                        self.router.navigateTo('/userState', stateData);
                         console.log("Go to lapsed ninja Controller");
+
                     } else {
                         // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
                         self.router.navigateTo('/');

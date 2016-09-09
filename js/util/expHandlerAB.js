@@ -10,12 +10,17 @@
         // Get From Disk Cache
         getVal: function(key, defaultVal, callback) {
 
-            platformSdk.nativeReqAB({
-                fn: 'getABTestBoolean',
-                ctx: this,
-                data: [key, defaultVal],
-                success: callback
-            });
+
+            if(typeof PlatformBridge.getABTestBoolean != 'undefined')
+                platformSdk.nativeReqAB({
+                    fn: 'getABTestBoolean',
+                    ctx: this,
+                    data: [key, defaultVal],
+                    success: callback
+                });
+            else{
+                callback(defaultVal);
+            }
         },
     };
 

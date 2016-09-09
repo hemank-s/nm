@@ -8,8 +8,8 @@
 @import 'emotions';
 @import 'mysteryBox';
 @import 'stickerReward';
+@import 'userState';
 @import 'mediaQueries';
-
 .tab-activity {
     height: 600px !important;
 }
@@ -99,15 +99,15 @@
     border-bottom: 2px solid #FFA615;
 }
 
-.statsTabSelected{
+.statsTabSelected {
     border-bottom: 2px solid #1DCECE;
 }
 
-.rewardsTabSelected{
+.rewardsTabSelected {
     border-bottom: 2px solid #FFA615;
 }
 
-.luckyBoxTabSelected{
+.luckyBoxTabSelected {
     border-bottom: 2px solid #D83D5E;
 }
 

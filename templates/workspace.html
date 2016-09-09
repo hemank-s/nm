@@ -25,9 +25,12 @@
             <div class="commonDv">
                 <div class="containerTabs">
                     <div class="comp__tabs clearfix">
-                        <a class="comp__tab" data-id="rewards"><div class="tabIconRewards"></div>REWARDS</a>
-                        <a class="comp__tab" data-id="activity"><div class="tabIconStats"></div>STATS</a>
-                        <a class="comp__tab " data-id="gifts"><div class="tabIconLuckyBox"></div>LUCKY BOX</a>
+                        <a class="comp__tab" data-id="rewards">
+                            <div class="tabIconRewards"></div>REWARDS</a>
+                        <a class="comp__tab" data-id="activity">
+                            <div class="tabIconStats"></div>STATS</a>
+                        <a class="comp__tab " data-id="gifts">
+                            <div class="tabIconLuckyBox"></div>LUCKY BOX</a>
                     </div>
                     <div class="comp__data">
                         <div id="sliderTabs" class="swipe">
@@ -38,8 +41,8 @@
                                         <li class="rewardRow" data-rewardId="{{id}}" data-state="{{state}}" data-rewardtype="{{type}}">
                                             <div class="rewardIcon"></div>
                                             <div class="rewardDetails">
-                                                    <p class="rewardHeading    {{^state}}{{#lockedGreyout}}rewardHeadingLocked{{/lockedGreyout}}{{/state}}">{{title}}</p>
-                                                    <p class="rewardSubheading {{^state}}{{#lockedGreyout}}rewardSubheading{{/lockedGreyout}}{{/state}}">{{stitle}}</p> 
+                                                <p class="rewardHeading    {{^state}}{{#lockedGreyout}}rewardHeadingLocked{{/lockedGreyout}}{{/state}}">{{title}}</p>
+                                                <p class="rewardSubheading {{^state}}{{#lockedGreyout}}rewardSubheadingLocked{{/lockedGreyout}}{{/state}}">{{stitle}}</p>
                                             </div>
                                             {{#streak}}
                                             <div class="rewardStreakWrapper">
@@ -68,8 +71,9 @@
                                         <div class="leaderboardWrapper">
                                             <div class="leaderboardHeading">Top Ninjas</div>
                                             <div class="topNinjas">
-                                         -->        <!-- Add the left right scrollable list here -->
-                                                <!-- <ul class="topList">
+                                         -->
+                                        <!-- Add the left right scrollable list here -->
+                                        <!-- <ul class="topList">
                                                     <li class="listRow">
                                                         <div class="userIcon"></div>
                                                         <div class="userName">Hemank</div>
@@ -152,7 +156,6 @@
                                 </div>
                                 <div class="fixtures_data tab-data tab-mysterybox" data-id="gifts">
                                     <div class="mysteryBoxContainer">
-                                        
                                     </div>
                                 </div>
                             </div>
