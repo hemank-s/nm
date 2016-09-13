@@ -24,6 +24,14 @@
             console.log("Set a default header Icon");
         }
 
+        if(data.rewardDetails.sanctioned){
+            console.log("Reward has been redeemed");
+            featureEnableButton.classList.add('hideClass');
+            featureRetryButton.classList.remove('hideClass');
+        }else{
+            console.log("Reward has not been redeemed");
+        }
+
         // Check the reward status here and set button enable or retry once redeemed or unlocked
 
         // FAQ URL CLICK EVENT
@@ -31,7 +39,7 @@
             console.log("Enabling The Exclusive Feature For You");
 
             var dataToSend = {};
-            dataToSend.rewardId = data.rewardId;
+            dataToSend.rid = data.rewardId;
             dataToSend.enable  = true;
 
             // Reward Details API :: Send Reward Id As well
@@ -52,19 +60,17 @@
         featureRetryButton.addEventListener('click', function(ev) {
             console.log("Enabling The Exclusive Feature For You");
 
-            var data = {};
-            data.rewardId = rewardId;
-            data.enable  = true;
+            var dataToSend = {};
+            dataToSend.rid = data.rewardId;
+            dataToSend.enable  = true;
 
             // Reward Details API :: Send Reward Id As well
-            App.NinjaService.getExclusiveFeature(data, function(res) {
+            App.NinjaService.getExclusiveFeature(dataToSend, function(res) {
 
                 // Show Toast if Success
                 console.log(res);
-                utils.showToast('You will receive your sticker via the team hike bot shortly, start sharing.');
+                utils.showToast('The feature will be enabled shortly.');
 
-                // Routing to the specific Router
-                //App.router.navigateTo(rewardRouter, res.data);
             }, this);
         });
 
