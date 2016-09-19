@@ -104,8 +104,6 @@
         this.coolDownController = new CoolDownController();
         this.stateController = new StateController();
 
-
-
         // Communication Controller
         this.TxService = new TxService();
         this.NinjaService = new NinjaService(this.TxService); //communication layer
@@ -142,7 +140,7 @@
                 id = '' + platformSdk.retrieveId('app.menu.om.block');
                 if (platformSdk.appData.block === 'true') {
                     unBlockApp();
-
+                    that.start();
                 } else {
                     platformSdk.appData.block = 'true';
                     platformSdk.blockChatThread();
@@ -280,11 +278,12 @@
 
             expHandlerAB.getVal(cacheProvider.getFromCritical('lockedRewardAB_key'), JSON.parse(cacheProvider.getFromCritical('lockedRewardAB_defaultVal')), function(response) {
                 cacheProvider.setInCritical('lockedGreyout', JSON.parse(response));
-            })
+            });
 
             utils.toggleBackNavigation(false);
             document.querySelector('.unblockButton').addEventListener('click', function() {
                 unBlockApp();
+                self.start();
             }, false);
 
             // No Internet Connection Tab
@@ -430,16 +429,19 @@
 
                 this.NinjaService.getNinjaProfile(function(res) {
                     console.log(res.data);
-                    cacheProvider.setInCritical('ftueCompleted', true);
-
-
-                    if (res.data.status == 'inactive' || res.data.status == 'locked') {
-
+                    if (res.data.status == 'locked') {
+                        cacheProvider.setInCritical('ftueCompleted', false);
                         self.router.navigateTo('/userState', res.data);
                         console.log("User state  is " + res.data.status);
 
-                    } else {
+                    } else if(res.data.status == 'inactive'){
+                        cacheProvider.setInCritical('ftueCompleted', false);
+                        self.router.navigateTo('/userState', res.data);
+                        console.log("User state  is " + res.data.status);
+
+                    }else{
                         // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
+                        cacheProvider.setInCritical('ftueCompleted', true);
                         self.router.navigateTo('/', data);
                         profileModel.updateNinjaData(res.data, self);
                         activityModel.fetchNinjaActivity('lifetime');

@@ -69,7 +69,7 @@
 
                 // Show Toast if Success
                 console.log(res);
-                utils.showToast('The feature will be enabled shortly.');
+                utils.showToast('We have sent you the feature once again!');
 
             }, this);
         });

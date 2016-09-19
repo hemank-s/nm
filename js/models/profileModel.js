@@ -90,7 +90,9 @@
             var ninjaProfileData = [];
             ninjaProfileData = data;
 
-            platformSdk.nativeReq({
+            if(platformSdk.platformVersion >= 15){
+                console.log("Platform Verison is latest");
+                platformSdk.nativeReq({
                 fn: 'getUserProfile',
                 ctx: this,
                 data: "",
@@ -134,8 +136,41 @@
 
                 }
             });
+            }else{
+                    console.log("Platform Verison is old");
+                    console.log("NINJA PROFILE DATA IS", ninjaProfileData);
 
+                    // UI Definition 
+                    var streakValue = document.getElementsByClassName('ninjaStreakValue')[0];
+                    var batteryValue = document.getElementsByClassName('ninjaBatteryValue')[0];
+                    var ninjaName = document.getElementsByClassName('ninjaName')[0];
+                    var ninjaIcon = document.getElementsByClassName('ninjaProfileIcon')[0];
 
+                    if(ninjaProfileData.streak){
+                        streakValue.innerHTML = ninjaProfileData.streak;    
+                    }else{
+                        streakValue.innerHTML = 0;
+                    }
+
+                    if(ninjaProfileData.battery){
+                        batteryValue.innerHTML = ninjaProfileData.battery;    
+                    }else{
+                        batteryValue.innerHTML = 0;
+                    }
+                    
+                    ninjaName.innerHTML = ninjaProfileData.name;
+
+                    // For Dp Refer the Android Client DP Path
+                    if (ninjaProfileData.dp) {
+                        ninjaIcon.style.backgroundImage = "url('file:///" + ninjaProfileData.dp + "')";
+                    } else {
+                        console.log("Set a default dp");
+                    }
+                    cacheProvider.setInCritical('ninjaProfileData', ninjaProfileData);
+                    //var helperData = platformSdk.appData.helperData || EMPTY_OBJ_READ_ONLY;
+
+            }
+            
         },
 
     };

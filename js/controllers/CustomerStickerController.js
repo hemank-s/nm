@@ -15,6 +15,9 @@
 
         var that = this;
         var rewardId = data.rewardId;
+        
+        customImageUploaded = false;
+        uploadCustomStickerData = {};
 
         // All Custom Sticker Views Defined
 
@@ -216,11 +219,12 @@
     // Reset To Default Sticker Image If Some Error Occurs While Selecting the Image :: Or uploading It
     CustomStickerController.prototype.setDefaultCustomStickerImage = function() {
 
-        var customStickerImage = document.getElementsByClassName( 'customStickerImage' )[0];
+        var uploadPhotoContainer = document.getElementsByClassName( 'uploadPhotoContainer' )[0];
+        var uploadPhoto = document.getElementsByClassName( 'uploadPhoto' )[0];
 
         console.log( 'Setting the default custom sticker image' );
-        customStickerImage.style.backgroundImage = 'none';
-
+        uploadPhotoContainer.style.backgroundImage = 'none';
+        uploadPhoto.style.display = 'block';
     };
 
     // Show Error State
@@ -287,7 +291,7 @@
 
                     if ( ! fileUrl.filesize || fileUrl.filesize === 0 ) {
 
-                        utils.showToast( 'Bummer. Your image could not be uploaded. Could you try again, please?' );
+                        utils.showToast( 'Sorry. Your image couldn’t be updated. Could you try again with another files, please?' );
                         customImageUploaded = false;
                         that.setDefaultCustomStickerImage();
                         return;
@@ -310,12 +314,14 @@
 
                     // Set the image from gallery as the container image
                     customStickerImage.style.backgroundImage = 'url(\'file://' + fileUrl.filePath + '\')';
+                    console.log("setting hemank to true");
                     customImageUploaded = true;
                 }
             });
 
         } catch ( err ) {
-            platformSdk.ui.showToast( 'Bummer. Your profile pic couldn’t be updated. Could you try again, please?' );
+            events.publish( 'update.loader', { show: false });
+            utils.showToast( 'Sorry. Your image couldn’t be updated. Could you try again with another files, please?' );
             that.setDefaultCustomStickerImage();
             customImageUploaded = false;
         }
@@ -371,14 +377,28 @@
                                 utils.addClass( customStickerFailScreen, 'hideClass' );
                                 utils.removeClass( customStickerSent, 'hideClass' );
                                 events.publish( 'update.loader', { show: false });
+                                customImageUploaded = false;
+                        
 
-                            } else {
-                                utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
+                            } else if(res.stat == 'fail'){
+                                events.publish( 'update.loader', { show: false });
+                                utils.showToast( res.data.reason );
                                 that.setDefaultCustomStickerImage();
+                                customImageUploaded = false;
+                        
+                            } else {
+                                events.publish( 'update.loader', { show: false });
+                                utils.showToast( 'Sorry. Your image couldn’t be updated. Could you try again with another files, please?' );
+                                that.setDefaultCustomStickerImage();
+                                customImageUploaded = false;
+                        
                             }
                         } catch ( err ) {
-                            utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
+                            events.publish( 'update.loader', { show: false });
+                            utils.showToast( 'Sorry. Your image couldn’t be updated. Could you try again with another files, please?' );
                             that.setDefaultCustomStickerImage();
+                            customImageUploaded = false;
+                        
                         }
 
                         //Hide loader
@@ -387,8 +407,9 @@
                 });
 
             } catch ( err ) {
-                utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
-
+                events.publish( 'update.loader', { show: false });
+                utils.showToast( 'Sorry. Your image couldn’t be updated. Could you try again with another files, please?' );
+                            
                 //profilePicLoader.classList.remove('picLoader');
                 that.setDefaultCustomStickerImage();
             }
@@ -443,14 +464,27 @@
                                 utils.addClass( customStickerFailScreen, 'hideClass' );
                                 utils.removeClass( customStickerSent, 'hideClass' );
                                 events.publish( 'update.loader', { show: false });
+                                customImageUploaded = false;
 
-                            } else {
-                                utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
+                            } else if(res.stat == 'fail'){
+                                events.publish( 'update.loader', { show: false });
+                                utils.showToast( res.data.reason );
                                 that.setDefaultCustomStickerImage();
+                                customImageUploaded = false;
+                        
+                            } else {
+                                events.publish( 'update.loader', { show: false });
+                                utils.showToast( 'Sorry. Your image couldn’t be updated. Could you try again with another files, please?' );
+                                that.setDefaultCustomStickerImage();
+                                customImageUploaded = false;
+                        
                             }
                         } catch ( err ) {
-                            utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
+                            events.publish( 'update.loader', { show: false });
+                            utils.showToast( 'Sorry. Your image couldn’t be updated. Could you try again with another files, please?' );
                             that.setDefaultCustomStickerImage();
+                            customImageUploaded = false;
+                        
                         }
 
                         //Hide loader
@@ -459,8 +493,8 @@
                 });
 
             } catch ( err ) {
-                utils.showToast( 'Bummer. Your image couldn’t be updated. Could you try again, please?' );
-
+                events.publish( 'update.loader', { show: false });
+                utils.showToast( 'Sorry. Your image couldn’t be updated. Could you try again with another files, please?' );            
                 //profilePicLoader.classList.remove('picLoader');
                 that.setDefaultCustomStickerImage();
             }
