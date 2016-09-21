@@ -19,9 +19,9 @@
 					"hm": "Exclusive ninja stuff only for you",
 					"layoutId": "app.html",
 					"appName": "hikeninja",
-					"appVersion": "1705",
-					"mAppVersionCode": 1705,
-					"appPackage": "http://static.platform.hike.in/download/microapp/hikeninja/v44/hikeninja.zip"
+					"appVersion": "3010",
+					"mAppVersionCode": 3010,
+					"appPackage": "http://static.platform.hike.in/download/microapp/hikeninja/v52/hikeninja.zip"
 				}
 			},
 			"cd": {
@@ -30,8 +30,9 @@
 				"sb_color": "#1A96D0"
 			},
 			"hd": {
+				"lockedRewardAB_key": "TEST",
+                "lockedRewardAB_defaultVal":"false"
 			}
 		}]
 	}
 }]
-

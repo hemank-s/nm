@@ -80,18 +80,33 @@
             }
         },
 
+
+        // Check and Update Adhoc reward
+        checkAndUpdateAdhocReward: function(res) {
+            console.log(res);
+            if(res.adhoc_reward.length > 0){
+                console.log("At least one reward is present");
+                console.log(res.adhoc_reward);
+                cacheProvider.setInCritical('adhocRewardForUser', res.adhoc_reward);
+            }else{
+                console.log("No adhoc reward is present");
+            }
+        },
+
         // Updates the Ninja Profile Data and check For Reward Status here
 
         updateNinjaData: function(data, App) {
 
             // Check the Reward Page and Update Rewards if need be
             this.checkRewardStatus(data.rewards_hash, App);
+            //this.checkAndUpdateAdhocReward(data,App);
 
             var ninjaProfileData = [];
             ninjaProfileData = data;
 
             if(platformSdk.platformVersion >= 15){
                 console.log("Platform Verison is latest");
+
                 platformSdk.nativeReq({
                 fn: 'getUserProfile',
                 ctx: this,
