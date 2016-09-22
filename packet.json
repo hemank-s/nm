@@ -19,9 +19,9 @@
 					"hm": "Exclusive ninja stuff only for you",
 					"layoutId": "app.html",
 					"appName": "hikeninja",
-					"appVersion": "3010",
-					"mAppVersionCode": 3010,
-					"appPackage": "http://static.platform.hike.in/download/microapp/hikeninja/v52/hikeninja.zip"
+					"appVersion": "5000",
+					"mAppVersionCode": 5000,
+					"appPackage": "http://static.platform.hike.in/download/microapp/hikeninja/v53/hikeninja.zip"
 				}
 			},
 			"cd": {

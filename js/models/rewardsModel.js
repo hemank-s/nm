@@ -126,7 +126,7 @@
             if(adhocReward){
                 for(var i = 0; i<adhocReward.length; i++){
                     rewardsData.rewards.push(adhocReward[i]);
-                    adhocReward.splice(i,1);
+                    //adhocReward.splice(i,1);
                 }
             }
             
