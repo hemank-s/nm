@@ -14,12 +14,13 @@
         var upgradeBtn = document.getElementsByClassName('upgradeBtn')[0];
 
         upgradeBtn.addEventListener('click', function(event) {
-            platformSdk.bridge.openFullPage('', "https://play.google.com/store/apps/details?id=com.bsb.hike");
-
+            
+            var jsonobj = {
+                'screen': 'openappstore',
+                'url': 'com.bsb.hike'
+            };
+            PlatformBridge.openActivity(JSON.stringify(jsonobj));
         });
-
-
-
 
     };
 

@@ -190,7 +190,7 @@
                         };
 
                         var data = {
-                            url: appConfig.INSTALL_URL,
+                            url: 'http://qa-content.hike.in/mapps/api/v2/apps/' + 'install.json',
                             params: obj
                         };
 
@@ -206,20 +206,43 @@
                         });
 
                         PlatformBridge.showToast("Please wait...");
-                        that.downloadBot();
+                        that.checkExistingBot('+hikecs+');
                     } else {
-                        var jsonobj = {
-                            'screen': 'microapp',
-                            'msisdn': '+hikecs+',
-                            'isBot': true,
-                            'extra_data': Constants.CS_HELP_JSON
-                        };
-                        PlatformBridge.openActivity(JSON.stringify(jsonobj));
+                        that.openExistingBot('+hikecs+');
                     }
                 }
             });
 
+        },
 
+        checkExistingBot: function(botname){
+
+            var that = this;
+            
+            platformSdk.nativeReq({
+                fn: 'isBotExist',
+                ctx: this,
+                data: "+hikecs+",
+                success: function(response) {
+                    if(response == 'false'){
+                        setInterval(function(){ 
+                            that.checkExistingBot('+hikecs+'); 
+                        }, 1000);
+                    }else{
+                        that.openExistingBot('+hikecs+');
+                    }
+                }
+            });
+        },
+
+        openExistingBot: function(botname){
+            var jsonobj = {
+                            'screen': 'microapp',
+                            'msisdn': botname,
+                            'isBot': true,
+                            'extra_data': Constants.CS_HELP_JSON
+                        };
+                        PlatformBridge.openActivity(JSON.stringify(jsonobj));
         },
 
         // Setting Up The Three Dot Menu
