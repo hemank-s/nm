@@ -51,7 +51,11 @@
                 'label': 'Friends feedback',
                 'theme': 'HomeScreen5.0'
             }]
-        }
+        },
+
+        INVOKE_MODE_APP_START: 1,
+        INVOKE_MODE_THREE_DOT: 2,
+
 
     };
 

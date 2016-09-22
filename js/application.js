@@ -167,83 +167,86 @@
 
             //Help
             platformSdk.events.subscribe('app.menu.om.help', function(id) {
-                that.downloadBot();
+                that.checkAndDownloadBot('+hikecs+', Constants.INVOKE_MODE_THREE_DOT);
             });
         },
 
 
-        downloadBot: function() {
+        // To download a bot
+        downloadBot: function(botname) {
+
+            var obj = {
+                "apps": [{
+                    "name": botname
+                }]
+            };
+
+            var data = {
+                url: appConfig.INSTALL_URL,
+                params: obj
+            };
+
+            data = JSON.stringify(data);
+
+            platformSdk.nativeReq({
+                fn: 'doPostRequest',
+                ctx: this,
+                data: data,
+                success: function(res) {
+                    console.log(res);
+                }
+            });
+
+        },
+
+
+
+        // Check if a bot exists
+        // invokeMode  - 1    ->  App start -> Just download bot (dont open) if bot doesnot exist
+        //             - 2    ->  Three dot click
+        //                             - If bot exist, open it.
+        //                             - If bot doesnt exist, just keep checking (but no download)                 
+
+        checkAndDownloadBot: function(botname, invokeMode) {
 
             var that = this;
 
             platformSdk.nativeReq({
                 fn: 'isBotExist',
                 ctx: this,
-                data: "+hikecs+",
+                data: botname,
                 success: function(response) {
 
-                    if (response == "false") {
-                        var obj = {
-                            "apps": [{
-                                "name": "hikecs"
-                            }]
-                        };
+                    //app start
+                    if (invokeMode == Constants.INVOKE_MODE_APP_START) {
+                        if (response == "false")
+                            that.downloadBot(botname.replace(/\+/g, ''));
 
-                        var data = {
-                            url: 'http://qa-content.hike.in/mapps/api/v2/apps/' + 'install.json',
-                            params: obj
-                        };
-
-                        data = JSON.stringify(data);
-
-                        platformSdk.nativeReq({
-                            fn: 'doPostRequest',
-                            ctx: this,
-                            data: data,
-                            success: function(res) {
-                                console.log(res);
-                            }
-                        });
-
-                        PlatformBridge.showToast("Please wait...");
-                        that.checkExistingBot('+hikecs+');
-                    } else {
-                        that.openExistingBot('+hikecs+');
+                    } else if (invokeMode == Constants.INVOKE_MODE_THREE_DOT) {
+                        if (response == 'false')
+                            that.checkAndDownloadBot(botname, invokeMode);
+                        else
+                            that.openExistingBot(botname);
                     }
-                }
-            });
 
-        },
 
-        checkExistingBot: function(botname){
-
-            var that = this;
-            
-            platformSdk.nativeReq({
-                fn: 'isBotExist',
-                ctx: this,
-                data: "+hikecs+",
-                success: function(response) {
-                    if(response == 'false'){
-                        setInterval(function(){ 
-                            that.checkExistingBot('+hikecs+'); 
-                        }, 1000);
-                    }else{
-                        that.openExistingBot('+hikecs+');
-                    }
                 }
             });
         },
 
-        openExistingBot: function(botname){
+
+
+        openExistingBot: function(botname) {
+
             var jsonobj = {
-                            'screen': 'microapp',
-                            'msisdn': botname,
-                            'isBot': true,
-                            'extra_data': Constants.CS_HELP_JSON
-                        };
-                        PlatformBridge.openActivity(JSON.stringify(jsonobj));
+                'screen': 'microapp',
+                'msisdn': botname,
+                'isBot': true,
+                'extra_data': Constants.CS_HELP_JSON
+            };
+            PlatformBridge.openActivity(JSON.stringify(jsonobj));
         },
+
 
         // Setting Up The Three Dot Menu
         initOverflowMenu: function() {
@@ -272,11 +275,10 @@
             ];
 
 
-
-
             that.OverflowEvents();
-
             platformSdk.setOverflowMenu(omList);
+            that.checkAndDownloadBot('+hikecs+', Constants.INVOKE_MODE_APP_START);
+
         },
 
         // If card Data Comes From Any Forwarded Card that calls Open Non Messaging Bot Here
