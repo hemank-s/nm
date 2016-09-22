@@ -52,12 +52,12 @@
                     }
 
                     if (res) {
-                        if(res.stat == "ok"){
-                            console.log(fn);
-                            fn.call(x, res);    
-                        }else{
+                        if (res.stat == "ok") {
                             console.log(res);
-                            if(res.stat == 'fail'){
+                            fn.call(x, res);
+                        } else {
+                            console.log(res);
+                            if (res.stat == 'fail') {
                                 events.publish('update.loader', { show: false });
                                 console.log(res.data.reason);
                                 platformSdk.ui.showToast(res.data.reason);

@@ -11,18 +11,16 @@
     };
 
     var URL = {
-        subscription_location: appConfig.SUB_URL + '/subscription/api/v3/microapps/subscribe.json',
-        unsubscription_location: appConfig.SUB_URL + '/subscription/api/v3/microapps/unsubscribe.json',
         api_location: appConfig.API_URL
     };
 
     ninjaService.prototype = {
 
         // Subscribe Call For Engine / Game
-        subscribeCall: function(data, fn, x) {
+        subscribeHandler: function(data, fn, x) {
             console.log(data);
             var params = {
-                'url': URL.subscription_location,
+                'url': URL.api_location + '/subscribe?random=' + Math.round(Math.random() * 999999999),
                 'type': 'POST',
                 'data': data
             };
@@ -30,17 +28,18 @@
             else this.ninjaService.communicate(params);
         },
 
-        // Unsubscribe CaLl For Ene Or Game
-        unsubscribeCall: function(data, fn, x) {
+        // Subscribe Call For Engine / Game
+        unsubscribeHandler: function(data, fn, x) {
             console.log(data);
             var params = {
-                'url': URL.unsubscription_location,
+                'url': URL.api_location + '/unsubscribe?random=' + Math.round(Math.random() * 999999999),
                 'type': 'POST',
                 'data': data
             };
             if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
             else this.ninjaService.communicate(params);
         },
+
 
         // Profile Service For Ninja 
         getNinjaProfile: function(fn, x) {
@@ -48,7 +47,7 @@
             var dpRequired = true;
             var params = {};
 
-            if(platformSdk.appVersion >= 15){
+            if (platformSdk.appVersion >= 15) {
                 dpRequired = false;
             }
 
@@ -64,6 +63,7 @@
                     'type': 'GET'
                 };
             }
+
             if (typeof fn === "function") return this.ninjaService.communicate(params, fn, x);
             else this.ninjaService.communicate(params);
         },

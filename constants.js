@@ -31,7 +31,28 @@
             REDEEMED: "3",
             FAILED: "4",
             EXPIRED: "5"
+        },
+
+        CS_HELP_JSON: {
+            'appName': 'Friends',
+            'title': 'Everything you need to know about friends',
+            'data': [{
+                'text': 'Details',
+                'type': 'weburl',
+                'icon': 'faq',
+                'url': 'http://support.hike.in/forums/23106287-Friends-concept',
+                'active': true
+            }, {
+                'text': 'Give feedback',
+                'type': 'feature',
+                'icon': 'issue',
+                'subCat': [],
+                'active': true,
+                'label': 'Friends feedback',
+                'theme': 'HomeScreen5.0'
+            }]
         }
+
     };
 
 })();

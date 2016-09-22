@@ -10,6 +10,8 @@
         StickerPackViewController = require('./controllers/StickerPackViewController'),
         CoolDownController = require('./controllers/CoolDownController'),
         StateController = require('./controllers/StateController'),
+        SubscriptionController = require('./controllers/SubscriptionController'),
+        UpgradeController = require('./controllers/UpgradeController'),
 
 
         Router = require('./util/router'),
@@ -21,7 +23,8 @@
         cacheProvider = require('./util/cacheProvider'),
         expHandlerAB = require('./util/expHandlerAB'),
         TxService = require('./util/txServices'),
-        NinjaService = require('./util/ninjaServices');
+        NinjaService = require('./util/ninjaServices'),
+        Constants = require('../constants.js');
 
     // Full Screen Loader
     var loader = document.getElementById('loader');
@@ -103,6 +106,8 @@
         this.stickerPackViewController = new StickerPackViewController();
         this.coolDownController = new CoolDownController();
         this.stateController = new StateController();
+        this.subscriptionController = new SubscriptionController();
+        this.upgradeController = new UpgradeController();
 
         // Communication Controller
         this.TxService = new TxService();
@@ -158,6 +163,63 @@
 
                 }
             });
+
+
+            //Help
+            platformSdk.events.subscribe('app.menu.om.help', function(id) {
+                that.downloadBot();
+            });
+        },
+
+
+        downloadBot: function() {
+
+            var that = this;
+
+            platformSdk.nativeReq({
+                fn: 'isBotExist',
+                ctx: this,
+                data: "+hikecs+",
+                success: function(response) {
+
+                    if (response == "false") {
+                        var obj = {
+                            "apps": [{
+                                "name": "hikecs"
+                            }]
+                        };
+
+                        var data = {
+                            url: appConfig.INSTALL_URL,
+                            params: obj
+                        };
+
+                        data = JSON.stringify(data);
+
+                        platformSdk.nativeReq({
+                            fn: 'doPostRequest',
+                            ctx: this,
+                            data: data,
+                            success: function(res) {
+                                console.log(res);
+                            }
+                        });
+
+                        PlatformBridge.showToast("Please wait...");
+                        that.downloadBot();
+                    } else {
+                        var jsonobj = {
+                            'screen': 'microapp',
+                            'msisdn': '+hikecs+',
+                            'isBot': true,
+                            'extra_data': Constants.CS_HELP_JSON
+                        };
+                        PlatformBridge.openActivity(JSON.stringify(jsonobj));
+                    }
+                }
+            });
+
+
         },
 
         // Setting Up The Three Dot Menu
@@ -176,8 +238,18 @@
                     'title': platformSdk.appData.block === 'true' ? 'Unblock' : 'Block',
                     'en': 'true',
                     'eventName': 'app.menu.om.block'
+                },
+
+                {
+                    'title': 'Help',
+                    'en': 'true',
+                    'eventName': 'app.menu.om.help'
+
                 }
             ];
+
+
+
 
             that.OverflowEvents();
 
@@ -366,89 +438,105 @@
                 utils.toggleBackNavigation(false);
             });
 
-            // STUB TO REMOVE
-            // Profile Call Fetches this res and sends to the profile udpater
+            // FAQ All Rewards Controller 
+            this.router.route('/subscribe', function(data) {
+                self.container.innerHTML = '';
+                self.subscriptionController.render(self.container, self, data);
+                utils.toggleBackNavigation(false);
+            });
 
-            // self.router.navigateTo('/');
-
-            // var res = { 'data': { "battery": 6, "rewards_hash": "be96dc8c0a876b08c8076b03acdee0db5", "status": "active", "streak": 1, "name": 'Hemank Sabharwal' } };
-            // profileModel.updateNinjaData(res.data, self);
-            // activityModel.fetchNinjaActivity('lifetime');
-            // mysteryBoxModel.getMysteryBoxDetails(self);
-
-            // STUB TO REMOVE
+            // FAQ All Rewards Controller 
+            this.router.route('/upgrade', function(data) {
+                self.container.innerHTML = '';
+                self.upgradeController.render(self.container, self, data);
+                utils.toggleBackNavigation(false);
+            });
 
 
+
+            var subscriptionCompleted = cacheProvider.getFromCritical('subscriptionCompleted');
             var ftueCompleted = cacheProvider.getFromCritical('ftueCompleted');
-            //var ftueCompleted = true;
-            if (ftueCompleted) {
-                console.log("This is and old user :: Fetching Profile battery and streak for the user");
 
-                // Check If Block True Or False
-                if (platformSdk.appData.block === 'true') {
+            // If user is already subscribed
+            if (subscriptionCompleted) {
+                if (ftueCompleted) {
+                    console.log("This is and old user :: Fetching Profile battery and streak for the user");
 
-                    console.log('User has blocked the Application');
-                    events.publish('app/block', {
-                        show: true
-                    });
+                    // Check If Block True Or False
+                    if (platformSdk.appData.block === 'true') {
+
+                        console.log('User has blocked the Application');
+                        events.publish('app/block', {
+                            show: true
+                        });
+                    }
+
+                    this.NinjaService.getNinjaProfile(function(res) {
+                        console.log(res.data);
+
+                        //Check for older version
+                        if (utils.upgradeRequired(res.data.hike_version, platformSdk.appData.appVersion)) {
+
+                            self.router.navigateTo('/upgrade');
+
+                        } else if (res.data.status == 'inactive' || res.data.status == 'locked') {
+
+                            self.router.navigateTo('/userState', res.data);
+                            console.log("User state  is " + res.data.status);
+
+                        } else {
+
+                            // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
+                            self.router.navigateTo('/');
+                            profileModel.updateNinjaData(res.data, self);
+                            activityModel.fetchNinjaActivity('lifetime');
+                            //mysteryBoxModel.getMysteryBoxDetails(self);
+                        }
+                    }, this);
+                }
+                // Show FTUE To the User
+                else {
+                    // STUB TO REMOVE
+
+                    var data = {};
+
+                    this.ninjaRewardsData = { 'rewards': [], 'rewards_hash': '' };
+                    this.ninjaProfileData = { "battery": 0, "rewards_hash": "", "status": "active", "streak": 0, "name": '' };
+                    this.ninjaActivityData = { "chatThemes": { "rec": 0, "sent": 0 }, "files": { "rec": 0, "sent": 0 }, "messages": { "rec": 0, "sent": 0 }, "statusUpdates": { "count": 0 }, "stickers": { "rec": 0, "sent": 0 } };
+
+                    // STUB TO REMOVE
+
+                    data.ninjaRewardsCollection = this.ninjaRewardsData;
+                    data.ninjaProfileData = this.ninjaProfileData;
+                    data.ninjaActivityData = this.ninjaActivityData;
+
+                    this.NinjaService.getNinjaProfile(function(res) {
+                        console.log(res.data);
+                        if (res.data.status == 'locked') {
+                            cacheProvider.setInCritical('ftueCompleted', false);
+                            self.router.navigateTo('/userState', res.data);
+                            console.log("User state  is " + res.data.status);
+
+                        } else if (res.data.status == 'inactive') {
+                            cacheProvider.setInCritical('ftueCompleted', false);
+                            self.router.navigateTo('/userState', res.data);
+                            console.log("User state  is " + res.data.status);
+
+                        } else {
+                            // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
+                            cacheProvider.setInCritical('ftueCompleted', true);
+                            self.router.navigateTo('/', data);
+                            profileModel.updateNinjaData(res.data, self);
+                            activityModel.fetchNinjaActivity('lifetime');
+                            //mysteryBoxModel.getMysteryBoxDetails(self);
+                        }
+                    }, this);
                 }
 
-                this.NinjaService.getNinjaProfile(function(res) {
-                    console.log(res.data);
+            } else
+                self.router.navigateTo('/subscribe');
 
-                    if (res.data.status == 'inactive' || res.data.status == 'locked') {
 
-                        self.router.navigateTo('/userState', res.data);
-                        console.log("User state  is " + res.data.status);
-
-                    } else {
-
-                        // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
-                        self.router.navigateTo('/');
-                        profileModel.updateNinjaData(res.data, self);
-                        activityModel.fetchNinjaActivity('lifetime');
-                        //mysteryBoxModel.getMysteryBoxDetails(self);
-                    }
-                }, this);
-            }
-            // Show FTUE To the User
-            else {
-                // STUB TO REMOVE
-
-                var data = {};
-
-                this.ninjaRewardsData = { 'rewards': [], 'rewards_hash': '' };
-                this.ninjaProfileData = { "battery": 0, "rewards_hash": "", "status": "active", "streak": 0, "name": '' };
-                this.ninjaActivityData = { "chatThemes": { "rec": 0, "sent": 0 }, "files": { "rec": 0, "sent": 0 }, "messages": { "rec": 0, "sent": 0 }, "statusUpdates": { "count": 0 }, "stickers": { "rec": 0, "sent": 0 } };
-
-                // STUB TO REMOVE
-
-                data.ninjaRewardsCollection = this.ninjaRewardsData;
-                data.ninjaProfileData = this.ninjaProfileData;
-                data.ninjaActivityData = this.ninjaActivityData;
-
-                this.NinjaService.getNinjaProfile(function(res) {
-                    console.log(res.data);
-                    if (res.data.status == 'locked') {
-                        cacheProvider.setInCritical('ftueCompleted', false);
-                        self.router.navigateTo('/userState', res.data);
-                        console.log("User state  is " + res.data.status);
-
-                    } else if(res.data.status == 'inactive'){
-                        cacheProvider.setInCritical('ftueCompleted', false);
-                        self.router.navigateTo('/userState', res.data);
-                        console.log("User state  is " + res.data.status);
-
-                    }else{
-                        // Get Everything From the cache :: Activity data :: Mystery Box Data :: Rewards Data
-                        cacheProvider.setInCritical('ftueCompleted', true);
-                        self.router.navigateTo('/', data);
-                        profileModel.updateNinjaData(res.data, self);
-                        activityModel.fetchNinjaActivity('lifetime');
-                        //mysteryBoxModel.getMysteryBoxDetails(self);
-                    }
-                }, this);
-            }
 
         }
     };
