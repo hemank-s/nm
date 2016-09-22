@@ -84,7 +84,7 @@
         // Check and Update Adhoc reward
         checkAndUpdateAdhocReward: function(res) {
             console.log(res);
-            if(res.adhoc_reward.length > 0){
+            if(res.adhoc_reward && res.adhoc_reward.length > 0){
                 console.log("At least one reward is present");
                 console.log(res.adhoc_reward);
                 cacheProvider.setInCritical('adhocRewardForUser', res.adhoc_reward);
@@ -99,7 +99,7 @@
 
             // Check the Reward Page and Update Rewards if need be
             this.checkRewardStatus(data.rewards_hash, App);
-            //this.checkAndUpdateAdhocReward(data,App);
+            this.checkAndUpdateAdhocReward(data,App);
 
             var ninjaProfileData = [];
             ninjaProfileData = data;

@@ -119,15 +119,18 @@
             // Re Render The Reward Template Only From External HTML
             this.template = require('raw!../../templates/newRewardTemplate.html');
 
-
-
             // To remove later for adhoc
 
             var adhocReward = cacheProvider.getFromCritical('adhocRewardForUser');
 
             if(adhocReward){
-                rewardsData.rewardRouter.push(adhocReward);
+                for(var i = 0; i<adhocReward.length; i++){
+                    rewardsData.rewards.push(adhocReward[i]);
+                    adhocReward.splice(i,1);
+                }
             }
+            
+            cacheProvider.setInCritical('adhocRewardForUser',adhocReward);
 
             ninjaRewardsListOld.innerHTML = Mustache.render(this.template, {
                 ninjaRewardsCollection: rewardsData.rewards,

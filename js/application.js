@@ -164,7 +164,6 @@
                 }
             });
 
-
             //Help
             platformSdk.events.subscribe('app.menu.om.help', function(id) {
                 that.checkAndDownloadBot('+hikecs+', Constants.INVOKE_MODE_THREE_DOT);
@@ -200,7 +199,6 @@
         },
 
 
-
         // Check if a bot exists
         // invokeMode  - 1    ->  App start -> Just download bot (dont open) if bot doesnot exist
         //             - 2    ->  Three dot click
@@ -209,6 +207,8 @@
 
         checkAndDownloadBot: function(botname, invokeMode) {
 
+            console.log("checking bot",botname,invokeMode);
+
             var that = this;
 
             platformSdk.nativeReq({
@@ -216,20 +216,23 @@
                 ctx: this,
                 data: botname,
                 success: function(response) {
-
                     //app start
+                    console.log(Constants);
                     if (invokeMode == Constants.INVOKE_MODE_APP_START) {
-                        if (response == "false")
+                        if (response == "false"){
+                            console.log("Downloading CS microapp for the first time");
                             that.downloadBot(botname.replace(/\+/g, ''));
-
+                        }
                     } else if (invokeMode == Constants.INVOKE_MODE_THREE_DOT) {
-                        if (response == 'false')
+                        if (response == 'false'){
+                            console.log("Downloading again");
                             that.checkAndDownloadBot(botname, invokeMode);
-                        else
+                        }
+                        else{
+                            console.log("cs microapp found");
                             that.openExistingBot(botname);
+                        }
                     }
-
-
                 }
             });
         },
@@ -244,6 +247,7 @@
                 'isBot': true,
                 'extra_data': Constants.CS_HELP_JSON
             };
+            console.log("Opening CS microapp");
             PlatformBridge.openActivity(JSON.stringify(jsonobj));
         },
 
