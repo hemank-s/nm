@@ -541,12 +541,7 @@
 
                     this.NinjaService.getNinjaProfile(function(res) {
                         console.log(res.data);
-                        if (res.data.status == 'locked') {
-                            cacheProvider.setInCritical('ftueCompleted', false);
-                            self.router.navigateTo('/userState', res.data);
-                            console.log("User state  is " + res.data.status);
-
-                        } else if (res.data.status == 'inactive') {
+                        if (res.data.status == 'inactive' || res.data.status == 'locked') {
                             cacheProvider.setInCritical('ftueCompleted', false);
                             self.router.navigateTo('/userState', res.data);
                             console.log("User state  is " + res.data.status);

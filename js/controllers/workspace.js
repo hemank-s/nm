@@ -122,8 +122,10 @@
 
         this.el = document.createElement('div');
         this.el.className = 'workSpaceContainer animation_fadein noselect';
+
+
         this.el.innerHTML = Mustache.render(this.template, {
-            ninjaRewardsCollection: this.ninjaRewardsData.rewards,
+            ninjaRewardsCollection: (typeof this.ninjaRewardsData === 'undefined'? {} : this.ninjaRewardsData.rewards),
             ninjaActivityData: this.ninjaActivityData,
             ninjaProfileData: this.ninjaProfileData,
             lockedGreyout : cacheProvider.getFromCritical('lockedGreyout')

@@ -133,7 +133,7 @@
             cacheProvider.setInCritical('adhocRewardForUser',adhocReward);
 
             ninjaRewardsListOld.innerHTML = Mustache.render(this.template, {
-                ninjaRewardsCollection: rewardsData.rewards,
+                ninjaRewardsCollection: (typeof rewardsData === 'undefined'? {} : rewardsData.rewards),
                 lockedGreyout : cacheProvider.getFromCritical('lockedGreyout')
             });
 

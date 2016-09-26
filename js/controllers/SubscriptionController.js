@@ -4,6 +4,10 @@
     var utils = require('../util/utils'),
         Constants = require('../../constants.js'),
         cacheProvider = require('../util/cacheProvider'),
+        profileModel = require('../models/profileModel'),
+        activityModel = require('../models/activityModel'),
+        
+        
 
         SubscriptionController = function(options) {
             this.template = require('raw!../../templates/subscribe.html');
@@ -83,12 +87,9 @@
 
                         App.NinjaService.getNinjaProfile(function(res) {
                             console.log(res.data);
-                            if (res.data.status == 'locked') {
-                                cacheProvider.setInCritical('ftueCompleted', false);
-                                App.router.navigateTo('/userState', res.data);
-                                console.log("User state  is " + res.data.status);
 
-                            } else if (res.data.status == 'inactive') {
+
+                            if (res.data.status == 'locked' || res.data.status == 'locked') {
                                 cacheProvider.setInCritical('ftueCompleted', false);
                                 App.router.navigateTo('/userState', res.data);
                                 console.log("User state  is " + res.data.status);
