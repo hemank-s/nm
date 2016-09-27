@@ -88,8 +88,11 @@
                         App.NinjaService.getNinjaProfile(function(res) {
                             console.log(res.data);
 
-
-                            if (res.data.status == 'locked' || res.data.status == 'locked') {
+                            if (utils.upgradeRequired(res.data.hike_version, platformSdk.appData.appVersion)) {
+                                cacheProvider.setInCritical('ftueCompleted', true);
+                                App.router.navigateTo('/upgrade');
+                            }
+                            else if (res.data.status == 'locked' || res.data.status == 'locked') {
                                 cacheProvider.setInCritical('ftueCompleted', false);
                                 App.router.navigateTo('/userState', res.data);
                                 console.log("User state  is " + res.data.status);
@@ -109,7 +112,7 @@
                     utils.showToast('Something went wrong while subscribing');
 
 
-            }, this);
+            }, that);
 
         });
 

@@ -541,7 +541,12 @@
 
                     this.NinjaService.getNinjaProfile(function(res) {
                         console.log(res.data);
-                        if (res.data.status == 'inactive' || res.data.status == 'locked') {
+
+                         if (utils.upgradeRequired(res.data.hike_version, platformSdk.appData.appVersion)) {
+                                cacheProvider.setInCritical('ftueCompleted', true);
+                                App.router.navigateTo('/upgrade');
+                        }
+                        else if (res.data.status == 'inactive' || res.data.status == 'locked') {
                             cacheProvider.setInCritical('ftueCompleted', false);
                             self.router.navigateTo('/userState', res.data);
                             console.log("User state  is " + res.data.status);
